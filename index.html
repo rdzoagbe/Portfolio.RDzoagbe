@@ -5,6 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Roland Dzoagbe | IT Infrastructure & Operations Support Manager</title>
   <meta name="description" content="Portfolio of Roland Dzoagbe — Senior IT Infrastructure & Operations Support Manager specializing in infrastructure, cybersecurity, Microsoft 365, Azure, IT operations and service delivery." />
+
+  <!-- Open Graph (LinkedIn, Facebook, WhatsApp link previews) -->
+  <link rel="canonical" href="https://rdzoagbe.github.io/Portfolio.RolandDzoagbe/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://rdzoagbe.github.io/Portfolio.RolandDzoagbe/" />
+  <meta property="og:site_name" content="Roland Dzoagbe — Portfolio" />
+  <meta property="og:title" content="Roland Dzoagbe | IT Infrastructure & Operations Support Manager" />
+  <meta property="og:description" content="Senior IT leader — Microsoft 365, Azure, Intune, cybersecurity, ITSM and service delivery. Paris 2024 Olympic & Paralympic Games IT operations. Bilingual EN/FR." />
+  <meta property="og:image" content="https://rdzoagbe.github.io/Portfolio.RolandDzoagbe/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Roland Dzoagbe — Senior IT Infrastructure & Operations Support Manager" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="fr_FR" />
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Roland Dzoagbe | IT Infrastructure & Operations Support Manager" />
+  <meta name="twitter:description" content="Senior IT leader — Microsoft 365, Azure, Intune, cybersecurity, ITSM and service delivery. Paris 2024 Games IT operations. Bilingual EN/FR." />
+  <meta name="twitter:image" content="https://rdzoagbe.github.io/Portfolio.RolandDzoagbe/og-image.png" />
   <style>
     :root {
       --bg:#edf4fb;
@@ -783,6 +803,39 @@
       }
     }
 
+    /* ===== Language switcher (FR/EN) ===== */
+    .lang-switch {
+      display:inline-flex;
+      align-items:center;
+      gap:2px;
+      padding:3px;
+      margin-left:4px;
+      border:1px solid var(--line-strong);
+      border-radius:999px;
+      background:var(--panel);
+      flex-shrink:0;
+    }
+    .lang-btn {
+      border:0;
+      background:transparent;
+      padding:6px 13px;
+      border-radius:999px;
+      font-family:inherit;
+      font-weight:700;
+      font-size:.76rem;
+      letter-spacing:.05em;
+      cursor:pointer;
+      color:var(--muted);
+      transition:background .18s ease, color .18s ease;
+    }
+    .lang-btn:hover { color:var(--text); }
+    .lang-btn.active {
+      background:linear-gradient(135deg, var(--primary), var(--primary-2));
+      color:#fff;
+    }
+    @media (max-width: 720px) {
+      .lang-btn { padding:5px 10px; }
+    }
   </style>
 </head>
 <body>
@@ -796,7 +849,11 @@
         <button class="nav-btn" data-page="recommendations">Recommendations</button>
         <button class="nav-btn" data-page="resume">Download CV</button>
         <button class="nav-btn" data-page="contact">Contact</button>
-        <a class="nav-link cta" href="https://linkedin.com/in/r-dz" target="_blank" rel="noopener">Let’s Connect ↗</a>
+        <div class="lang-switch" role="group" aria-label="Language selector / Sélecteur de langue">
+          <button class="lang-btn" data-lang="fr" type="button" aria-label="Français">FR</button>
+          <button class="lang-btn active" data-lang="en" type="button" aria-label="English">EN</button>
+        </div>
+        <a class="nav-link cta" id="navCta" href="https://linkedin.com/in/r-dz" target="_blank" rel="noopener">Let’s Connect ↗</a>
       </nav>
     </div>
 
@@ -820,12 +877,12 @@
               <div class="cv-dd" id="cvDropdownHome">
                 <button class="btn secondary" type="button" id="cvButtonHome" aria-expanded="false">Download CV ▾</button>
                 <div class="cv-menu">
-                  <a href="RDzoagbe_IT_Infrastructure_Operations_Support_Manager_EN.pdf" download>
-                    <span>English CV<small>IT Infrastructure & Operations Support Manager</small></span>
+                  <a href="Roland_Dzoagbe_EN.pdf" download>
+                    <span>English CV<small>IT Manager · Infrastructure & Cyber Operations</small></span>
                     <span class="lang">EN</span>
                   </a>
-                  <a href="RDzoagbe_Responsable_Infrastructure_IT_Operations_Support_FR.pdf" download>
-                    <span>CV Français<small>Responsable Infrastructure & Operations IT</small></span>
+                  <a href="Roland_Dzoagbe_FR.pdf" download>
+                    <span>CV Français<small>Responsable IT · Infrastructure & Cyber Operations</small></span>
                     <span class="lang">FR</span>
                   </a>
                 </div>
@@ -889,9 +946,9 @@
         </div>
 
         <div class="home-stat">
-          <strong>250+</strong>
+          <strong>600+</strong>
           <span>Users supported</span>
-          <small>Multi-site and event environments including Paris 2024.</small>
+          <small>Multi-site 24/7 operations at HBS and Paris 2024 event environments.</small>
         </div>
 
         <div class="home-stat">
@@ -1025,14 +1082,14 @@
             <div class="career-dot-v2">01</div>
             <div class="career-card-v2 featured-career">
               <div class="career-card-head-v2">
-                <div class="career-period-v2">Mar 2025 – Dec 2025 · Boulogne-Billancourt</div>
+                <div class="career-period-v2">Apr 2025 – Dec 2025 · Boulogne-Billancourt</div>
                 <h3>Infrastructure & Support Manager</h3>
-                <div class="career-company-v2">HBS · Permanent · International broadcast sites</div>
+                <div class="career-company-v2">HBS · International broadcast operations · 600+ users · 24/7</div>
               </div>
               <div class="career-card-body-v2">
                 <div class="career-impact-v2">
                   <span class="impact-pill-v2">Infrastructure operations</span>
-                  <span class="impact-pill-v2">N1–N3 support</span>
+                  <span class="impact-pill-v2">N1–N3 · 8 engineers</span>
                   <span class="impact-pill-v2">80% MTTR reduction</span>
                   <span class="impact-pill-v2">Defender / MFA</span>
                 </div>
@@ -1053,7 +1110,7 @@
             <div class="career-card-v2">
               <div class="career-card-head-v2">
                 <div class="career-period-v2">Mar 2024 – Mar 2025 · Kingston upon Thames / Hybrid</div>
-                <h3>IT Manager</h3>
+                <h3>Infrastructure & Delivery Manager — Paris 2024</h3>
                 <div class="career-company-v2">The iLUKA Collective · Paris 2024 Olympic & Paralympic Games</div>
               </div>
               <div class="career-card-body-v2">
@@ -1130,7 +1187,7 @@
             <div class="career-dot-v2">05</div>
             <div class="career-card-v2">
               <div class="career-card-head-v2">
-                <div class="career-period-v2">Jun 2021 – Aug 2022 · Paris</div>
+                <div class="career-period-v2">Jun 2021 – Jul 2022 · Paris</div>
                 <h3>Technical Support Analyst</h3>
                 <div class="career-company-v2">Dechert LLP · Legal / regulated environment</div>
               </div>
@@ -1182,7 +1239,7 @@
             <div class="career-dot-v2">07</div>
             <div class="career-card-v2">
               <div class="career-card-head-v2">
-                <div class="career-period-v2">2008 – 2017</div>
+                <div class="career-period-v2">2009 – 2017</div>
                 <h3>Healthcare Assistant & Self-Directed IT Practitioner</h3>
                 <div class="career-company-v2">Medical Institute · Independent learning</div>
               </div>
@@ -1290,13 +1347,13 @@
           <div class="cv-dd">
             <button class="btn primary cv-toggle" type="button">⬇ Download CV ▾</button>
             <div class="cv-menu" role="menu">
-             <a href="./Roland_Dzoagbe_CV_EN.pdf" download="Roland_Dzoagbe_CV_EN.pdf" role="menuitem">
-  <span>English CV<small>Roland Dzoagbe CV-EN</small></span>
+             <a href="./Roland_Dzoagbe_EN.pdf" download="Roland_Dzoagbe_EN.pdf" role="menuitem">
+  <span>English CV<small>Roland Dzoagbe — CV EN</small></span>
   <span class="lang">EN</span>
 </a>
 
-<a href="./Roland_Dzoagbe_CV_FR.pdf" download="Roland_Dzoagbe_CV_FR.pdf" role="menuitem">
-  <span>CV Français<small>Roland Dzoagbe CV-FR</small></span>
+<a href="./Roland_Dzoagbe_FR.pdf" download="Roland_Dzoagbe_FR.pdf" role="menuitem">
+  <span>CV Français<small>Roland Dzoagbe — CV FR</small></span>
   <span class="lang">FR</span>
 </a>
             </div>
@@ -1360,6 +1417,238 @@
       cvButtonHome?.setAttribute("aria-expanded", "false");
     });
 
+  </script>
+
+  <script>
+    /* =========================================================
+       FR / EN language system
+       - English lives in the HTML (default / source of truth)
+       - French strings below, applied via CSS selectors
+       - Choice saved in localStorage; browser language detected
+         on first visit
+       ========================================================= */
+    (function () {
+      const META = {
+        en: {
+          title: "Roland Dzoagbe | IT Infrastructure & Operations Support Manager",
+          desc: "Portfolio of Roland Dzoagbe — Senior IT Infrastructure & Operations Support Manager specializing in infrastructure, cybersecurity, Microsoft 365, Azure, IT operations and service delivery."
+        },
+        fr: {
+          title: "Roland Dzoagbe | Responsable Infrastructure & Opérations IT",
+          desc: "Portfolio de Roland Dzoagbe — Responsable senior Infrastructure & Opérations IT, spécialisé en infrastructure, cybersécurité, Microsoft 365, Azure, opérations IT et service delivery."
+        }
+      };
+
+      /* [selector, French HTML] — English is captured automatically from the page */
+      const FR = [
+        /* ---- Navigation ---- */
+        ['.nav-btn[data-page="home"]', 'Accueil'],
+        ['.nav-btn[data-page="about"]', 'À propos'],
+        ['.nav-btn[data-page="skills"]', 'Expertise'],
+        ['.nav-btn[data-page="experience"]', 'Parcours'],
+        ['.nav-btn[data-page="recommendations"]', 'Recommandations'],
+        ['.nav-btn[data-page="resume"]', 'Télécharger CV'],
+        ['.nav-btn[data-page="contact"]', 'Contact'],
+        ['#navCta', 'Me contacter ↗'],
+
+        /* ---- Home / hero ---- */
+        ['.home-intro-card .badge', 'Responsable senior Infrastructure & Opérations IT'],
+        ['.home-intro-card .role', 'Responsable Infrastructure & Opérations IT, spécialisé en infrastructure, cybersécurité, Microsoft 365, Azure, gestion des postes de travail, opérations IT et service delivery.'],
+        ['.home-intro-card .summary', "J'aide les organisations à construire des opérations IT fiables, sécurisées et bien structurées. Mon parcours combine une expertise technique de terrain, le management d'équipes support, les environnements Microsoft 365 / Intune / Azure, les pratiques ITSM et une expérience de delivery sous forte pression, notamment sur les Jeux Olympiques & Paralympiques de Paris 2024."],
+        ['.home-intro-card .btn.primary[data-page="contact"]', 'Me contacter'],
+        ['#cvButtonHome', 'Télécharger le CV ▾'],
+        ['.home-intro-card .btn.secondary[data-page="experience"]', 'Voir le parcours'],
+        ['.socials .pill:nth-child(3)', 'Région parisienne, France'],
+        ['.socials .pill:nth-child(4)', 'Anglais / Français'],
+        ['.trust-label', 'Atouts clés'],
+        ['.trust-row .trust-chip:nth-child(4)', 'Cybersécurité'],
+        ['.trust-row .trust-chip:nth-child(6)', 'Management du support'],
+        ['.home-availability', 'Ouvert aux opportunités de leadership IT stratégique'],
+        ['.home-profile-body h2', 'Opérations IT fiables, modern workplace et leadership du support.'],
+        ['.home-profile-body > p', "Du support technique de terrain au management de l'infrastructure et des opérations, j'apporte structure, sens des responsabilités et exécution sereine dans des environnements IT complexes."],
+        ['.home-profile-links a:nth-child(2) span:first-child', 'Profil LinkedIn'],
+
+        /* ---- Home stats ---- */
+        ['.home-stat-strip .home-stat:nth-child(1) span', "Ans d'expérience IT"],
+        ['.home-stat-strip .home-stat:nth-child(1) small', 'Infrastructure, support, modern workplace et opérations.'],
+        ['.home-stat-strip .home-stat:nth-child(2) span', 'Utilisateurs accompagnés'],
+        ['.home-stat-strip .home-stat:nth-child(2) small', 'Opérations 24/7 multi-sites chez HBS et environnements événementiels Paris 2024.'],
+        ['.home-stat-strip .home-stat:nth-child(3) span', 'Réduction du MTTR'],
+        ['.home-stat-strip .home-stat:nth-child(3) small', 'Amélioration de la performance du support et du respect des SLA.'],
+        ['.home-stat-strip .home-stat:nth-child(4) span', 'Modern workplace'],
+        ['.home-stat-strip .home-stat:nth-child(4) small', 'Intune, Autopilot, Defender, Azure et gouvernance des postes.'],
+        ['.home-stat-strip .home-stat:nth-child(5) span', 'Opérations critiques'],
+        ['.home-stat-strip .home-stat:nth-child(5) small', 'Environnement de delivery IT des Jeux Olympiques & Paralympiques.'],
+
+        /* ---- About ---- */
+        ['#page-about .section-title h2', 'Un leadership infrastructure avec une vraie profondeur technique.'],
+        ['#page-about .section-title p', 'Le meilleur des portfolios tech modernes : positionnement clair, présentation soignée, impact mesurable et hiérarchie visuelle nette.'],
+        ['#page-about .grid-2 .card:nth-child(1) h3', 'Profil professionnel'],
+        ['#page-about .grid-2 .card:nth-child(1) p', "Parti du support de première ligne, j'ai évolué vers le pilotage de fonctions infrastructure et support opérationnel critiques, avec une carrière marquée par la polyvalence technique, l'amélioration de la qualité de service, le management d'équipe et le delivery sous pression. Je suis spécialisé en infrastructure workplace connectée au cloud, gestion des postes de travail, IAM, cybersécurité, écosystèmes Microsoft et opérations de service."],
+        ['#page-about .grid-2 .card:nth-child(1) .tag:nth-child(2)', 'Support opérationnel'],
+        ['#page-about .grid-2 .card:nth-child(1) .tag:nth-child(4)', 'Cybersécurité'],
+        ['#page-about .grid-2 .card:nth-child(1) .tag:nth-child(5)', 'Automatisation'],
+        ['#page-about .grid-2 .card:nth-child(2) h3', "Ce que j'apporte"],
+        ['#page-about .grid-2 .card:nth-child(2) li:nth-child(1)', "Management d'équipes support et infrastructure dans des environnements exigeants."],
+        ['#page-about .grid-2 .card:nth-child(2) li:nth-child(2)', 'Expertise opérationnelle sur Microsoft 365, Azure, Intune, Defender et Entra ID.'],
+        ['#page-about .grid-2 .card:nth-child(2) li:nth-child(3)', "Amélioration de l'expérience utilisateur, des délais de réponse et de la stabilité opérationnelle."],
+        ['#page-about .grid-2 .card:nth-child(2) li:nth-child(4)', 'Solide expérience du cycle de vie des postes, ITSM, coordination fournisseurs et durcissement sécurité.'],
+        ['#page-about .grid-2 .card:nth-child(2) li:nth-child(5)', 'Collaboration fluide en anglais et en français avec des interlocuteurs internationaux.'],
+
+        /* ---- Skills ---- */
+        ['#page-skills .section-title h2', 'Expertise et outils.'],
+        ['#page-skills .section-title p', "Centré sur ce que recruteurs et managers attendent d'un profil senior infrastructure et support opérationnel."],
+        ['#page-skills .cards-3 .card:nth-child(1) h3', 'Infrastructure & Cloud'],
+        ['#page-skills .cards-3 .card:nth-child(1) p', 'Microsoft 365, Azure, Entra ID, Intune, Autopilot, administration Windows, gestion des postes, conformité des appareils, patching et gestion des accès.'],
+        ['#page-skills .cards-3 .card:nth-child(2) h3', 'Opérations & Support'],
+        ['#page-skills .cards-3 .card:nth-child(2) p', "Management du helpdesk, ITSM, gestion des SLA, gestion des incidents et des problèmes, amélioration du service, onboarding/offboarding, gestion de parc et documentation."],
+        ['#page-skills .cards-3 .card:nth-child(3) h3', 'Sécurité & Automatisation'],
+        ['#page-skills .cards-3 .card:nth-child(3) p', 'Defender, MFA, accès conditionnel, IAM, pare-feux, processus conformes RGPD, PowerShell, automatisation, reporting et standardisation des déploiements.'],
+        ['#page-skills .cards-2 .card:nth-child(1) h3', 'Stack technique'],
+        ['#page-skills .cards-2 .card:nth-child(2) h3', 'Forces managériales'],
+        ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(1)', "Management d'équipe"],
+        ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(2)', 'Communication parties prenantes'],
+        ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(3)', 'Culture ITIL'],
+        ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(4)', 'Excellence opérationnelle'],
+        ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(5)', 'Gestion fournisseurs'],
+        ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(6)', 'Amélioration continue'],
+
+        /* ---- Experience: header + sidebar ---- */
+        ['#page-experience .section-title h2', 'Parcours professionnel'],
+        ['#page-experience .section-title p', "Une vue claire et structurée de ma progression, du support technique de terrain vers le leadership infrastructure & opérations et les environnements de delivery Paris 2024."],
+        ['.career-summary-v2 .ey', 'Parcours professionnel'],
+        ['.career-summary-v2 h3', 'De technicien support à responsable infrastructure & opérations.'],
+        ['.career-summary-v2 p', "Mon parcours combine exécution technique, support utilisateurs, service delivery, gouvernance des postes, cybersécurité et leadership dans des environnements sous forte pression."],
+        ['.career-mini-stats .career-mini-stat:nth-child(1) span', "Ans en support IT, infrastructure et opérations"],
+        ['.career-mini-stats .career-mini-stat:nth-child(2) span', 'Utilisateurs accompagnés sur les sites Paris 2024'],
+        ['.career-mini-stats .career-mini-stat:nth-child(3) span', "Réduction du MTTR grâce à l'amélioration du support"],
+
+        /* ---- Experience card 01: HBS ---- */
+        ['.career-roadmap-v2 article:nth-of-type(1) .career-period-v2', 'Avr. 2025 – Déc. 2025 · Boulogne-Billancourt'],
+        ['.career-roadmap-v2 article:nth-of-type(1) h3', 'Responsable Infrastructure & Support'],
+        ['.career-roadmap-v2 article:nth-of-type(1) .career-company-v2', 'HBS · Opérations broadcast internationales · 600+ utilisateurs · 24h/24'],
+        ['.career-roadmap-v2 article:nth-of-type(1) .impact-pill-v2:nth-child(1)', "Opérations d'infrastructure"],
+        ['.career-roadmap-v2 article:nth-of-type(1) .impact-pill-v2:nth-child(2)', 'N1–N3 · 8 ingénieurs'],
+        ['.career-roadmap-v2 article:nth-of-type(1) .impact-pill-v2:nth-child(3)', 'MTTR réduit de 80 %'],
+        ['.career-roadmap-v2 article:nth-of-type(1) ul li:nth-child(1)', "Pilotage des opérations d'infrastructure IT au niveau des sites : continuité d'activité, conformité sécurité et alignement avec les parties prenantes exécutives."],
+        ['.career-roadmap-v2 article:nth-of-type(1) ul li:nth-child(2)', "Management d'équipes support N1–N3 multi-sites : réduction du MTTR de 80 % et amélioration du respect des SLA."],
+        ['.career-roadmap-v2 article:nth-of-type(1) ul li:nth-child(3)', 'Déploiement de Microsoft Defender for Endpoint et du MFA sur des environnements multi-sites.'],
+        ['.career-roadmap-v2 article:nth-of-type(1) ul li:nth-child(4)', 'Coordination des incidents de sécurité et des escalades : confinement rapide et continuité de service.'],
+        ['.career-roadmap-v2 article:nth-of-type(1) ul li:nth-child(5)', "Livraison de projets d'évolution d'infrastructure : modernisation réseau et déploiements Autopilot."],
+        ['.career-roadmap-v2 article:nth-of-type(1) ul li:nth-child(6)', 'Conception de tableaux de bord de performance et de reportings pour la direction, au service du pilotage budgétaire et de la prise de décision.'],
+
+        /* ---- Experience card 02: iLUKA ---- */
+        ['.career-roadmap-v2 article:nth-of-type(2) .career-period-v2', 'Mars 2024 – Mars 2025 · Kingston upon Thames / Hybride'],
+        ['.career-roadmap-v2 article:nth-of-type(2) h3', 'Responsable Infrastructure & Delivery — JOP Paris 2024'],
+        ['.career-roadmap-v2 article:nth-of-type(2) .career-company-v2', 'The iLUKA Collective · Jeux Olympiques & Paralympiques Paris 2024'],
+        ['.career-roadmap-v2 article:nth-of-type(2) .impact-pill-v2:nth-child(1)', '250+ utilisateurs'],
+        ['.career-roadmap-v2 article:nth-of-type(2) .impact-pill-v2:nth-child(2)', 'Sites événementiels'],
+        ['.career-roadmap-v2 article:nth-of-type(2) .impact-pill-v2:nth-child(4)', 'Gouvernance des accès'],
+        ['.career-roadmap-v2 article:nth-of-type(2) ul li:nth-child(1)', "Conception et exploitation de l'infrastructure IT pour 250+ utilisateurs sur plusieurs sites événementiels."],
+        ['.career-roadmap-v2 article:nth-of-type(2) ul li:nth-child(2)', 'Pilotage de bout en bout des opérations IT pour les Jeux Olympiques & Paralympiques de Paris 2024.'],
+        ['.career-roadmap-v2 article:nth-of-type(2) ul li:nth-child(3)', "Responsabilité du parc applicatif métier : plateformes de billetterie, Eventim, CRM, contrôle d'accès et workflows de reporting."],
+        ['.career-roadmap-v2 article:nth-of-type(2) ul li:nth-child(4)', "Garantie de la conformité sécurité, de la gouvernance des accès et de la traçabilité des audits en environnement critique."],
+        ['.career-roadmap-v2 article:nth-of-type(2) ul li:nth-child(5)', 'Coordination des prestataires et fournisseurs, achats et pilotage budgétaire IT.'],
+
+        /* ---- Experience card 03: AKUR8 ---- */
+        ['.career-roadmap-v2 article:nth-of-type(3) .career-period-v2', 'Mai 2023 – Oct. 2023 · Paris'],
+        ['.career-roadmap-v2 article:nth-of-type(3) h3', 'Responsable IT Groupe'],
+        ['.career-roadmap-v2 article:nth-of-type(3) .career-company-v2', 'AKUR8 · InsurTech SaaS en forte croissance'],
+        ['.career-roadmap-v2 article:nth-of-type(3) .impact-pill-v2:nth-child(3)', 'RGPD'],
+        ['.career-roadmap-v2 article:nth-of-type(3) .impact-pill-v2:nth-child(4)', 'Accès SaaS'],
+        ['.career-roadmap-v2 article:nth-of-type(3) ul li:nth-child(1)', "Pilotage des opérations IT et des environnements applicatifs métier dans un contexte SaaS en forte croissance."],
+        ['.career-roadmap-v2 article:nth-of-type(3) ul li:nth-child(2)', "Administration des systèmes IAM (Okta, Google Admin) : utilisateurs, groupes, droits et accès SaaS."],
+        ['.career-roadmap-v2 article:nth-of-type(3) ul li:nth-child(3)', 'Gestion des achats IT, suivi budgétaire, coordination des fournisseurs et des prestataires.'],
+        ['.career-roadmap-v2 article:nth-of-type(3) ul li:nth-child(4)', "Collaboration avec l'équipe sécurité sur les standards IT, l'alignement RGPD et les contrôles internes."],
+        ['.career-roadmap-v2 article:nth-of-type(3) ul li:nth-child(5)', 'Accompagnement de la montée en compétence, partage de connaissances, documentation et amélioration des processus.'],
+
+        /* ---- Experience card 04: Zenly ---- */
+        ['.career-roadmap-v2 article:nth-of-type(4) .career-period-v2', 'Juil. 2022 – Mars 2023 · Paris / Hybride'],
+        ['.career-roadmap-v2 article:nth-of-type(4) h3', 'Responsable IT'],
+        ['.career-roadmap-v2 article:nth-of-type(4) .career-company-v2', 'Zenly · Groupe Snapchat'],
+        ['.career-roadmap-v2 article:nth-of-type(4) .impact-pill-v2:nth-child(1)', '180+ utilisateurs'],
+        ['.career-roadmap-v2 article:nth-of-type(4) ul li:nth-child(1)', "Gestion de bout en bout de l'infrastructure IT et des applications métier pour 180+ collaborateurs internationaux."],
+        ['.career-roadmap-v2 article:nth-of-type(4) ul li:nth-child(2)', "Support des environnements Windows, macOS et Linux, y compris la préparation des postes et la configuration des images."],
+        ['.career-roadmap-v2 article:nth-of-type(4) ul li:nth-child(3)', 'Gestion de Okta, Google Admin, onboarding/offboarding, tickets JIRA, communication Slack et coordination fournisseurs.'],
+        ['.career-roadmap-v2 article:nth-of-type(4) ul li:nth-child(4)', "Installation, administration et supervision des équipements d'infrastructure : serveurs, bornes WiFi et commutateurs."],
+        ['.career-roadmap-v2 article:nth-of-type(4) ul li:nth-child(5)', 'Documentation des interventions et reporting opérationnel quotidien.'],
+
+        /* ---- Experience card 05: Dechert ---- */
+        ['.career-roadmap-v2 article:nth-of-type(5) .career-period-v2', 'Juin 2021 – Juil. 2022 · Paris'],
+        ['.career-roadmap-v2 article:nth-of-type(5) h3', 'Analyste Support Technique'],
+        ['.career-roadmap-v2 article:nth-of-type(5) .career-company-v2', 'Dechert LLP · Environnement juridique / réglementé'],
+        ['.career-roadmap-v2 article:nth-of-type(5) .impact-pill-v2:nth-child(2)', 'SLA 99%+'],
+        ['.career-roadmap-v2 article:nth-of-type(5) ul li:nth-child(1)', "Support IT multi-pays via ServiceNow, avec un respect des SLA supérieur à 99 % en environnement réglementé RGPD."],
+        ['.career-roadmap-v2 article:nth-of-type(5) ul li:nth-child(2)', 'Utilisation de Citrix Workspace, Active Directory, AirWatch MDM, Azure MDM et ServiceNow pour le support et la gestion de parc.'],
+        ['.career-roadmap-v2 article:nth-of-type(5) ul li:nth-child(3)', 'Préparation des utilisateurs, configuration des images de postes et support des salles de réunion (Cisco, Teams, Skype).'],
+        ['.career-roadmap-v2 article:nth-of-type(5) ul li:nth-child(4)', 'Dépannage réseau : HTTP, DNS et TCP/IP.'],
+        ['.career-roadmap-v2 article:nth-of-type(5) ul li:nth-child(5)', 'Documentation des interventions et reporting hebdomadaire.'],
+
+        /* ---- Experience card 06: Artemys ---- */
+        ['.career-roadmap-v2 article:nth-of-type(6) h3', 'Technicien Support / Support de proximité / Technicien IT'],
+        ['.career-roadmap-v2 article:nth-of-type(6) .impact-pill-v2:nth-child(1)', 'Support N1/N2/N3'],
+        ['.career-roadmap-v2 article:nth-of-type(6) .impact-pill-v2:nth-child(4)', '~200 utilisateurs'],
+        ['.career-roadmap-v2 article:nth-of-type(6) ul li:nth-child(1)', 'Support N2/N3, administration des environnements Microsoft 365 et Azure, et participation aux projets de migration Windows.'],
+        ['.career-roadmap-v2 article:nth-of-type(6) ul li:nth-child(2)', 'Gestion des tickets GLPI, G Suite, sauvegardes Veeam, commutation Cisco, O365, Azure Admin et inventaire/enrôlement des postes.'],
+        ['.career-roadmap-v2 article:nth-of-type(6) ul li:nth-child(3)', 'Installation et configuration des postes de travail, logiciels, téléphonie, visioconférence et équipements réseau.'],
+        ['.career-roadmap-v2 article:nth-of-type(6) ul li:nth-child(4)', 'Administration des utilisateurs et profils Active Directory, gestion du parc IT et déploiement des équipements.'],
+        ['.career-roadmap-v2 article:nth-of-type(6) ul li:nth-child(5)', 'Rédaction de documentation technique et de procédures de déploiement.'],
+
+        /* ---- Experience card 07: Healthcare ---- */
+        ['.career-roadmap-v2 article:nth-of-type(7) h3', 'Assistant de soins & autodidacte en informatique'],
+        ['.career-roadmap-v2 article:nth-of-type(7) .career-company-v2', 'Institut médical · Apprentissage autonome'],
+        ['.career-roadmap-v2 article:nth-of-type(7) .impact-pill-v2:nth-child(2)', 'Résilience'],
+        ['.career-roadmap-v2 article:nth-of-type(7) .impact-pill-v2:nth-child(3)', 'Auto-formation'],
+        ['.career-roadmap-v2 article:nth-of-type(7) ul li:nth-child(1)', "Développement de compétences en communication avec les patients, travail d'équipe et gestion d'opérations sous pression."],
+        ['.career-roadmap-v2 article:nth-of-type(7) ul li:nth-child(2)', "Construction d'une expertise IT fondamentale en autodidacte : installation d'OS, maintenance matérielle, montage de PC sur mesure et dépannage."],
+
+        /* ---- Recommendations ---- */
+        ['#page-recommendations .section-title h2', 'Recommandations'],
+        ['#page-recommendations .section-title p', "Recommandations LinkedIn authentiques soulignant la fiabilité, l'esprit d'équipe, le leadership IT, le delivery sous pression et le soutien des opérations critiques de Paris 2024. Témoignages originaux conservés en anglais."],
+
+        /* ---- Resume / CV ---- */
+        ['#page-resume .badge', 'Options de téléchargement'],
+        ['#page-resume h2', 'Choisissez la version de votre CV.'],
+        ['#page-resume .resume-block > div > p', "Sélectionnez la langue du CV à télécharger. Les deux fichiers sont optimisés ATS et alignés sur des postes seniors en infrastructure, support opérationnel, Microsoft 365 / Azure, cybersécurité et service delivery."],
+        ['#page-resume .cv-toggle', '⬇ Télécharger le CV ▾'],
+        ['#page-resume .cv-hint', 'Astuce : conservez les deux fichiers PDF dans le même dossier que ce fichier HTML.'],
+
+        /* ---- Contact ---- */
+        ['#page-contact .section-title h2', 'Entrons en contact.'],
+        ['#page-contact .section-title p', "Ouvert aux opportunités seniors en infrastructure, support opérationnel et management IT en France et à l'international."],
+        ['#page-contact .contact-item:nth-child(1) .contact-label', 'Téléphone'],
+        ['#page-contact .contact-item:nth-child(4) .contact-label', 'Localisation'],
+        ['#page-contact .contact-item:nth-child(4) .contact-value', 'Île-de-France · Ouvert aux opportunités UK / internationales']
+      ];
+
+      const enCache = new Map();
+      const langBtns = document.querySelectorAll('.lang-btn');
+      const metaDesc = document.querySelector('meta[name="description"]');
+
+      function setLang(lang) {
+        FR.forEach(([sel, frHtml]) => {
+          const el = document.querySelector(sel);
+          if (!el) return;
+          if (!enCache.has(sel)) enCache.set(sel, el.innerHTML);
+          el.innerHTML = (lang === 'fr') ? frHtml : enCache.get(sel);
+        });
+        document.documentElement.setAttribute('lang', lang);
+        document.title = META[lang].title;
+        if (metaDesc) metaDesc.setAttribute('content', META[lang].desc);
+        langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+        try { localStorage.setItem('rd-lang', lang); } catch (e) { /* private mode */ }
+      }
+
+      langBtns.forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+
+      /* First visit: saved choice > browser language > English */
+      let initial = 'en';
+      try { initial = localStorage.getItem('rd-lang') || ''; } catch (e) {}
+      if (initial !== 'en' && initial !== 'fr') {
+        initial = (navigator.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+      }
+      if (initial === 'fr') setLang('fr');
+    })();
   </script>
 </body>
 </html>
