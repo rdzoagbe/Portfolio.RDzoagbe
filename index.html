@@ -1101,6 +1101,23 @@
     .project-outcome { color:var(--muted); line-height:1.7; font-size:.93rem; flex:1; }
     .project-metrics { display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; }
     @media (max-width:980px) { .projects-grid { grid-template-columns:1fr; } }
+
+    /* ---- Certifications & continuous learning (Expertise page) ---- */
+    .certs-head { margin-top:26px; margin-bottom:4px; }
+    .certs-head h3 { font-size:1.3rem; letter-spacing:-.02em; color:var(--text); margin-bottom:4px; }
+    .certs-head p { color:var(--muted); line-height:1.6; font-size:.95rem; max-width:660px; }
+    .certs-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:14px; }
+    .cert-card { display:flex; flex-direction:column; gap:6px; padding:18px; border-radius:20px; background:var(--panel-strong); border:1px solid rgba(148,163,184,.18); box-shadow:var(--shadow-soft); transition:transform .2s ease, box-shadow .2s ease; }
+    .cert-card:hover { transform:translateY(-3px); box-shadow:0 18px 40px rgba(15,23,42,.10); }
+    :root[data-theme="dark"] .cert-card:hover { box-shadow:0 20px 44px rgba(0,0,0,.5); }
+    .cert-icon { width:34px; height:34px; border-radius:11px; display:grid; place-items:center; background:rgba(37,99,235,.10); color:var(--primary); font-weight:900; font-size:15px; margin-bottom:2px; }
+    :root[data-theme="dark"] .cert-icon { background:rgba(59,130,246,.16); color:#38bdf8; }
+    .cert-name { font-weight:800; color:var(--text); font-size:1rem; line-height:1.25; letter-spacing:-.01em; }
+    .cert-meta { color:var(--muted-2); font-size:.82rem; font-weight:700; }
+    .cert-status { margin-top:4px; align-self:flex-start; padding:4px 9px; border-radius:999px; font-size:.68rem; font-weight:800; letter-spacing:.02em; background:rgba(245,158,11,.12); color:#92400e; border:1px solid rgba(245,158,11,.32); }
+    :root[data-theme="dark"] .cert-status { background:rgba(245,158,11,.14); color:#fbbf24; border-color:rgba(245,158,11,.32); }
+    @media (max-width:980px) { .certs-grid { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:560px) { .certs-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -1313,6 +1330,34 @@
           </div>
         </div>
 
+        <div class="certs-head">
+          <h3>Certifications &amp; continuous learning</h3>
+          <p>Formal and online credentials across IT service management, cloud and cybersecurity.</p>
+        </div>
+        <div class="certs-grid">
+          <div class="cert-card">
+            <div class="cert-icon">✓</div>
+            <div class="cert-name">ITIL 4 Foundation</div>
+            <div class="cert-meta">IT service management</div>
+            <span class="cert-status">Official exam upcoming</span>
+          </div>
+          <div class="cert-card">
+            <div class="cert-icon">✓</div>
+            <div class="cert-name">Azure Administrator</div>
+            <div class="cert-meta">Alison · 2026</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-icon">✓</div>
+            <div class="cert-name">Cybersecurity</div>
+            <div class="cert-meta">Google · Coursera · 2024</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-icon">✓</div>
+            <div class="cert-name">Introduction to Cybersecurity</div>
+            <div class="cert-meta">Cisco · 2023</div>
+          </div>
+        </div>
+
         <div class="projects-head">
           <h3>Selected projects</h3>
           <p>A closer look at delivery in high-stakes, multi-site environments — framed by outcome rather than task.</p>
@@ -1321,9 +1366,9 @@
           <article class="card project-card">
             <div class="project-eyebrow">Paris 2024 · Olympic &amp; Paralympic Games</div>
             <h3>End-to-end Games IT operations</h3>
-            <p class="project-outcome">Designed and operated the IT infrastructure for 250+ users across multiple event sites, owning the business application stack (ticketing, Eventim, CRM, access control) with security compliance, access governance and audit traceability in a mission-critical environment.</p>
+            <p class="project-outcome">Designed and operated the IT infrastructure for 250+ users across multiple event sites as the single point of contact for every department, owning the business application stack (ticketing, Eventim, CRM, access control) with security compliance, access governance and audit traceability in a mission-critical environment.</p>
             <div class="project-metrics">
-              <span class="tag">250+ users</span><span class="tag">Multiple event sites</span><span class="tag">Mission-critical</span>
+              <span class="tag">250+ users</span><span class="tag">SPOC · all departments</span><span class="tag">Multiple event sites</span><span class="tag">Mission-critical</span>
             </div>
           </article>
           <article class="card project-card">
@@ -1429,6 +1474,7 @@
                 <ul>
                   <li>Designed and operated IT infrastructure for 250+ users across multiple event sites.</li>
                   <li>Led end-to-end IT operations for the Paris 2024 Olympic & Paralympic Games.</li>
+                  <li>Acted as the single point of contact for every department, coordinating IT support and requests across the organisation.</li>
                   <li>Owned business application stack including ticketing platforms, Eventim, CRM, access control and reporting workflows.</li>
                   <li>Ensured security compliance, access governance and audit traceability in mission-critical environments.</li>
                   <li>Coordinated service providers, vendors, procurement and IT budget planning.</li>
@@ -1849,11 +1895,18 @@
         ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(4)', 'Excellence opérationnelle'],
         ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(5)', 'Gestion fournisseurs'],
         ['#page-skills .cards-2 .card:nth-child(2) .tag:nth-child(6)', 'Amélioration continue'],
+        ['#page-skills .certs-head h3', 'Certifications & formation continue'],
+        ['#page-skills .certs-head p', 'Diplômes et formations en ligne en gestion des services IT, cloud et cybersécurité.'],
+        ['#page-skills .cert-card:nth-child(1) .cert-meta', 'Gestion des services IT'],
+        ['#page-skills .cert-card:nth-child(1) .cert-status', 'Examen officiel à venir'],
+        ['#page-skills .cert-card:nth-child(3) .cert-name', 'Cybersécurité'],
+        ['#page-skills .cert-card:nth-child(4) .cert-name', 'Introduction à la cybersécurité'],
         ['#page-skills .projects-head h3', 'Projets clés'],
         ['#page-skills .projects-head p', 'Un aperçu de la delivery dans des environnements multi-sites à fort enjeu — présentés par résultat plutôt que par tâche.'],
         ['#page-skills .project-card:nth-child(1) .project-eyebrow', 'Paris 2024 · Jeux Olympiques & Paralympiques'],
         ['#page-skills .project-card:nth-child(1) h3', 'Opérations IT de bout en bout des Jeux'],
-        ['#page-skills .project-card:nth-child(1) .project-outcome', "Conception et exploitation de l'infrastructure IT pour plus de 250 utilisateurs sur plusieurs sites événementiels, avec la responsabilité du parc applicatif métier (billetterie, Eventim, CRM, contrôle d'accès), la conformité de sécurité, la gouvernance des accès et la traçabilité d'audit en environnement critique."],
+        ['#page-skills .project-card:nth-child(1) .project-outcome', "Conception et exploitation de l'infrastructure IT pour plus de 250 utilisateurs sur plusieurs sites événementiels, en tant que point de contact unique de tous les départements, avec la responsabilité du parc applicatif métier (billetterie, Eventim, CRM, contrôle d'accès), la conformité de sécurité, la gouvernance des accès et la traçabilité d'audit en environnement critique."],
+        ['#page-skills .project-card:nth-child(1) .project-metrics .tag:nth-child(2)', 'SPOC · tous départements'],
         ['#page-skills .project-card:nth-child(2) .project-eyebrow', 'Leadership infrastructure & support'],
         ['#page-skills .project-card:nth-child(2) h3', 'Support multi-sites & redressement des SLA'],
         ['#page-skills .project-card:nth-child(2) .project-outcome', "Pilotage d'équipes support N1–N3 en opérations multi-sites 24/7 pour plus de 600 utilisateurs, réduisant le MTTR de 80 % tout en améliorant le respect des SLA et en construisant tableaux de bord et reporting d'aide à la décision."],
@@ -1955,7 +2008,13 @@
 
         /* ---- Recommendations ---- */
         ['#page-recommendations .section-title h2', 'Recommandations'],
-        ['#page-recommendations .section-title p', "Recommandations LinkedIn authentiques soulignant la fiabilité, l'esprit d'équipe, le leadership IT, le delivery sous pression et le soutien des opérations critiques de Paris 2024. Témoignages originaux conservés en anglais."],
+        ['#page-recommendations .section-title p', "Recommandations LinkedIn authentiques soulignant la fiabilité, l'esprit d'équipe, le leadership IT, le delivery sous pression et le soutien des opérations critiques de Paris 2024."],
+        ['#page-recommendations .recommendation-card:nth-child(1) .quote', "J'ai eu la chance de recruter et de travailler aux côtés de Roland pendant les Jeux Olympiques et Paralympiques de Paris 2024. Si vous cherchez un IT manager, Roland est LA perle rare. Il est toujours impliqué et vraiment fiable. C'est toujours lui que les membres de l'équipe appellent en premier. De plus, Roland est intelligent, organisé, dispose d'une vision 360° complète et est prêt à proposer des améliorations sur les processus ou le budget."],
+        ['#page-recommendations .recommendation-card:nth-child(2) .quote', "Roland était un collègue formidable, et un membre clé de mon équipe pendant les Jeux. Roland est très compétent, toujours prêt à aider les autres et à trouver des solutions pour que chacun soit parfaitement équipé sur le plan IT afin de faire son travail sans aucune contrainte. Roland est également organisé et méticuleux."],
+        ['#page-recommendations .recommendation-card:nth-child(3) .quote', "Ce fut un plaisir de travailler avec Roland. Une véritable pépite qui a travaillé très dur pour livrer toutes les étapes du projet Paris 2024, et avec succès. Aimable, travailleur et d'une grande aide, un atout pour n'importe quelle équipe. Vivement recommandé, il nous manquera beaucoup."],
+        ['#page-recommendations .recommendation-card:nth-child(4) .quote', "Roland a un véritable esprit d'équipe — toujours prêt à aider, quelle que soit la tâche, et toujours avec le sourire. Excellent dans son travail, compétent et expérimenté, je recommande vivement Roland."],
+        ['#page-recommendations .recommendation-card:nth-child(5) .quote', "J'ai eu le plaisir de travailler dans la même équipe que Roland. Je peux affirmer que c'est un coéquipier fiable et j'ai beaucoup apprécié sa volonté d'aider dès qu'il le pouvait. Il a dû gérer seul les opérations IT quotidiennes de tout un bureau, et a démontré d'excellentes connaissances techniques."],
+        ['#page-recommendations .recommendation-card:nth-child(6) .quote', "Je recommande vivement Roland pour tout poste de management IT. En tant qu'IT manager, il est fiable, patient et un vrai plaisir à côtoyer au travail. Son calme et son sens de la résolution de problèmes créent un environnement bienveillant pour son équipe, tandis que son expertise technique garantit des opérations fluides et efficaces."],
 
         /* ---- Resume / CV ---- */
         ['#page-resume .badge', 'Options de téléchargement'],
