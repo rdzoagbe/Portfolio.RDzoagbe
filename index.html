@@ -1118,6 +1118,8 @@
     :root[data-theme="dark"] .cert-status { background:rgba(245,158,11,.14); color:#fbbf24; border-color:rgba(245,158,11,.32); }
     @media (max-width:980px) { .certs-grid { grid-template-columns:repeat(2,1fr); } }
     @media (max-width:560px) { .certs-grid { grid-template-columns:1fr; } }
+    .certs-note { margin-top:12px; font-size:.88rem; color:var(--muted); line-height:1.55; padding:12px 15px; border-radius:14px; background:var(--panel-strong); border:1px solid rgba(148,163,184,.18); box-shadow:var(--shadow-soft); }
+    .certs-note strong { color:var(--text); }
   </style>
 </head>
 <body>
@@ -1180,13 +1182,6 @@
               </div>
 
               <button class="btn secondary" data-page="experience">View Career Path</button>
-            </div>
-
-            <div class="socials">
-              <a class="pill" href="mailto:rolanddzoagbe@gmail.com">rolanddzoagbe@gmail.com</a>
-              <a class="pill" href="https://linkedin.com/in/r-dz" target="_blank" rel="noopener">LinkedIn ↗</a>
-              <span class="pill">Paris Area, France</span>
-              <span class="pill">English / French</span>
             </div>
 
             <div class="trust">
@@ -1357,6 +1352,7 @@
             <div class="cert-meta">Cisco · 2023</div>
           </div>
         </div>
+        <p class="certs-note"><strong>Accreditation:</strong> Paris 2024 Olympic &amp; Paralympic Games (The iLUKA Collective) — access to secured event sites after administrative security screening.</p>
 
         <div class="projects-head">
           <h3>Selected projects</h3>
@@ -1841,8 +1837,6 @@
         ['.home-intro-card .btn.primary[data-page="contact"]', 'Me contacter'],
         ['#cvButtonHome', 'Télécharger le CV ▾'],
         ['.home-intro-card .btn.secondary[data-page="experience"]', 'Voir le parcours'],
-        ['.socials .pill:nth-child(3)', 'Région parisienne, France'],
-        ['.socials .pill:nth-child(4)', 'Anglais / Français'],
         ['.trust-label', 'Atouts clés'],
         ['.trust-row .trust-chip:nth-child(4)', 'Cybersécurité'],
         ['.trust-row .trust-chip:nth-child(6)', 'Management du support'],
@@ -1901,6 +1895,7 @@
         ['#page-skills .cert-card:nth-child(1) .cert-status', 'Examen officiel à venir'],
         ['#page-skills .cert-card:nth-child(3) .cert-name', 'Cybersécurité'],
         ['#page-skills .cert-card:nth-child(4) .cert-name', 'Introduction à la cybersécurité'],
+        ['#page-skills .certs-note', '<strong>Accréditation :</strong> Jeux Olympiques &amp; Paralympiques Paris 2024 (The iLUKA Collective) — accès aux sites sécurisés après criblage administratif.'],
         ['#page-skills .projects-head h3', 'Projets clés'],
         ['#page-skills .projects-head p', 'Un aperçu de la delivery dans des environnements multi-sites à fort enjeu — présentés par résultat plutôt que par tâche.'],
         ['#page-skills .project-card:nth-child(1) .project-eyebrow', 'Paris 2024 · Jeux Olympiques & Paralympiques'],
