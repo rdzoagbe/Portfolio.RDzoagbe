@@ -20,7 +20,7 @@
   <meta name="twitter:image" content="https://rdzoagbe.github.io/Portfolio.RolandDzoagbe/profile.jpg">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#07111f">
-  <meta name="build" content="20260824113514">
+  <meta name="build" content="20260824153235">
   <style>
     :root{--bg:#eef3fb;--surface:#fff;--surface2:#eef4fb;--text:#0b1220;--muted:#556479;--line:#dce5f0;--blue:#1473ff;--blue2:#0a9be7;--cyan:#22c7ee;--dark:#07111f;--dark2:#0d1b2d;--green:#22c55e;--shadow:0 20px 55px rgba(10,30,60,.10);--radius:22px;--max:1200px}
     *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
@@ -67,6 +67,10 @@
     .cmenu a{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:11px;font-size:.87rem;font-weight:700;color:var(--text)}
     .cmenu a:hover{background:var(--surface2);color:var(--blue)}
     .cmenu svg{width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:1.7;flex:none}
+    .cdrop-wide{width:100%}.cdrop-wide .cbtn-wide{width:100%;justify-content:space-between}.cdrop-wide .cmenu{left:0;right:0;min-width:0}
+    .page{display:none}.page.active{display:block;animation:pagein .35s ease}
+    @keyframes pagein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    @media(prefers-reduced-motion:reduce){.page.active{animation:none}}
     .hero-meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:26px;color:var(--muted);font-size:13px;font-weight:650}
     .hero-meta span{display:inline-flex;align-items:center;gap:7px}
     .hero-meta svg{width:15px;height:15px;stroke:var(--blue);fill:none}
@@ -189,9 +193,9 @@
 </head>
 <body>
   <header class="nav" aria-label="Navigation principale">
-    <a class="brand" href="#top"><span class="logo">RD</span><span>ROLAND DZOAGBE</span></a>
+    <a class="brand" href="#home"><span class="logo">RD</span><span>ROLAND DZOAGBE</span></a>
     <nav class="navlinks">
-      <a href="#top" class="active" data-i18n="nav.home">Accueil</a><a href="#about" data-i18n="nav.about">À propos</a><a href="#experience" data-i18n="nav.exp">Expérience</a><a href="#impact" data-i18n="nav.impact">Impact</a><a href="#expertise" data-i18n="nav.expertise">Expertises</a><a href="#leadership" data-i18n="nav.leadership">Leadership</a><a href="#contact" data-i18n="nav.contact">Contact</a>
+      <a href="#home" class="active" data-i18n="nav.home">Accueil</a><a href="#about" data-i18n="nav.about">À propos</a><a href="#experience" data-i18n="nav.exp">Expérience</a><a href="#impact" data-i18n="nav.impact">Impact</a><a href="#expertise" data-i18n="nav.expertise">Expertises</a><a href="#leadership" data-i18n="nav.leadership">Leadership</a><a href="#contact" data-i18n="nav.contact">Contact</a>
     </nav>
     <button class="icon-btn menu" id="menuBtn" type="button" aria-label="Menu">☰</button>
     <div class="nav-actions">
@@ -202,6 +206,7 @@
   </header>
 
   <main id="top">
+    <div class="page" id="home">
     <!-- HERO -->
     <section class="hero"><div class="container hero-grid">
       <div class="hero-copy reveal">
@@ -256,9 +261,10 @@
       <div class="stat"><span class="ic"><svg viewBox="0 0 24 24"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.5 2A3.5 3.5 0 0 0 6 19z"/></svg></span><span class="val" style="font-size:1.15rem">Cloud & Microsoft</span><b data-i18n="st.5b">Azure · M365 · Entra ID</b><span data-i18n="st.5d">Modern workplace & sécurité.</span></div>
       <div class="stat"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg></span><span class="val" style="font-size:1.35rem">International</span><b data-i18n="st.6b">Environnements multi-sites</b><span data-i18n="st.6d">Anglais & français.</span></div>
     </div></div></div>
+    </div><!-- /home -->
 
     <!-- ABOUT -->
-    <section id="about"><div class="container reveal">
+    <section id="about" class="page"><div class="container reveal">
       <span class="kicker" data-i18n="about.kicker">À propos</span>
       <h2 class="sec-title" data-i18n="about.title">Leadership avec une vraie profondeur technique.</h2>
       <div class="title-underline"></div>
@@ -282,7 +288,7 @@
     </div></section>
 
     <!-- EXPERIENCE -->
-    <section id="experience"><div class="container reveal">
+    <section id="experience" class="page"><div class="container reveal">
       <span class="kicker" data-i18n="exp.kicker">Expérience</span>
       <h2 class="sec-title" data-i18n="exp.title">Parcours professionnel.</h2>
       <div class="title-underline"></div>
@@ -298,7 +304,7 @@
     </div></section>
 
     <!-- IMPACT -->
-    <section id="impact" class="dark-section"><div class="container reveal">
+    <section id="impact" class="page dark-section"><div class="container reveal">
       <span class="kicker" data-i18n="imp.kicker">Impact & réalisations</span>
       <h2 class="sec-title" data-i18n="imp.title">Des résultats concrets, pas seulement des responsabilités.</h2>
       <div class="title-underline"></div>
@@ -325,7 +331,7 @@
     </div></section>
 
     <!-- EXPERTISE -->
-    <section id="expertise"><div class="container reveal">
+    <section id="expertise" class="page"><div class="container reveal">
       <span class="kicker" data-i18n="ex.kicker">Mon expertise</span>
       <h2 class="sec-title" data-i18n="ex.title">Ce que j'apporte à une organisation.</h2>
       <div class="title-underline"></div>
@@ -341,7 +347,7 @@
     </div></section>
 
     <!-- LEADERSHIP / RECOMMENDATIONS -->
-    <section id="leadership"><div class="container reveal">
+    <section id="leadership" class="page"><div class="container reveal">
       <span class="kicker" data-i18n="lead.kicker">Leadership</span>
       <h2 class="sec-title" data-i18n="lead.title">Ce que disent mes collègues.</h2>
       <div class="title-underline"></div>
@@ -356,7 +362,7 @@
     </div></section>
 
     <!-- CONTACT -->
-    <section id="contact" class="dark-section"><div class="container reveal">
+    <section id="contact" class="page dark-section"><div class="container reveal">
       <span class="kicker" data-i18n="ct.kicker">Contact</span>
       <h2 class="sec-title" data-i18n="ct.title">Parlons de vos enjeux IT.</h2>
       <div class="title-underline"></div>
@@ -372,11 +378,14 @@
         </div>
         <div class="contact-card">
           <h3 data-i18n="ct.reach">Restons en contact</h3>
-          <div class="clist">
-            <a href="mailto:rolanddzoagbe@gmail.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>rolanddzoagbe@gmail.com</a>
-            <a href="tel:+33782884646"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>+33 7 82 88 46 46</a>
-            <a href="https://linkedin.com/in/r-dz" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M6 9v8M6 6.5v.01M10 17v-4a2 2 0 0 1 4 0v4M10 11v6" stroke-width="1.6"/></svg>linkedin.com/in/r-dz</a>
-            <a href="https://github.com/rdzoagbe" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2-6-2m12 4v-3.5a3 3 0 0 0-.9-2.6c3-.3 6-1.5 6-6.6a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.6 1.4a12 12 0 0 0-6.5 0C6.6 1.4 5.5 1.7 5.5 1.7a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 8.7c0 5.1 3 6.3 6 6.6a3 3 0 0 0-.9 2.3V21"/></svg>github.com/rdzoagbe</a>
+          <div class="cdrop cdrop-wide" style="margin-bottom:14px">
+            <button class="btn cbtn-wide" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="ct.show">Afficher mes coordonnées</span><span class="caret" aria-hidden="true">▾</span></button>
+            <div class="cmenu" role="menu" aria-label="Contact">
+              <a role="menuitem" href="mailto:rolanddzoagbe@gmail.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>rolanddzoagbe@gmail.com</a>
+              <a role="menuitem" href="tel:+33782884646"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>+33 7 82 88 46 46</a>
+              <a role="menuitem" href="https://linkedin.com/in/r-dz" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M6 9v8M6 6.5v.01M10 17v-4a2 2 0 0 1 4 0v4M10 11v6" stroke-width="1.6"/></svg>linkedin.com/in/r-dz</a>
+              <a role="menuitem" href="https://github.com/rdzoagbe" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2-6-2m12 4v-3.5a3 3 0 0 0-.9-2.6c3-.3 6-1.5 6-6.6a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.6 1.4a12 12 0 0 0-6.5 0C6.6 1.4 5.5 1.7 5.5 1.7a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 4 8.7c0 5.1 3 6.3 6 6.6a3 3 0 0 0-.9 2.3V21"/></svg>github.com/rdzoagbe</a>
+            </div>
           </div>
           <div class="cv-row">
             <a href="./Roland_Dzoagbe_FR.pdf" download><span data-i18n="ct.cvfr">CV Français</span><strong>FR ↓</strong></a>
@@ -405,7 +414,7 @@
         'imp.kicker':'Impact & achievements','imp.title':'Concrete outcomes, not just responsibilities.','imp.1t':'Support turnaround — HBS','imp.1a':'24/7 multi-site operations for 600+ users.','imp.1b':'Led a 6-person N1–N3 team.','imp.1c':'Improved service performance and SLAs.','imp.res':'Results','imp.1m1':'MTTR','imp.1m2':'Users','imp.1m3':'Uptime','imp.2t':'IT operations — Paris 2024','imp.2a':'IT infrastructure for 250+ multi-site users.','imp.2b':'Single point of contact for departments.','imp.2c':'Access governance, compliance and audit.','imp.res2':'Results','imp.2m1':'Users','imp.2m2':'Sites','imp.2m3':'Coordination','imp.3t':'Service, security & modernisation','imp.3a':'Multi-country support with 99%+ SLA (Dechert).','imp.3b':'Deployed Autopilot, Defender for Endpoint and MFA.','imp.3c':'Optimised cost and network availability.','imp.res3':'Results','imp.3m1':'SLA met','imp.3m2':'SaaS cost','imp.3m3':'Network uptime',
         'ex.kicker':'My expertise','ex.title':'What I bring to an organisation.','ex.1t':'Infrastructure','ex.1p':'Design, deployment and operation of secure, resilient infrastructure.','ex.2t':'Service Delivery & ITSM','ex.2p':'ITIL, incidents, problems, changes, SLA, KPIs and continuous improvement.','ex.3t':'Cloud & Microsoft','ex.3p':'Azure, Microsoft 365, Entra ID, hybrid cloud, security and collaboration.','ex.4t':'Cybersecurity','ex.4p':'IAM, MFA, data protection, awareness and risk management.','ex.5t':'Leadership','ex.5p':'Team management, talent development, communication and performance culture.','ex.6t':'Governance & Budget','ex.6p':'Budget management, vendor management, reporting and business alignment.','ex.tools':'Technology ecosystem',
         'lead.kicker':'Leadership','lead.title':'What colleagues say.','r1':'I was lucky enough to recruit and work alongside Roland during Paris 2024. If you are looking for an IT manager, Roland is THE catch. Committed, reliable, organised, with a complete 360° vision.','r1s':'Human Resources Director','r2':'Roland was a fantastic colleague and a key member of my team during the Games. Very skilled, always willing to help, organised and meticulous.','r2s':'Sponsorship Operations','r3':'It was a pleasure working with Roland. An absolute gem who worked very hard to deliver all Paris 2024 milestones. Highly recommended.','r3s':'Consultant · The iLUKA Collective','r4':'Roland is such a team player — always willing to help, whatever the task. Great at his job, skilled and experienced.','r4s':'Managing Director · The iLUKA Collective','r5':'Roland is a reliable teammate with strong technical knowledge. He successfully ran the day-to-day IT operations of an entire office.','r5s':'IT Support Specialist','r6':'I strongly recommend Roland for any IT management role. Dependable, patient and a pleasure to work with, with strong problem-solving.','r6s':'Global Account Director · The iLUKA Collective',
-        'ct.kicker':'Contact','ct.title':"Let's talk about your IT challenges.",'ct.opent':'Open to new opportunities','ct.openp':'I am looking for permanent roles or missions in stimulating environments where I can bring my expertise and leadership.','ct.roles':'Target roles','ct.reach':'Get in touch','ct.btn':'Contact me →','ct.cvfr':'CV Français','ct.cven':'English CV',
+        'ct.kicker':'Contact','ct.title':"Let's talk about your IT challenges.",'ct.opent':'Open to new opportunities','ct.openp':'I am looking for permanent roles or missions in stimulating environments where I can bring my expertise and leadership.','ct.roles':'Target roles','ct.reach':'Get in touch','ct.show':'Show my contact details','ct.btn':'Contact me →','ct.cvfr':'CV Français','ct.cven':'English CV',
         'foot.copy':'© 2026 Roland Dzoagbe. All rights reserved.'
       }
     };
@@ -418,21 +427,31 @@
     frBtn.onclick=()=>setLang('fr');enBtn.onclick=()=>setLang('en');
     const root=document.documentElement;let theme='light';try{theme=localStorage.getItem('rd-theme')||'light'}catch(e){}if(theme==='dark')root.dataset.theme='dark';
     document.getElementById('themeBtn').onclick=()=>{const dark=root.dataset.theme==='dark';if(dark)delete root.dataset.theme;else root.dataset.theme='dark';try{localStorage.setItem('rd-theme',dark?'light':'dark')}catch(e){}};
-    const menu=document.getElementById('menuBtn');menu.onclick=()=>{const n=document.querySelector('.navlinks');const open=n.style.display==='flex';n.style.display=open?'none':'flex';n.style.position='absolute';n.style.top='64px';n.style.left='12px';n.style.right='12px';n.style.flexDirection='column';n.style.alignItems='stretch';n.style.background=getComputedStyle(root).getPropertyValue('--surface');n.style.padding='10px';n.style.border='1px solid var(--line)';n.style.borderRadius='14px';n.style.boxShadow='var(--shadow)'};
-    const obs=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.08});
-    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-    const secs=[...document.querySelectorAll('main section, main #top')];
-    const links=[...document.querySelectorAll('.navlinks a')];
-    const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id))}}),{rootMargin:'-45% 0px -50% 0px'});
-    document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
+    var navwrap=document.querySelector('.navlinks');
+    function closeMenu(){if(navwrap)navwrap.style.display='';}
+    const menu=document.getElementById('menuBtn');menu.onclick=()=>{const n=navwrap;const open=n.style.display==='flex';if(open){n.style.display='';return;}n.style.display='flex';n.style.position='absolute';n.style.top='64px';n.style.left='12px';n.style.right='12px';n.style.flexDirection='column';n.style.alignItems='stretch';n.style.background=getComputedStyle(root).getPropertyValue('--surface');n.style.padding='10px';n.style.border='1px solid var(--line)';n.style.borderRadius='14px';n.style.boxShadow='var(--shadow)';};
 
-    /* Hero "contact" dropdown */
+    /* Page router — each nav tab is its own page */
+    const pages=[...document.querySelectorAll('.page')];
+    const navlinksA=[...document.querySelectorAll('.navlinks a')];
+    function showPage(id){
+      if(!pages.some(p=>p.id===id))id='home';
+      pages.forEach(p=>p.classList.toggle('active',p.id===id));
+      navlinksA.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+      document.querySelectorAll('.page.active .reveal').forEach(el=>el.classList.add('visible'));
+      window.scrollTo(0,0);closeMenu();
+    }
+    function curId(){return (location.hash||'#home').replace('#','');}
+    window.addEventListener('hashchange',()=>showPage(curId()));
+    showPage(curId());
+
+    /* Contact dropdowns (hero + contact page) */
     (function(){
-      var drop=document.getElementById('cdrop'),btn=document.getElementById('contactBtn');
-      if(!drop||!btn)return;
-      btn.addEventListener('click',function(e){e.stopPropagation();var o=drop.classList.toggle('open');btn.setAttribute('aria-expanded',o);});
-      document.addEventListener('click',function(e){if(!drop.contains(e.target)){drop.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
-      document.addEventListener('keydown',function(e){if(e.key==='Escape'){drop.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+      var drops=[...document.querySelectorAll('.cdrop')];
+      function closeAll(except){drops.forEach(function(d){if(d!==except){d.classList.remove('open');var b=d.querySelector('button');if(b)b.setAttribute('aria-expanded','false');}});}
+      drops.forEach(function(d){var b=d.querySelector('button');if(!b)return;b.addEventListener('click',function(e){e.stopPropagation();var willOpen=!d.classList.contains('open');closeAll(d);d.classList.toggle('open',willOpen);b.setAttribute('aria-expanded',willOpen);});});
+      document.addEventListener('click',function(e){drops.forEach(function(d){if(!d.contains(e.target)){d.classList.remove('open');var b=d.querySelector('button');if(b)b.setAttribute('aria-expanded','false');}});});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll(null);});
     })();
 
     /* Auto-update: reload the page when a newer build is published */
@@ -445,7 +464,7 @@
           .then(function(r){return r.ok?r.json():null;})
           .then(function(d){
             if(d&&d.build&&d.build!==current){
-              location.replace(location.pathname+'?v='+encodeURIComponent(d.build));
+              location.replace(location.pathname+'?v='+encodeURIComponent(d.build)+location.hash);
             }
           }).catch(function(){});
       }
