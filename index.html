@@ -20,6 +20,7 @@
   <meta name="twitter:image" content="https://rdzoagbe.github.io/Portfolio.RolandDzoagbe/profile.jpg">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#07111f">
+  <meta name="build" content="20260824111846">
   <style>
     :root{--bg:#eef3fb;--surface:#fff;--surface2:#eef4fb;--text:#0b1220;--muted:#556479;--line:#dce5f0;--blue:#1473ff;--blue2:#0a9be7;--cyan:#22c7ee;--dark:#07111f;--dark2:#0d1b2d;--green:#22c55e;--shadow:0 20px 55px rgba(10,30,60,.10);--radius:22px;--max:1200px}
     *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
@@ -409,6 +410,24 @@
     const links=[...document.querySelectorAll('.navlinks a')];
     const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id))}}),{rootMargin:'-45% 0px -50% 0px'});
     document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
+
+    /* Auto-update: reload the page when a newer build is published */
+    (function(){
+      var meta=document.querySelector('meta[name="build"]');
+      var current=meta?meta.getAttribute('content'):null;
+      if(!current||current==='BUILD_ID')return;
+      function check(){
+        fetch('./version.json?t='+new Date().getTime(),{cache:'no-store'})
+          .then(function(r){return r.ok?r.json():null;})
+          .then(function(d){
+            if(d&&d.build&&d.build!==current){
+              location.replace(location.pathname+'?v='+encodeURIComponent(d.build));
+            }
+          }).catch(function(){});
+      }
+      setInterval(check,30000);
+      document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});
+    })();
   </script>
 </body>
 </html>
