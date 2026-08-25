@@ -10,7 +10,7 @@ const T={
         'ex.kicker':'My expertise','ex.title':'What I bring to an organisation.','ex.1t':'Infrastructure','ex.1p':'Design, deployment and operation of secure, resilient infrastructure.','ex.2t':'Service Delivery & ITSM','ex.2p':'ITIL, incidents, problems, changes, SLA, KPIs and continuous improvement.','ex.3t':'Cloud & Microsoft','ex.3p':'Azure, Microsoft 365, Entra ID, hybrid cloud, security and collaboration.','ex.4t':'Cybersecurity','ex.4p':'IAM, MFA, data protection, awareness and risk management.','ex.5t':'Leadership','ex.5p':'Team management, talent development, communication and performance culture.','ex.6t':'Governance & Budget','ex.6p':'Budget management, vendor management, reporting and business alignment.','ex.tools':'Technology ecosystem',
         'lead.kicker':'Leadership','lead.title':'What colleagues say.','r1':'I was lucky enough to recruit and work alongside Roland during Paris 2024. If you are looking for an IT manager, Roland is THE catch. Committed, reliable, organised, with a complete 360° vision.','r1s':'Human Resources Director','r2':'Roland was a fantastic colleague and a key member of my team during the Games. Very skilled, always willing to help, organised and meticulous.','r2s':'Sponsorship Operations','r3':'It was a pleasure working with Roland. An absolute gem who worked very hard to deliver all Paris 2024 milestones. Highly recommended.','r3s':'Consultant · The iLUKA Collective','r4':'Roland is such a team player — always willing to help, whatever the task. Great at his job, skilled and experienced.','r4s':'Managing Director · The iLUKA Collective','r5':'Roland is a reliable teammate with strong technical knowledge. He successfully ran the day-to-day IT operations of an entire office.','r5s':'IT Support Specialist','r6':'I strongly recommend Roland for any IT management role. Dependable, patient and a pleasure to work with, with strong problem-solving.','r6s':'Global Account Director · The iLUKA Collective',
         'ct.kicker':'Contact','ct.title':"Let's talk about your IT challenges.",'ct.opent':'Open to new opportunities','ct.openp':'I am looking for permanent roles or missions in stimulating environments where I can bring my expertise and leadership.','ct.roles':'Target roles','ct.reach':'Get in touch','ct.show':'Show my contact details','ct.btn':'Contact me →','ct.cvfr':'CV Français','ct.cven':'English CV',
-        'foot.copy':'© 2026 Roland Dzoagbe. All rights reserved.'
+        'foot.copy':'© 2026 Roland Dzoagbe. All rights reserved.','e404.k':'Error 404','e404.p':'This page does not exist or has moved.','e404.btn':'Back to home →','e404.btn2':'Contact me'
       }
     };
     const nodes=[...document.querySelectorAll('[data-i18n]')];
@@ -59,3 +59,31 @@ const T={
       setInterval(check,30000);
       document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});
     })();
+
+/* Favicon (inline SVG, RD monogram) */
+(function(){
+  var svg="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#1473ff'/><stop offset='1' stop-color='#22c7ee'/></linearGradient></defs><rect width='64' height='64' rx='16' fill='url(#g)'/><text x='32' y='43' font-family='Arial,Helvetica,sans-serif' font-size='30' font-weight='700' fill='#fff' text-anchor='middle'>RD</text></svg>";
+  var l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml,'+encodeURIComponent(svg);document.head.appendChild(l);
+})();
+
+/* Subtle tech background: drifting nodes linked by faint lines (theme-aware) */
+(function(){
+  try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+  var c=document.createElement('canvas');c.id='bgfx';document.body.appendChild(c);
+  var ctx=c.getContext('2d'),dpr=Math.min(window.devicePixelRatio||1,2),w=0,h=0,pts=[],raf=0;
+  function rgb(){var v=getComputedStyle(document.documentElement).getPropertyValue('--fx');return (v&&v.trim())||'20,115,255';}
+  function resize(){w=c.width=Math.floor(innerWidth*dpr);h=c.height=Math.floor(innerHeight*dpr);c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';var n=Math.max(24,Math.min(70,Math.floor(innerWidth*innerHeight/24000)));pts=[];for(var i=0;i<n;i++)pts.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.16*dpr,vy:(Math.random()-.5)*.16*dpr});}
+  function step(){
+    ctx.clearRect(0,0,w,h);var col=rgb(),max=(150*dpr)*(150*dpr),i,j;
+    for(i=0;i<pts.length;i++){var p=pts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;}
+    ctx.lineWidth=dpr;
+    for(i=0;i<pts.length;i++)for(j=i+1;j<pts.length;j++){var a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;if(d<max){ctx.strokeStyle='rgba('+col+','+((1-d/max)*.20)+')';ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}
+    ctx.fillStyle='rgba('+col+',.55)';
+    for(i=0;i<pts.length;i++){ctx.beginPath();ctx.arc(pts[i].x,pts[i].y,1.5*dpr,0,6.2832);ctx.fill();}
+    raf=requestAnimationFrame(step);
+  }
+  function start(){cancelAnimationFrame(raf);raf=requestAnimationFrame(step);}
+  window.addEventListener('resize',resize);
+  document.addEventListener('visibilitychange',function(){if(document.hidden)cancelAnimationFrame(raf);else start();});
+  resize();start();
+})();
