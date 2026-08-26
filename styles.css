@@ -168,3 +168,7 @@
 :root{--fx:20,115,255}
 :root[data-theme=dark]{--fx:120,180,255}
 #bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.about-card.story .lead{font-size:1.18rem;font-weight:750;color:var(--text);line-height:1.5;margin:0 0 16px;border-left:3px solid var(--blue);padding-left:15px}
+.about-card.story p{margin-bottom:13px}
+.about-card.story p:last-of-type{margin-bottom:0}
+.about-card.story .tags{margin-top:20px}
