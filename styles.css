@@ -172,3 +172,9 @@
 .about-card.story p{margin-bottom:13px}
 .about-card.story p:last-of-type{margin-bottom:0}
 .about-card.story .tags{margin-top:20px}
+.edu-head{font-family:inherit;text-align:center;font-size:1.4rem;font-weight:800;letter-spacing:-.02em;margin:46px 0 18px;color:var(--text)}
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.edu-grid ul{list-style:none;display:grid;gap:10px;margin-top:8px}
+.edu-grid li{color:var(--muted);font-size:.92rem;line-height:1.5;padding-left:18px;position:relative}
+.edu-grid li:before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--blue)}
+@media(max-width:720px){.edu-grid{grid-template-columns:1fr}}
