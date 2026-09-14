@@ -201,3 +201,11 @@
 .home-proj .more{display:flex;justify-content:center;margin-top:26px}
 .tools-note{margin-top:14px;color:var(--muted);line-height:1.6;font-size:.95rem}
 @media(max-width:720px){.proj-grid{grid-template-columns:1fr}}
+
+/* ---- Store badges ---- */
+.store-badges{display:flex;gap:10px;flex-wrap:wrap}
+.store-badge{display:inline-flex;align-items:center;gap:9px;background:#000;color:#fff;border:1px solid #a6a6a6;border-radius:9px;padding:6px 13px 6px 10px;text-decoration:none;line-height:1.05;min-height:42px;transition:.2s}
+.store-badge:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.store-badge svg{width:24px;height:24px;flex:none}
+.store-badge small{display:block;font-size:9px;letter-spacing:.03em;opacity:.92;text-transform:none}
+.store-badge b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
