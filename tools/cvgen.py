@@ -106,9 +106,8 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'decisions; maintained documentation and knowledge base.']},
                  {'role': 'IT Manager — Paris 2024',
                   'company': 'The iLUKA Collective',
-                  'date': 'March 2024 – March 2025',
-                  'ctx': 'Olympic &amp; Paralympic engagement · 250+ users · Multi-site, mission-critical · Kingston '
-                         'upon Thames, UK',
+                  'date': 'March 2024 – September 2024',
+                  'ctx': 'Olympic &amp; Paralympic engagement · 250+ users · Multi-site, mission-critical · Paris',
                   'env': 'Eventim ticketing · CRM · Access control · GDPR access governance · SLA and GTR/GTI '
                          'reporting',
                   'bullets': ['Led end-to-end IT operations for the Paris 2024 Olympic &amp; Paralympic Games as '
@@ -152,7 +151,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'reporting.']},
                  {'role': 'Technical Support Analyst',
                   'company': 'Dechert LLP',
-                  'date': 'June 2021 – August 2022',
+                  'date': 'June 2021 – July 2022',
                   'ctx': 'International law firm (Paris, Luxembourg, Brussels) · GDPR-regulated',
                   'env': 'ServiceNow · Active Directory · Windows Server · Citrix Workspace · AirWatch · Azure MDM · '
                          'Cisco',
@@ -174,25 +173,25 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'Provided N1/N2 support for 200 users; managed Active Directory accounts; diagnosed '
                               'and resolved system, network and equipment incidents; produced technical '
                               'documentation.']},
-                 {'role': 'IT Technician',
-                  'company': 'Artemys Paris',
-                  'date': 'February 2018 – February 2021',
-                  'ctx': 'Clients: DBV Technologies, OPCO Santé · 200+ users · 2 sites · Tier 2/3',
-                  'env': 'Microsoft 365 · Azure · Google Workspace · Windows Server · Cisco switches · GLPI · Veeam',
-                  'bullets': ['Provided N2/N3 support and administered Microsoft 365, Azure and Google Workspace '
-                              'environments.',
-                              'Led Windows Server and workstation migration projects; configured Cisco switches — '
-                              '25% improvement in network availability.',
-                              'Managed GLPI ticketing, Veeam backup, O365/Azure Admin and endpoint '
-                              'inventory/enrolment; optimized onboarding/offboarding and reinforced IT '
-                              'documentation.']},
-                 {'role': 'Support Technician (N1/N2)',
-                  'company': 'Cabinet Alain Bensoussan',
-                  'date': 'February 2017 – March 2018',
-                  'ctx': '~200 users',
+                 {'role': 'Onsite IT Support Technician',
+                  'company': 'Artemys',
+                  'date': 'April 2020 – April 2021',
+                  'ctx': 'Client missions: DBV Technologies, OPCO Santé · ~200 users · 2 sites · Tier 2/3',
+                  'env': 'Microsoft 365 · Azure AD · Google Workspace · Cisco switches · GLPI · Veeam · Ivanti LANDesk',
+                  'bullets': ['Provided N2/N3 support for ~200 users; administered Microsoft 365 (Azure admin, '
+                              'licences, groups) and Google Workspace.',
+                              'Migrated workstations to Windows 10 with Ivanti LANDesk; configured and patched Cisco '
+                              'switches — 25% improvement in network availability.',
+                              'Managed GLPI ticketing, Veeam backup and endpoint inventory/enrolment; set up Lifesize '
+                              'video-conferencing rooms; documented procedures.']},
+                 {'role': 'IT Operations &amp; Logistics Assistant (N1/N2 support)',
+                  'company': 'Cabinet Alain Bensoussan Avocats',
+                  'date': 'February 2019 – April 2020',
+                  'ctx': '~200 users · Permanent contract',
                   'env': None,
-                  'bullets': ['First formal IT role: Active Directory administration, IT estate and mobile-fleet '
-                              'management, equipment deployment and user support; technical documentation and '
+                  'bullets': ['First IT role: installed and configured workstations, software, phones and '
+                              'video-conferencing; managed Active Directory accounts; N1/N2 support for 200 users; '
+                              'iOS/Android fleet; peripherals, routers and switches; technical documentation and '
                               'deployment procedures.']}],
         'cert': 'ITIL 4 Foundation — training completed, official exam scheduled · Microsoft Azure Administrator — '
                 'Alison, AZ-104 curriculum (2026) · Cybersecurity — Google / Coursera (2024) · Introduction to '
@@ -229,7 +228,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
         's_sum': 'PROFESSIONAL SUMMARY',
         'role': 'IT Infrastructure &amp; Identity Access Leader',
         'kw': 'Entra ID · Okta · Microsoft 365 · Intune · Azure · ITIL · ServiceNow',
-        'summary': 'IT infrastructure and identity leader with 10+ years running secure, multi-site IT for '
+        'summary': 'IT infrastructure and identity leader with 6+ years running secure, multi-site IT for '
                    'international organizations, including the Paris 2024 Olympic &amp; Paralympic Games. Led a '
                    'six-person N1–N3 team for a 600-user, 24/7 broadcast operation. Hands-on expertise in identity '
                    'and access (Entra ID with PIM and Conditional Access, Okta, Google Workspace), Microsoft 365, '
@@ -274,9 +273,8 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'base de connaissances.']},
                  {'role': 'Responsable IT — Paris 2024',
                   'company': 'The iLUKA Collective',
-                  'date': 'Mars 2024 – Mars 2025',
-                  'ctx': 'Engagement Olympique &amp; Paralympique · 250+ utilisateurs · Multi-sites, critique · '
-                         'Kingston upon Thames, R.-U.',
+                  'date': 'Mars 2024 – Sept. 2024',
+                  'ctx': 'Engagement Olympique &amp; Paralympique · 250+ utilisateurs · Multi-sites, critique · Paris',
                   'env': 'Billetterie Eventim · CRM · Contrôle d’accès · Gouvernance des accès RGPD',
                   'bullets': ['Pilotage de l’IT de bout en bout des Jeux Olympiques &amp; Paralympiques de Paris '
                               '2024 en tant que point de contact unique de tous les départements sur plusieurs '
@@ -319,7 +317,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'coordination prestataires ; reporting quotidien.']},
                  {'role': 'Analyste Support Technique',
                   'company': 'Dechert LLP',
-                  'date': 'Juin 2021 – Août 2022',
+                  'date': 'Juin 2021 – Juil. 2022',
                   'ctx': 'Cabinet d’avocats international (Paris, Luxembourg, Bruxelles) · RGPD',
                   'env': 'ServiceNow · Active Directory · Windows Server · Citrix Workspace · AirWatch · Azure MDM · '
                          'Cisco',
@@ -339,26 +337,27 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'Support N1/N2 pour 200 utilisateurs ; gestion des comptes Active Directory ; '
                               'diagnostic et résolution des incidents système, réseau et équipement ; documentation '
                               'technique.']},
-                 {'role': 'Technicien IT / Support de proximité',
-                  'company': 'Artemys Paris',
-                  'date': 'Févr. 2018 – Févr. 2021',
-                  'ctx': 'Clients : DBV Technologies, OPCO Santé · 200+ utilisateurs · 2 sites · N2/N3',
-                  'env': 'Microsoft 365 · Azure · Google Workspace · Windows Server · Commutateurs Cisco · GLPI · '
-                         'Veeam',
-                  'bullets': ['Support N2/N3 et administration des environnements Microsoft 365, Azure et Google '
-                              'Workspace.',
-                              'Projets de migration Windows Server et postes ; configuration de commutateurs Cisco — '
-                              'amélioration de 25 % de la disponibilité réseau.',
-                              'Gestion GLPI, sauvegarde Veeam, O365/Azure Admin et inventaire/enrôlement des postes '
-                              '; optimisation onboarding/offboarding et documentation.']},
-                 {'role': 'Technicien Support (N1/N2)',
-                  'company': 'Cabinet Alain Bensoussan',
-                  'date': 'Févr. 2017 – Mars 2018',
-                  'ctx': '~200 utilisateurs',
+                 {'role': 'Technicien support de proximité',
+                  'company': 'Artemys',
+                  'date': 'Avr. 2020 – Avr. 2021',
+                  'ctx': 'Missions clients : DBV Technologies, OPCO Santé · ~200 utilisateurs · 2 sites · N2/N3',
+                  'env': 'Microsoft 365 · Azure AD · Google Workspace · Commutateurs Cisco · GLPI · Veeam · '
+                         'Ivanti LANDesk',
+                  'bullets': ['Support N2/N3 pour ~200 utilisateurs ; administration Microsoft 365 (Azure, licences, '
+                              'groupes) et Google Workspace.',
+                              'Migration des postes vers Windows 10 avec Ivanti LANDesk ; configuration et brassage '
+                              'des commutateurs Cisco — amélioration de 25 % de la disponibilité réseau.',
+                              'Gestion GLPI, sauvegarde Veeam, inventaire et enrôlement des postes ; installation de '
+                              'salles de visioconférence Lifesize ; documentation.']},
+                 {'role': 'Assistant d’exploitation et de logistique (support N1/N2)',
+                  'company': 'Cabinet Alain Bensoussan Avocats',
+                  'date': 'Févr. 2019 – Avr. 2020',
+                  'ctx': '~200 utilisateurs · CDI',
                   'env': None,
-                  'bullets': ['Premier poste IT : administration Active Directory, gestion du parc et de la flotte '
-                              'mobile, déploiement d’équipements et support ; documentation technique et '
-                              'procédures.']}],
+                  'bullets': ['Premier poste IT : installation et configuration des postes, logiciels, téléphones et '
+                              'visioconférence ; gestion des comptes Active Directory ; support N1/N2 pour 200 '
+                              'utilisateurs ; flotte iOS/Android ; périphériques, routeurs et commutateurs ; '
+                              'documentation et procédures de déploiement.']}],
         'cert': 'ITIL 4 Foundation — formation terminée, examen officiel à venir · Microsoft Azure Administrator — '
                 'Alison, programme AZ-104 (2026) · Cybersécurité — Google / Coursera (2024) · Introduction à la '
                 'cybersécurité — Cisco (2023). Accréditation : JOP Paris 2024 — accès aux sites sécurisés (criblage '
@@ -394,7 +393,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
         's_sum': 'PROFIL PROFESSIONNEL',
         'role': 'Responsable Infrastructure IT &amp; Gestion des identités',
         'kw': 'Entra ID · Okta · Microsoft 365 · Intune · Azure · ITIL · ServiceNow',
-        'summary': 'Responsable infrastructure IT et identités, plus de 10 ans à exploiter et sécuriser des SI '
+        'summary': 'Responsable infrastructure IT et identités, plus de 6 ans à exploiter et sécuriser des SI '
                    'multi-sites pour des organisations internationales, dont les Jeux Olympiques &amp; Paralympiques '
                    'de Paris 2024. Direction d’une équipe N1–N3 de six personnes pour une opération de diffusion '
                    '24/7 de 600 utilisateurs. Expertise concrète en identités et accès (Entra ID avec PIM et accès '
