@@ -139,7 +139,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                   'company': 'Zenly (Snap Inc. Group)',
                   'date': 'July 2022 – March 2023',
                   'ctx': '180+ international users · Scale-up · Ended with Snap Inc. Paris office closure',
-                  'env': 'Okta · Google Workspace · Windows · macOS · Linux · JIRA · Slack · WiFi and switching',
+                  'env': 'Okta · Google Workspace · Jamf · Windows · macOS · Linux · JIRA · Slack · WiFi and switching',
                   'bullets': ['Managed end-to-end IT infrastructure and end-user support for 180+ international '
                               'employees across Windows, macOS and Linux.',
                               'Administered Okta and Google Admin (onboarding/offboarding, users, groups); ran JIRA '
@@ -168,8 +168,8 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                   'ctx': '~200 users · Tier 1/2',
                   'env': None,
                   'bullets': ['Installed and configured workstations, software and equipment (telephony, '
-                              'video-conferencing, network); maintained the IT estate and mobile fleet '
-                              '(iOS/Android).',
+                              'video-conferencing, network); maintained the Mac estate (Jamf) and '
+                              'mobile fleet (iOS/Android).',
                               'Provided N1/N2 support for 200 users; managed Active Directory accounts; diagnosed '
                               'and resolved system, network and equipment incidents; produced technical '
                               'documentation.']},
@@ -200,7 +200,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
         'edu': 'Education: 3W Academy — Computer Software &amp; Media Applications (2017) · High School Diploma — '
                'Ghana. Languages: English &amp; French (bilingual).',
         'comps': [('Infrastructure &amp; Cloud:',
-                   ' Microsoft 365, Azure, Entra ID (Governance, PIM, Conditional Access), Intune, Autopilot, SCCM, '
+                   ' Microsoft 365, Azure, Entra ID (Governance, PIM, Conditional Access), Intune, Autopilot, Jamf, SCCM, '
                    'Windows Server, VMware, Hyper-V'),
                   ('Security, Identity &amp; Compliance:',
                    ' Identity &amp; privileged access (Entra ID, Okta): just-in-time elevation (PIM), Conditional '
@@ -306,7 +306,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                   'date': 'Juil. 2022 – Mars 2023',
                   'ctx': '180+ utilisateurs internationaux · Scale-up · Fin suite à la fermeture du bureau parisien '
                          'de Snap Inc.',
-                  'env': 'Okta · Google Workspace · Windows · macOS · Linux · JIRA · Slack · WiFi et commutation',
+                  'env': 'Okta · Google Workspace · Jamf · Windows · macOS · Linux · JIRA · Slack · WiFi et commutation',
                   'bullets': ['Gestion de l’infrastructure IT et du support pour 180+ collaborateurs internationaux '
                               'sous Windows, macOS et Linux.',
                               'Administration Okta et Google Admin (onboarding/offboarding, utilisateurs, groupes) ; '
@@ -333,7 +333,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                   'ctx': '~200 utilisateurs · N1/N2',
                   'env': None,
                   'bullets': ['Installation et configuration des postes, logiciels et équipements (téléphonie, '
-                              'visioconférence, réseau) ; maintenance du parc et de la flotte mobile (iOS/Android).',
+                              'visioconférence, réseau) ; maintenance du parc Mac (Jamf) et de la flotte mobile (iOS/Android).',
                               'Support N1/N2 pour 200 utilisateurs ; gestion des comptes Active Directory ; '
                               'diagnostic et résolution des incidents système, réseau et équipement ; documentation '
                               'technique.']},
@@ -365,7 +365,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
         'edu': 'Formation : 3W Academy — Développement logiciel &amp; applications média (2017) · Baccalauréat — '
                'Ghana. Langues : Anglais &amp; Français (bilingue).',
         'comps': [('Infrastructure &amp; Cloud:',
-                   ' Microsoft 365, Azure, Entra ID (gouvernance, PIM, accès conditionnel), Intune, Autopilot, SCCM, '
+                   ' Microsoft 365, Azure, Entra ID (gouvernance, PIM, accès conditionnel), Intune, Autopilot, Jamf, SCCM, '
                    'Windows Server, VMware, Hyper-V'),
                   ('Sécurité, Identités &amp; Conformité:',
                    ' Identités &amp; accès privilégiés (Entra ID, Okta) : élévation à la demande (PIM), accès '
