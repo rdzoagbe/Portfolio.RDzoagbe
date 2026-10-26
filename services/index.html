@@ -146,6 +146,11 @@ textarea{min-height:110px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,245,.18)}
 .fbtns{display:flex;flex-wrap:wrap;gap:10px}
 .privacy{font-size:13.5px;color:var(--mute)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.fstatus{font-size:14px;font-weight:600;border-radius:10px;padding:10px 12px}
+.fstatus:empty{display:none}
+.fstatus.ok{background:#e7f8ef;color:#136c3a}
+.fstatus.err{background:#fdecea;color:#a3271c}
 .direct{display:grid;gap:12px}
 .direct>a{display:flex;align-items:center;gap:14px;text-decoration:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px 18px}
 .direct>a:hover{background:rgba(255,255,255,.1)}
@@ -380,14 +385,18 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
             <option>Je ne sais pas</option><option>Moins de 300 €</option><option>300 à 700 €</option>
             <option>700 à 1 500 €</option><option>Plus de 1 500 €</option>
           </select></div>
+        <div class="full"><label for="contact">Votre e-mail ou téléphone, pour vous répondre</label><input id="contact" name="contact" autocomplete="email" placeholder="Ex. : nom@exemple.fr ou 06 12 34 56 78"></div>
         <div class="full"><label for="message">Votre projet en quelques mots</label><textarea id="message" name="message" placeholder="Ce que vous voulez, pour qui, et pour quand."></textarea></div>
+        <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="full fbtns">
+          <button class="btn btn-primary" type="button" id="send-direct" hidden>Envoyer ma demande</button>
           <button class="btn btn-wa" type="button" id="send-wa">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.2h.01c5.46 0 9.91-4.45 9.91-9.91A9.85 9.85 0 0 0 12.04 2zm5.8 14.13c-.25.69-1.44 1.32-2 1.37-.51.05-1 .24-3.37-.7-2.85-1.12-4.65-4.04-4.79-4.23-.14-.19-1.15-1.53-1.15-2.92 0-1.39.73-2.07.99-2.35.26-.28.56-.35.75-.35l.54.01c.17.01.41-.07.64.49.24.57.81 1.97.88 2.11.07.14.12.31.02.5-.09.19-.14.31-.28.47-.14.17-.3.37-.42.5-.14.14-.29.29-.12.57.17.28.74 1.22 1.59 1.97 1.09.97 2.01 1.27 2.3 1.41.28.14.45.12.61-.07.17-.19.71-.83.9-1.11.19-.28.38-.24.64-.14.26.09 1.65.78 1.93.92.28.14.47.21.54.33.07.12.07.69-.18 1.38z"/></svg>
             Envoyer sur WhatsApp</button>
           <button class="btn btn-line" type="button" id="send-mail">Envoyer par e-mail</button>
         </div>
-        <p class="full privacy">Rien n’est enregistré sur ce site : votre message s’ouvre directement dans WhatsApp ou dans votre messagerie, et vous l’envoyez vous-même.</p>
+        <p class="full fstatus" id="fstatus" role="status" aria-live="polite"></p>
+        <p class="full privacy" id="privacy">Rien n’est enregistré sur ce site : votre message s’ouvre directement dans WhatsApp ou dans votre messagerie, et vous l’envoyez vous-même.</p>
       </form>
       <div class="handover">
         <h3>À la livraison, vous recevez votre fiche de remise</h3>
@@ -407,10 +416,11 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
           <li>Si nous arrêtons, vous retirez mon accès en quinze minutes et le site reste en ligne.</li>
         </ul>
         <div class="ho-send">
+          <button class="btn btn-primary" type="button" id="ho-direct" hidden>Envoyer ma demande</button>
           <button class="btn btn-wa" type="button" id="ho-wa">Envoyer ma demande sur WhatsApp</button>
           <button class="btn btn-line" type="button" id="ho-mail">Par e-mail</button>
         </div>
-        <p class="ho-note">Pensez à indiquer plus haut votre prénom et le type de projet.</p>
+        <p class="ho-note" id="ho-note">Pensez à indiquer plus haut votre prénom et le type de projet.</p>
         <a class="ho-link" href="fiche-de-remise-client.pdf" target="_blank" rel="noopener">Voir la fiche complète (PDF) →</a>
       </div>
       </div>
@@ -466,14 +476,17 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
     if ((d.get('activite') || '').trim()) L.push('Activité : ' + d.get('activite').trim());
     L.push('Projet : ' + d.get('projet'));
     L.push('Budget : ' + d.get('budget'));
-    var picked = [].map.call(document.querySelectorAll('.ho-item[aria-pressed=true]'), function(b){ return b.dataset.item; });
-    if (picked.length) L.push('Éléments à prévoir : ' + picked.join(', '));
+    var items = picked();
+    if (items) L.push('Éléments à prévoir : ' + items);
+    if ((d.get('contact') || '').trim()) L.push('Pour me répondre : ' + d.get('contact').trim());
     if ((d.get('message') || '').trim()) { L.push(''); L.push(d.get('message').trim()); }
     return L.join('\n');
   }
-  function valid(){
+  // Formspree form id (the part after formspree.io/f/). Empty: direct sending stays hidden.
+  var FORMSPREE_ID = '';
+  function valid(needContact){
     var ok = true;
-    ['prenom','projet'].forEach(function(id){
+    (needContact ? ['prenom','projet','contact'] : ['prenom','projet']).forEach(function(id){
       var el = document.getElementById(id);
       if (!el.value.trim()) { el.setAttribute('aria-invalid','true'); if (ok) el.focus(); ok = false; }
       else el.removeAttribute('aria-invalid');
@@ -487,6 +500,46 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
   function sendMail(){
     if (!valid()) return;
     location.href = 'mailto:roland.dzoagbe@gmail.com?subject=' + encodeURIComponent('Demande de devis') + '&body=' + encodeURIComponent(compose());
+  }
+  function picked(){
+    return [].map.call(document.querySelectorAll('.ho-item[aria-pressed=true]'), function(b){ return b.dataset.item; }).join(', ');
+  }
+  var status = document.getElementById('fstatus'), sending = false;
+  function sendDirect(){
+    if (sending || !valid(true)) return;
+    var d = new FormData(f), contact = (d.get('contact') || '').trim(), btns = document.querySelectorAll('#send-direct,#ho-direct');
+    var data = {
+      _subject: 'Demande de devis - ' + (d.get('prenom') || '').trim(),
+      prenom: (d.get('prenom') || '').trim(), activite: (d.get('activite') || '').trim(),
+      projet: d.get('projet'), budget: d.get('budget'), contact: contact,
+      elements: picked() || 'Aucun', message: (d.get('message') || '').trim(), _gotcha: d.get('_gotcha') || ''
+    };
+    if (contact.indexOf('@') > 0) data.email = contact;
+    sending = true; status.className = 'full fstatus'; status.textContent = 'Envoi en cours…';
+    [].forEach.call(btns, function(b){ b.disabled = true; });
+    fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+      method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(function(r){
+      if (!r.ok) throw new Error(r.status);
+      status.className = 'full fstatus ok';
+      status.textContent = 'Merci ' + data.prenom + ', votre demande est bien envoyée. Je vous réponds sous 48 h.';
+      f.reset();
+      [].forEach.call(document.querySelectorAll('.ho-item'), function(b){ b.setAttribute('aria-pressed', 'false'); });
+    }).catch(function(){
+      status.className = 'full fstatus err';
+      status.textContent = 'L’envoi n’a pas abouti. Réessayez, ou envoyez votre demande sur WhatsApp ou par e-mail.';
+    }).then(function(){
+      sending = false; [].forEach.call(btns, function(b){ b.disabled = false; });
+      status.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }
+  if (FORMSPREE_ID) {
+    document.getElementById('send-direct').hidden = false;
+    document.getElementById('ho-direct').hidden = false;
+    document.getElementById('send-direct').addEventListener('click', sendDirect);
+    document.getElementById('ho-direct').addEventListener('click', sendDirect);
+    document.getElementById('privacy').textContent = 'Avec « Envoyer ma demande », votre message m’est transmis par e-mail via le service Formspree, uniquement pour vous répondre. Avec WhatsApp ou l’e-mail, il s’ouvre dans votre application et vous l’envoyez vous-même.';
+    document.getElementById('ho-note').textContent = 'Pensez à indiquer plus haut votre prénom, le type de projet et un moyen de vous répondre.';
   }
   document.getElementById('send-wa').addEventListener('click', sendWa);
   document.getElementById('send-mail').addEventListener('click', sendMail);
