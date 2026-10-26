@@ -157,8 +157,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .handover h3{color:#fff;font-size:18px;line-height:1.3}
 .handover>p{color:#c4d2e1;font-size:14.5px;margin-top:6px}
 .ho-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
-.ho-list li{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.05);border-radius:10px;padding:9px 12px;font-size:14px;color:#e4edf6}
-.ho-list small{color:var(--sky);font-size:12.5px;white-space:nowrap}
+.ho-item{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;color:#e4edf6;cursor:pointer;text-align:left;transition:background .15s,border-color .15s}
+.ho-item:hover{background:rgba(255,255,255,.1)}
+.ho-item:before{content:"";flex:none;width:16px;height:16px;border-radius:5px;border:1.5px solid rgba(255,255,255,.45)}
+.ho-item span{flex:1}
+.ho-item[aria-pressed=true]{background:rgba(34,211,238,.14);border-color:var(--cyan)}
+.ho-item[aria-pressed=true]:before{background:var(--cyan) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23081626' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--cyan)}
+.ho-item:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.ho-item small{color:var(--sky);font-size:12.5px;white-space:nowrap}
+.handover .ho-hint{color:var(--sky);font-size:13.5px;margin-top:14px;font-weight:600}
+.ho-send{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.handover .ho-note{color:#9fb3c8;font-size:12.5px;margin-top:8px}
 .ho-points{list-style:none;display:grid;gap:6px;color:#c4d2e1;font-size:14px}
 .ho-points li:before{content:"✓";color:var(--cyan);font-weight:700;margin-right:8px}
 .handover .ho-link{display:inline-block;margin-top:14px;color:var(--sky);font-weight:600;font-size:14.5px}
@@ -383,19 +392,25 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
       <div class="handover">
         <h3>À la livraison, vous recevez votre fiche de remise</h3>
         <p>Tous les comptes de votre site ou de votre application sont à votre nom et payés par vous. Vous pouvez retirer mon accès à tout moment, sans que rien ne s’arrête.</p>
-        <ul class="ho-list">
-          <li>Nom de domaine <small>env. 12 € / an</small></li>
-          <li>Hébergement <small>souvent gratuit</small></li>
-          <li>Code du site (GitHub) <small>gratuit</small></li>
-          <li>Messagerie <small>selon l’offre</small></li>
-          <li>Application iPhone <small>99 $ / an</small></li>
-          <li>Application Android <small>25 $, une fois</small></li>
+        <p class="ho-hint">Cochez ce dont vous avez besoin, et ce sera ajouté à votre demande.</p>
+        <ul class="ho-list" aria-label="Éléments à prévoir">
+          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Nom de domaine"><span>Nom de domaine</span><small>env. 12 € / an</small></button></li>
+          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Hébergement"><span>Hébergement</span><small>souvent gratuit</small></button></li>
+          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Code du site (GitHub)"><span>Code du site (GitHub)</span><small>gratuit</small></button></li>
+          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Messagerie professionnelle"><span>Messagerie</span><small>selon l’offre</small></button></li>
+          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Application iPhone"><span>Application iPhone</span><small>99 $ / an</small></button></li>
+          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Application Android"><span>Application Android</span><small>25 $, une fois</small></button></li>
         </ul>
         <ul class="ho-points">
           <li>Aucun mot de passe partagé : je travaille avec mon propre accès.</li>
           <li>Les dates de renouvellement sont notées, à commencer par le nom de domaine.</li>
           <li>Si nous arrêtons, vous retirez mon accès en quinze minutes et le site reste en ligne.</li>
         </ul>
+        <div class="ho-send">
+          <button class="btn btn-wa" type="button" id="ho-wa">Envoyer ma demande sur WhatsApp</button>
+          <button class="btn btn-line" type="button" id="ho-mail">Par e-mail</button>
+        </div>
+        <p class="ho-note">Pensez à indiquer plus haut votre prénom et le type de projet.</p>
         <a class="ho-link" href="fiche-de-remise-client.pdf" target="_blank" rel="noopener">Voir la fiche complète (PDF) →</a>
       </div>
       </div>
@@ -451,6 +466,8 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
     if ((d.get('activite') || '').trim()) L.push('Activité : ' + d.get('activite').trim());
     L.push('Projet : ' + d.get('projet'));
     L.push('Budget : ' + d.get('budget'));
+    var picked = [].map.call(document.querySelectorAll('.ho-item[aria-pressed=true]'), function(b){ return b.dataset.item; });
+    if (picked.length) L.push('Éléments à prévoir : ' + picked.join(', '));
     if ((d.get('message') || '').trim()) { L.push(''); L.push(d.get('message').trim()); }
     return L.join('\n');
   }
@@ -463,13 +480,20 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
     });
     return ok;
   }
-  document.getElementById('send-wa').addEventListener('click', function(){
+  function sendWa(){
     if (!valid()) return;
     window.open('https://wa.me/33782884646?text=' + encodeURIComponent(compose()), '_blank', 'noopener');
-  });
-  document.getElementById('send-mail').addEventListener('click', function(){
+  }
+  function sendMail(){
     if (!valid()) return;
-    location.href = 'mailto:rolanddzoagbe@gmail.com?subject=' + encodeURIComponent('Demande de devis') + '&body=' + encodeURIComponent(compose());
+    location.href = 'mailto:roland.dzoagbe@gmail.com?subject=' + encodeURIComponent('Demande de devis') + '&body=' + encodeURIComponent(compose());
+  }
+  document.getElementById('send-wa').addEventListener('click', sendWa);
+  document.getElementById('send-mail').addEventListener('click', sendMail);
+  document.getElementById('ho-wa').addEventListener('click', sendWa);
+  document.getElementById('ho-mail').addEventListener('click', sendMail);
+  [].forEach.call(document.querySelectorAll('.ho-item'), function(b){
+    b.addEventListener('click', function(){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); });
   });
 })();
 </script>
