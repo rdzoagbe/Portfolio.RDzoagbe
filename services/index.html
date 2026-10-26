@@ -451,6 +451,7 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
   </div>
 </footer>
 
+<script src="../admin/sb.js"></script>
 <script>
 (function(){
   document.getElementById('y').textContent = new Date().getFullYear();
@@ -484,12 +485,30 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
     });
     return ok;
   }
+  // Every request also lands in the private space (once per content), whatever the button.
+  var lastLead = '';
+  function pushLead(source){
+    if (!window.RDsb) return;
+    var d = new FormData(f), row = {
+      prenom: (d.get('prenom') || '').trim().slice(0, 100), activite: (d.get('activite') || '').trim().slice(0, 200),
+      projet: (d.get('projet') || '').slice(0, 100), budget: (d.get('budget') || '').slice(0, 100),
+      contact: (d.get('contact') || '').trim().slice(0, 200), elements: picked().slice(0, 500),
+      message: (d.get('message') || '').trim().slice(0, 5000), source: source
+    };
+    if (d.get('_gotcha')) return;
+    var sig = JSON.stringify([row.prenom, row.projet, row.contact, row.elements, row.message]);
+    if (sig === lastLead) return;
+    lastLead = sig;
+    window.RDsb.submitLead(row).catch(function(){ lastLead = ''; });
+  }
   function sendWa(){
     if (!valid()) return;
+    pushLead('whatsapp');
     window.open('https://wa.me/33782884646?text=' + encodeURIComponent(compose()), '_blank', 'noopener');
   }
   function sendMail(){
     if (!valid()) return;
+    pushLead('e-mail');
     location.href = 'mailto:roland.dzoagbe@hotmail.com?subject=' + encodeURIComponent('Demande de devis') + '&body=' + encodeURIComponent(compose());
   }
   function picked(){
@@ -498,6 +517,7 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
   var status = document.getElementById('fstatus'), sending = false;
   function sendDirect(){
     if (sending || !valid(true)) return;
+    pushLead('formulaire');
     var d = new FormData(f), contact = (d.get('contact') || '').trim(), btns = document.querySelectorAll('#send-direct');
     var data = {
       _subject: 'Demande de devis - ' + (d.get('prenom') || '').trim(),

@@ -128,7 +128,8 @@ tr.is-opt .tot{font-style:italic;color:var(--mute)}
 </head>
 <body>
 <div class="tools">
-  <b>Devis</b>
+  <a class="tb" href="../admin/">← Espace privé</a>
+  <b>Devis <span id="sync" style="font-weight:400;font-size:12.5px;color:#9fb3c8;margin-left:6px"></span></b>
   <button class="tb" type="button" id="b-import">Importer une demande</button>
   <button class="tb" type="button" id="b-new">Nouveau devis</button>
   <button class="tb" type="button" id="b-mail">Préparer l’e-mail</button>
@@ -233,8 +234,13 @@ tr.is-opt .tot{font-style:italic;color:var(--mute)}
   <div class="foot">Roland Dzoagbe · entrepreneur individuel · SIRET 104 838 727 00014 · Prix nets, en euros.</div>
 </main>
 
+<script src="../admin/sb.js"></script>
 <script>
 (function(){
+  // Private page: only the signed-in owner can use it.
+  var sb = window.RDsb;
+  if (!sb || !sb.session()) { location.replace('../admin/'); return; }
+  var QID = new URLSearchParams(location.search).get('q'), remoteTimer = null, lastTotal = 0;
   var PRESETS = [
     {l:'Page de présentation', s:'Une page : activité, horaires, tarifs, contacts ; adaptée au téléphone.', parts:[
       ['Conception de la page', 'Structure, textes et mise en forme', 60],
@@ -273,7 +279,13 @@ tr.is-opt .tot{font-style:italic;color:var(--mute)}
     [].forEach.call(document.querySelectorAll('[data-k]'), function(el){
       d.f[el.dataset.k] = el.type === 'checkbox' ? el.checked : (el.isContentEditable ? el.innerText : el.value);
     });
-    try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){}
+    if (!QID) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){} return; }
+    $('sync').textContent = 'modifications non enregistrées…';
+    clearTimeout(remoteTimer);
+    remoteTimer = setTimeout(function(){
+      sb.update('quotes', QID, { data: d, numero: d.f.num || '', total: lastTotal })
+        .then(function(){ $('sync').textContent = 'enregistré ✓'; }, function(){ $('sync').textContent = 'non enregistré : vérifiez la connexion'; });
+    }, 700);
   }
   function iso(d){ return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
   function nextNum(){
@@ -329,7 +341,7 @@ tr.is-opt .tot{font-style:italic;color:var(--mute)}
     $('t-ht').textContent = eur(once);
     $('r-vat').hidden = novat; $('t-vat').textContent = eur(vat);
     $('t-label').textContent = novat ? 'Net à payer' : 'Total TTC';
-    $('t-ttc').textContent = eur(once + vat);
+    $('t-ttc').textContent = eur(once + vat); lastTotal = Math.round((once + vat) * 100) / 100;
     $('r-month').hidden = !month; $('t-month').textContent = eur(month * (novat ? 1 : 1.2)) + ' / mois';
     $('t-deppct').textContent = pct; $('t-dep').textContent = eur((once + vat) * pct / 100);
     $('vatline').textContent = novat ? 'TVA non applicable, article 293 B du CGI.' : 'Montants hors taxes ; TVA au taux de 20 %.';
@@ -415,20 +427,43 @@ tr.is-opt .tot{font-style:italic;color:var(--mute)}
   }
 
   // init
-  var saved = load();
-  if (saved) {
+  function apply(saved){
     state.lines = saved.lines || []; state.acc = saved.acc || [];
     Object.keys(saved.f || {}).forEach(function(k){
       var el = document.querySelector('[data-k="' + k + '"]'); if (!el) return;
       if (el.type === 'checkbox') el.checked = saved.f[k]; else if (el.isContentEditable) el.innerText = saved.f[k]; else el.value = saved.f[k];
     });
     renderLines(); renderAcc();
-  } else fresh();
+  }
+  if (QID) {
+    // a quote stored in the private space: the owner's address stays in this browser only
+    var myaddr = (function(){ try { return (JSON.parse(localStorage.getItem(KEY) || '{}').f || {}).myaddr || ''; } catch(e){ return ''; } })();
+    $('sync').textContent = 'chargement…';
+    sb.select('quotes', 'select=*&id=eq.' + encodeURIComponent(QID)).then(function(rows){
+      var q = rows && rows[0];
+      if (!q) { $('sync').textContent = 'devis introuvable'; return; }
+      var d = q.data || {};
+      apply(d);
+      if (myaddr && !document.querySelector('[data-k="myaddr"]').value) document.querySelector('[data-k="myaddr"]').value = myaddr;
+      if (!state.lines.length && d.lead && d.lead.projet) {
+        $('importtext').value = 'Projet : ' + d.lead.projet + (d.lead.elements ? '\nÉléments à prévoir : ' + d.lead.elements : '');
+        doImport();
+      }
+      $('importbox').classList.remove('open');
+      $('sync').textContent = 'enregistré ✓';
+    }, function(){ $('sync').textContent = 'connexion expirée : reconnectez-vous'; });
+  } else {
+    var saved = load();
+    if (saved) apply(saved); else fresh();
+  }
 
   [].forEach.call(document.querySelectorAll('[data-k]'), function(el){ el.addEventListener('input', totals); el.addEventListener('change', totals); });
   [].forEach.call(document.querySelectorAll('.add'), function(b){ b.onclick = function(){ addPreset(+b.dataset.preset); }; });
   $('b-print').onclick = function(){ save(); window.print(); };
-  $('b-new').onclick = function(){ if (confirm('Commencer un nouveau devis ? Le devis en cours sera effacé de cette page.')) fresh(); };
+  $('b-new').onclick = function(){
+    if (QID) { location.href = '../admin/'; return; }
+    if (confirm('Commencer un nouveau devis ? Le devis en cours sera effacé de cette page.')) fresh();
+  };
   $('b-import').onclick = function(){ $('importbox').classList.add('open'); $('importtext').focus(); };
   $('b-cancel').onclick = function(){ $('importbox').classList.remove('open'); };
   $('b-doimport').onclick = doImport;
@@ -439,10 +474,10 @@ tr.is-opt .tot{font-style:italic;color:var(--mute)}
     e.preventDefault(); $('importtext').value = t; doImport();
   });
   // a request pasted earlier straight into "Le projet": spread it into the right fields
-  if (looksLikeRequest($('desc').innerText) && !$('c-name').value) {
+  if (!QID && looksLikeRequest($('desc').innerText) && !$('c-name').value) {
     $('importtext').value = $('desc').innerText; $('desc').innerText = ''; doImport();
   }
-  if (!$('c-name').value && !$('desc').innerText.trim()) $('importbox').classList.add('open');
+  if (!QID && !$('c-name').value && !$('desc').innerText.trim()) $('importbox').classList.add('open');
   $('b-mail').onclick = function(){
     var c = ($('c-contact').value || '').trim();
     location.href = 'mailto:' + (c.indexOf('@') > 0 ? encodeURIComponent(c) : '') + '?subject=' + encodeURIComponent('Votre devis ' + $('num').value) + '&body=' + encodeURIComponent(summary());
