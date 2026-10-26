@@ -501,7 +501,7 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
   }
   function sendMail(){
     if (!valid()) return;
-    location.href = 'mailto:roland.dzoagbe@gmail.com?subject=' + encodeURIComponent('Demande de devis') + '&body=' + encodeURIComponent(compose());
+    location.href = 'mailto:roland.dzoagbe@hotmail.com?subject=' + encodeURIComponent('Demande de devis') + '&body=' + encodeURIComponent(compose());
   }
   function picked(){
     return [].map.call(document.querySelectorAll('.ho-item[aria-pressed=true]'), function(b){ return b.dataset.item; }).join(', ');
