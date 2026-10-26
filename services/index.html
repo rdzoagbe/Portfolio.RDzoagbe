@@ -160,9 +160,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .direct small{display:block;color:#9fb3c8;font-size:13px}
 .direct b{font-size:16.5px}
 .cleft{display:grid;gap:18px}
-.handover{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 24px}
-.handover h3{color:#fff;font-size:18px;line-height:1.3}
-.handover>p{color:#c4d2e1;font-size:14.5px;margin-top:6px}
+.needs{border-top:1px solid var(--line);padding-top:14px}
+.needs-t{display:block;font-size:14px;font-weight:700}
+.needs-t small{font-weight:400;color:var(--mute);font-size:12.5px;margin-left:6px}
+.needs .ho-list{margin:10px 0 8px}
+.needs .ho-item{background:var(--soft);border-color:#c9d6e4;color:var(--ink)}
+.needs .ho-item:hover{background:#e9f1f8}
+.needs .ho-item:before{border-color:#9fb3c8}
+.needs .ho-item small{color:var(--blue2)}
+.needs .ho-item[aria-pressed=true]{background:#e3f9fd;border-color:var(--cyan)}
+.needs-note{font-size:13px;color:var(--mute)}
+.needs-note a{color:var(--blue2);font-weight:600}
 .ho-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
 .ho-item{display:flex;width:100%;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;color:#e4edf6;cursor:pointer;text-align:left;transition:background .15s,border-color .15s}
 .ho-item:hover{background:rgba(255,255,255,.1)}
@@ -172,13 +180,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 .ho-item[aria-pressed=true]:before{background:var(--cyan) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23081626' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--cyan)}
 .ho-item:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .ho-item small{color:var(--sky);font-size:12.5px;white-space:nowrap}
-.handover .ho-hint{color:var(--sky);font-size:13.5px;margin-top:14px;font-weight:600}
-.ho-send{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
-.handover .ho-note{color:#9fb3c8;font-size:12.5px;margin-top:8px}
-.ho-points{list-style:none;display:grid;gap:6px;color:#c4d2e1;font-size:14px}
-.ho-points li:before{content:"✓";color:var(--cyan);font-weight:700;margin-right:8px}
-.handover .ho-link{display:inline-block;margin-top:14px;color:var(--sky);font-weight:600;font-size:14.5px}
-@media (max-width:620px){.ho-list{grid-template-columns:1fr}.handover{padding:20px}}
 .bcard{margin-top:6px}
 .bcard-flip{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;perspective:1200px;aspect-ratio:1000/648;border-radius:12px}
 .bcard-inner{position:relative;display:block;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
@@ -389,6 +390,18 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
           </select></div>
         <div class="full"><label for="contact">Votre e-mail ou téléphone, pour vous répondre</label><input id="contact" name="contact" autocomplete="email" placeholder="Ex. : nom@exemple.fr ou 06 12 34 56 78"></div>
         <div class="full"><label for="message">Votre idée de projet</label><p class="fhelp" id="message-help">Racontez-la avec vos mots : ce que vous voulez faire, pour qui, ce qui existe déjà (logo, textes, photos, ancien site), des sites ou applications que vous aimez, et pour quand.</p><textarea id="message" name="message" rows="7" aria-describedby="message-help" placeholder="Ex. : je tiens une boulangerie à Bondy. Je voudrais un site avec nos produits, nos horaires et la commande de gâteaux pour le week-end. J’ai déjà un logo et des photos. J’aimerais qu’il soit en ligne avant Noël."></textarea></div>
+        <div class="full needs">
+          <span class="needs-t">Ce qu’il faudra prévoir <small>facultatif : cochez ce que vous savez déjà</small></span>
+          <ul class="ho-list" aria-label="Éléments à prévoir">
+            <li><button type="button" class="ho-item" aria-pressed="false" data-item="Nom de domaine"><span>Nom de domaine</span><small>env. 12 € / an</small></button></li>
+            <li><button type="button" class="ho-item" aria-pressed="false" data-item="Hébergement"><span>Hébergement</span><small>souvent gratuit</small></button></li>
+            <li><button type="button" class="ho-item" aria-pressed="false" data-item="Code du site (GitHub)"><span>Code du site (GitHub)</span><small>gratuit</small></button></li>
+            <li><button type="button" class="ho-item" aria-pressed="false" data-item="Messagerie professionnelle"><span>Messagerie</span><small>selon l’offre</small></button></li>
+            <li><button type="button" class="ho-item" aria-pressed="false" data-item="Application iPhone"><span>Application iPhone</span><small>99 $ / an</small></button></li>
+            <li><button type="button" class="ho-item" aria-pressed="false" data-item="Application Android"><span>Application Android</span><small>25 $, une fois</small></button></li>
+          </ul>
+          <p class="needs-note">Tous ces comptes seront à votre nom et payés par vous. À la livraison, vous recevez votre fiche de remise et vous pouvez retirer mon accès à tout moment, sans que rien ne s’arrête. <a href="fiche-de-remise-client.pdf" target="_blank" rel="noopener">Voir la fiche de remise (PDF)</a></p>
+        </div>
         <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="full fbtns">
           <button class="btn btn-primary" type="button" id="send-direct" hidden>Envoyer ma demande</button>
@@ -400,31 +413,6 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
         <p class="full fstatus" id="fstatus" role="status" aria-live="polite"></p>
         <p class="full privacy" id="privacy">Rien n’est enregistré sur ce site : votre message s’ouvre directement dans WhatsApp ou dans votre messagerie, et vous l’envoyez vous-même.</p>
       </form>
-      <div class="handover">
-        <h3>À la livraison, vous recevez votre fiche de remise</h3>
-        <p>Tous les comptes de votre site ou de votre application sont à votre nom et payés par vous. Vous pouvez retirer mon accès à tout moment, sans que rien ne s’arrête.</p>
-        <p class="ho-hint">Cochez ce dont vous avez besoin, et ce sera ajouté à votre demande.</p>
-        <ul class="ho-list" aria-label="Éléments à prévoir">
-          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Nom de domaine"><span>Nom de domaine</span><small>env. 12 € / an</small></button></li>
-          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Hébergement"><span>Hébergement</span><small>souvent gratuit</small></button></li>
-          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Code du site (GitHub)"><span>Code du site (GitHub)</span><small>gratuit</small></button></li>
-          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Messagerie professionnelle"><span>Messagerie</span><small>selon l’offre</small></button></li>
-          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Application iPhone"><span>Application iPhone</span><small>99 $ / an</small></button></li>
-          <li><button type="button" class="ho-item" aria-pressed="false" data-item="Application Android"><span>Application Android</span><small>25 $, une fois</small></button></li>
-        </ul>
-        <ul class="ho-points">
-          <li>Aucun mot de passe partagé : je travaille avec mon propre accès.</li>
-          <li>Les dates de renouvellement sont notées, à commencer par le nom de domaine.</li>
-          <li>Si nous arrêtons, vous retirez mon accès en quinze minutes et le site reste en ligne.</li>
-        </ul>
-        <div class="ho-send">
-          <button class="btn btn-primary" type="button" id="ho-direct" hidden>Envoyer ma demande</button>
-          <button class="btn btn-wa" type="button" id="ho-wa">Envoyer ma demande sur WhatsApp</button>
-          <button class="btn btn-line" type="button" id="ho-mail">Par e-mail</button>
-        </div>
-        <p class="ho-note" id="ho-note">Pensez à indiquer plus haut votre prénom et le type de projet.</p>
-        <a class="ho-link" href="fiche-de-remise-client.pdf" target="_blank" rel="noopener">Voir la fiche complète (PDF) →</a>
-      </div>
       </div>
       <div class="direct">
         <a href="tel:+33782884646"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg><span><small>Téléphone</small><b>07 82 88 46 46</b></span></a>
@@ -509,7 +497,7 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
   var status = document.getElementById('fstatus'), sending = false;
   function sendDirect(){
     if (sending || !valid(true)) return;
-    var d = new FormData(f), contact = (d.get('contact') || '').trim(), btns = document.querySelectorAll('#send-direct,#ho-direct');
+    var d = new FormData(f), contact = (d.get('contact') || '').trim(), btns = document.querySelectorAll('#send-direct');
     var data = {
       _subject: 'Demande de devis - ' + (d.get('prenom') || '').trim(),
       prenom: (d.get('prenom') || '').trim(), activite: (d.get('activite') || '').trim(),
@@ -537,16 +525,11 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
   }
   if (FORMSPREE_ID) {
     document.getElementById('send-direct').hidden = false;
-    document.getElementById('ho-direct').hidden = false;
     document.getElementById('send-direct').addEventListener('click', sendDirect);
-    document.getElementById('ho-direct').addEventListener('click', sendDirect);
     document.getElementById('privacy').textContent = 'Avec « Envoyer ma demande », votre message m’est transmis par e-mail via le service Formspree, uniquement pour vous répondre. Avec WhatsApp ou l’e-mail, il s’ouvre dans votre application et vous l’envoyez vous-même.';
-    document.getElementById('ho-note').textContent = 'Pensez à indiquer plus haut votre prénom, le type de projet et un moyen de vous répondre.';
   }
   document.getElementById('send-wa').addEventListener('click', sendWa);
   document.getElementById('send-mail').addEventListener('click', sendMail);
-  document.getElementById('ho-wa').addEventListener('click', sendWa);
-  document.getElementById('ho-mail').addEventListener('click', sendMail);
   [].forEach.call(document.querySelectorAll('.ho-item'), function(b){
     b.addEventListener('click', function(){ b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); });
   });
