@@ -146,6 +146,8 @@ textarea{min-height:110px;resize:vertical}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,245,.18)}
 .fbtns{display:flex;flex-wrap:wrap;gap:10px}
 .privacy{font-size:13.5px;color:var(--mute)}
+.fhelp{font-size:13px;color:var(--mute);margin:2px 0 6px;line-height:1.45}
+#message{min-height:150px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .fstatus{font-size:14px;font-weight:600;border-radius:10px;padding:10px 12px}
 .fstatus:empty{display:none}
@@ -386,7 +388,7 @@ footer details p{color:#8fa3b8;font-size:13.5px;padding:0 16px 14px}
             <option>700 à 1 500 €</option><option>Plus de 1 500 €</option>
           </select></div>
         <div class="full"><label for="contact">Votre e-mail ou téléphone, pour vous répondre</label><input id="contact" name="contact" autocomplete="email" placeholder="Ex. : nom@exemple.fr ou 06 12 34 56 78"></div>
-        <div class="full"><label for="message">Votre projet en quelques mots</label><textarea id="message" name="message" placeholder="Ce que vous voulez, pour qui, et pour quand."></textarea></div>
+        <div class="full"><label for="message">Votre idée de projet</label><p class="fhelp" id="message-help">Racontez-la avec vos mots : ce que vous voulez faire, pour qui, ce qui existe déjà (logo, textes, photos, ancien site), des sites ou applications que vous aimez, et pour quand.</p><textarea id="message" name="message" rows="7" aria-describedby="message-help" placeholder="Ex. : je tiens une boulangerie à Bondy. Je voudrais un site avec nos produits, nos horaires et la commande de gâteaux pour le week-end. J’ai déjà un logo et des photos. J’aimerais qu’il soit en ligne avant Noël."></textarea></div>
         <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="full fbtns">
           <button class="btn btn-primary" type="button" id="send-direct" hidden>Envoyer ma demande</button>
