@@ -106,7 +106,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'decisions; maintained documentation and knowledge base.']},
                  {'role': 'IT Manager — Paris 2024',
                   'company': 'The iLUKA Collective',
-                  'date': 'March 2024 – September 2024',
+                  'date': 'March 2024 – March 2025',
                   'ctx': 'Olympic &amp; Paralympic engagement · 250+ users · Multi-site, mission-critical · Paris',
                   'env': 'Eventim ticketing · CRM · Access control · GDPR access governance · SLA and GTR/GTI '
                          'reporting',
@@ -273,7 +273,7 @@ C = {'en': {'jobs': [{'role': 'Independent Projects — Product Design &amp; Del
                               'base de connaissances.']},
                  {'role': 'Responsable IT — Paris 2024',
                   'company': 'The iLUKA Collective',
-                  'date': 'Mars 2024 – Sept. 2024',
+                  'date': 'Mars 2024 – Mars 2025',
                   'ctx': 'Engagement Olympique &amp; Paralympique · 250+ utilisateurs · Multi-sites, critique · Paris',
                   'env': 'Billetterie Eventim · CRM · Contrôle d’accès · Gouvernance des accès RGPD',
                   'bullets': ['Pilotage de l’IT de bout en bout des Jeux Olympiques &amp; Paralympiques de Paris '
