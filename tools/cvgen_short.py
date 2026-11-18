@@ -80,7 +80,7 @@ CONTACT = ('rolanddzoagbe@gmail.com · +33 7 82 88 46 46 · Bondy (Île-de-Franc
 
 C = {
 'fr': dict(
-    role='Responsable IT &amp; Infrastructure · Microsoft 365, identités et sécurité',
+    role='Responsable IT &amp; Infrastructure (IT Manager) · Microsoft 365, identités et sécurité',
     s_sum='PROFIL', s_exp='EXPÉRIENCE', s_proj='PROJETS EN COURS', s_prev='PARCOURS ANTÉRIEUR',
     s_comp='COMPÉTENCES', s_edu='FORMATION, CERTIFICATIONS ET LANGUES',
     summary='Responsable IT et infrastructure, 7 ans en informatique dont 3 à la tête de l’IT '
@@ -146,13 +146,11 @@ C = {
           '<font color="#556072">(2019–2020)</font>',
           'Aide-soignant en établissements de santé, puis reconversion vers l’informatique '
           '<font color="#556072">(2009–2017)</font>'],
-    comps=[('Identités et sécurité', 'Entra ID (MFA, accès conditionnel, PIM), Okta, Microsoft Defender, RGPD, PCA/PRA'),
-           ('Postes et infrastructure', 'Microsoft 365, Intune, Autopilot, Jamf, Windows Server, Azure, PowerShell'),
-           ('Services et management', 'ITIL, ServiceNow, SLA et indicateurs, management d’équipe, prestataires, budget')],
-    edu=['<b>VAE en cours</b> : titre CESI Manager en infrastructures et cybersécurité des SI (RNCP niveau 7, Bac+5), '
-         'dossier recevable depuis novembre 2026',
-         'ITIL 4 Foundation (formation suivie, examen à venir) · Azure Administrator AZ-104 (Alison, 2026) · '
-         'Cybersécurité : Google (2024), Cisco (2023)',
+    comps=[('Identités et sécurité', 'Entra ID (MFA, accès conditionnel, PIM), Active Directory, Okta, Defender, cybersécurité, RGPD, PCA/PRA'),
+           ('Postes et infrastructure', 'Microsoft 365, gestion de parc et MDM (Intune, Autopilot, Jamf), Windows Server, Azure, Meraki, Veeam, PowerShell'),
+           ('Services et management', 'ITIL, ServiceNow, helpdesk N1–N3, SLA et indicateurs, management d’équipe, prestataires, budget')],
+    edu=['<b>VAE en cours</b> : titre CESI Manager en infrastructures et cybersécurité des SI (RNCP niveau 7, Bac+5)',
+         'ITIL 4 Foundation (examen à venir) · Azure AZ-104 (Alison, 2026) · Cybersécurité : Google (2024), Cisco (2023)',
          '3W Academy, développement (2017) · <b>Langues</b> : français et anglais (bilingue)'],
 ),
 'en': dict(
@@ -219,13 +217,11 @@ C = {
           '<b>Alain Bensoussan Avocats</b> – L1/L2 Support, first IT role <font color="#556072">(2019–2020)</font>',
           'Healthcare assistant in hospitals and care facilities, then a career change into IT '
           '<font color="#556072">(2009–2017)</font>'],
-    comps=[('Identity and security', 'Entra ID (MFA, Conditional Access, PIM), Okta, Microsoft Defender, GDPR, BCP/DRP'),
-           ('Devices and infrastructure', 'Microsoft 365, Intune, Autopilot, Jamf, Windows Server, Azure, PowerShell'),
-           ('Service and management', 'ITIL, ServiceNow, SLAs and KPIs, team management, vendors, budget')],
-    edu=['<b>In progress (VAE)</b>: CESI Manager en infrastructures et cybersécurité des SI (French national '
-         'qualification, EQF level 7, Master’s level), application accepted in November 2026',
-         'ITIL 4 Foundation (course completed, exam pending) · Azure Administrator AZ-104 (Alison, 2026) · '
-         'Cybersecurity: Google (2024), Cisco (2023)',
+    comps=[('Identity and security', 'Entra ID (MFA, Conditional Access, PIM), Active Directory, Okta, Microsoft Defender, cybersecurity, GDPR, BCP/DRP'),
+           ('Devices and infrastructure', 'Microsoft 365, device management and MDM (Intune, Autopilot, Jamf), Windows Server, Azure, Meraki, Veeam, PowerShell'),
+           ('Service and management', 'ITIL, ServiceNow, L1–L3 service desk, SLAs and KPIs, team management, vendors, budget')],
+    edu=['<b>In progress (VAE)</b>: CESI Manager en infrastructures et cybersécurité des SI (EQF level 7, Master’s level)',
+         'ITIL 4 Foundation (exam pending) · Azure AZ-104 (Alison, 2026) · Cybersecurity: Google (2024), Cisco (2023)',
          '3W Academy, software development (2017) · <b>Languages</b>: French and English (bilingual)'],
 ),
 }
