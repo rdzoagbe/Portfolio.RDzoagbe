@@ -91,6 +91,11 @@ input:focus-visible,select:focus-visible,button:focus-visible,.btn-file:focus-wi
 .listbox li .sub{color:var(--muted);font-size:.8rem;text-align:right}
 .listbox li.on,.listbox li:hover{background:var(--accent-soft)}
 .listbox li.empty{color:var(--muted);cursor:default}
+.listbox li .main{min-width:0}
+.listbox li.row-region .main{font-weight:600}
+.listbox li.row-all{padding-left:28px;font-weight:600;color:var(--accent)}
+.listbox li.nested{padding-left:28px}
+.listbox li[aria-selected="true"] .main{color:var(--accent);font-weight:600}
 
 .group{border:0;margin:0;padding:0;display:grid;gap:8px;min-width:0}
 .group legend{font-size:.85rem;font-weight:500;color:var(--muted);padding:0;margin-bottom:8px}

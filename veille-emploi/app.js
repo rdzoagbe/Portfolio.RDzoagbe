@@ -1,4 +1,4 @@
-const VERSION = '0.4.0';
+const VERSION = '0.5.0';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -61,7 +61,7 @@ const T = {
     x_interim: 'Intérim', x_stage: 'Stage', x_alternance: 'Alternance', x_cdd: 'CDD', x_partiel: 'Temps partiel', x_nuit: 'Horaires de nuit',
     x_weekend: 'Week-ends', x_astreintes: 'Astreintes', x_deplacements: 'Déplacements fréquents', x_esn: 'ESN et sociétés de conseil',
     x_cabinets: 'Cabinets de recrutement', x_nosalary: 'Sans salaire indiqué',
-    regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
+    wholeRegion: 'Toute la région {r}', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
     remote_hybrid: 'Hybride ou complet', remote_onsite: 'Sur site accepté', remote_remote: 'Télétravail complet uniquement',
     contract_cdi: 'CDI', contract_cdi_cdd: 'CDI ou CDD', contract_cdi_free: 'CDI ou freelance', contract_all: 'Tous',
     consent: "J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.",
@@ -103,7 +103,7 @@ const T = {
     x_interim: 'Temp work', x_stage: 'Internship', x_alternance: 'Apprenticeship', x_cdd: 'Fixed-term', x_partiel: 'Part-time', x_nuit: 'Night shifts',
     x_weekend: 'Weekends', x_astreintes: 'On-call duty', x_deplacements: 'Frequent travel', x_esn: 'IT services & consulting firms',
     x_cabinets: 'Recruitment agencies', x_nosalary: 'No salary shown',
-    regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
+    wholeRegion: 'All of {r}', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
     remote_hybrid: 'Hybrid or fully remote', remote_onsite: 'On-site is fine', remote_remote: 'Fully remote only',
     contract_cdi: 'Permanent (CDI)', contract_cdi_cdd: 'Permanent or fixed-term', contract_cdi_free: 'Permanent or freelance', contract_all: 'Any',
     consent: 'I agree that my CV is analysed to suggest job offers. I can delete everything at any time.',
@@ -359,34 +359,109 @@ $('roleInput').addEventListener('blur', () => { if ($('roleInput').value.trim())
 $('roleChips').addEventListener('click', (e) => { if (e.target === $('roleChips')) $('roleInput').focus(); });
 
 let locActive = 0;
+let locExpanded = null; // region id opened inside the dropdown
+let locRows = [];
+const regionOf = (dept) => G.items.find((x) => x.kind === 'region' && x.name === dept.region);
+function rowSelected(r) {
+  if (r.type === 'all') return data.locations.includes(r.rid) && !(data.regionDepts[r.rid] || []).length;
+  if (r.type === 'dept') return data.locations.includes(r.id) || (data.regionDepts[r.rid] || []).includes(r.id);
+  return data.locations.includes(r.id);
+}
+function buildRows() {
+  const q = $('locInput').value.trim();
+  const rows = [];
+  const pushRegion = (reg) => {
+    rows.push({ type: 'region', id: reg.id });
+    if (locExpanded === reg.id) {
+      rows.push({ type: 'all', id: reg.id, rid: reg.id });
+      regionDepts(reg.id).forEach((d) => rows.push({ type: 'dept', id: d.id, rid: reg.id, nested: true }));
+    }
+  };
+  if (!q) {
+    G.items.filter((i) => i.kind === 'special').forEach((i) => rows.push({ type: 'special', id: i.id }));
+    G.items.filter((i) => i.kind === 'region').forEach(pushRegion);
+  } else {
+    searchLocations(q).forEach((i) => {
+      if (i.kind === 'region') pushRegion(i);
+      else if (i.kind === 'dept') { const reg = regionOf(i); rows.push({ type: 'dept', id: i.id, rid: reg ? reg.id : null }); }
+      else rows.push({ type: 'special', id: i.id });
+    });
+  }
+  return rows;
+}
 function openLocList() {
-  const res = searchLocations($('locInput').value).filter((i) => !data.locations.includes(i.id));
+  locRows = buildRows();
+  if (locActive >= locRows.length) locActive = Math.max(0, locRows.length - 1);
   const ul = $('locList'); ul.textContent = '';
-  if (!res.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = t('noMatch'); ul.appendChild(li); }
-  res.forEach((i, idx) => {
+  if (!locRows.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = t('noMatch'); ul.appendChild(li); }
+  locRows.forEach((r, idx) => {
+    const i = G.byId[r.id];
     const li = document.createElement('li');
-    li.role = 'option'; li.id = 'loc-' + idx; li.dataset.id = i.id;
-    li.innerHTML = '<span></span><span class="sub"></span>';
-    li.firstChild.textContent = locLabel(i.id); li.lastChild.textContent = locSub(i);
+    li.role = 'option'; li.id = 'loc-' + idx; li.dataset.idx = idx;
+    li.className = 'row-' + r.type + (r.nested ? ' nested' : '');
+    const sel = r.type !== 'region' && rowSelected(r);
+    li.setAttribute('aria-selected', String(sel));
+    const main = document.createElement('span'); main.className = 'main';
+    const sub = document.createElement('span'); sub.className = 'sub';
+    if (r.type === 'region') {
+      const open = locExpanded === r.id;
+      li.setAttribute('aria-expanded', String(open));
+      main.textContent = (open ? '▾ ' : '▸ ') + i.name;
+      const n = data.locations.includes(r.id) ? ((data.regionDepts[r.id] || []).length || t('regionAll')) : '';
+      sub.textContent = n ? '✓ ' + (typeof n === 'number' ? n + ' dép.' : n) : regionDepts(r.id).length + ' dép.';
+    } else if (r.type === 'all') {
+      main.textContent = (sel ? '✓ ' : '') + t('wholeRegion', { r: i.name });
+    } else if (r.type === 'dept') {
+      main.textContent = (sel ? '✓ ' : '') + `${i.code} · ${i.name}`;
+      sub.textContent = r.nested ? '' : i.region;
+    } else {
+      main.textContent = (sel ? '✓ ' : '') + locLabel(r.id);
+    }
+    li.append(main, sub);
     if (idx === locActive) li.classList.add('on');
-    li.addEventListener('mousedown', (e) => { e.preventDefault(); pickLoc(i.id); });
+    li.addEventListener('mousedown', (e) => { e.preventDefault(); locActive = idx; actLoc(r); });
     ul.appendChild(li);
   });
   ul.hidden = false; $('locInput').setAttribute('aria-expanded', 'true');
-  if (res[locActive]) $('locInput').setAttribute('aria-activedescendant', 'loc-' + locActive);
+  if (locRows[locActive]) {
+    $('locInput').setAttribute('aria-activedescendant', 'loc-' + locActive);
+    const on = ul.querySelector('li.on'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
+  }
+}
+function actLoc(r) {
+  if (r.type === 'region') { locExpanded = locExpanded === r.id ? null : r.id; openLocList(); return; }
+  if (r.type === 'all') {
+    if (!data.locations.includes(r.rid)) data.locations.push(r.rid);
+    data.regionDepts[r.rid] = [];
+    data.locations = data.locations.filter((id) => { if (!id.startsWith('D:')) return true; const reg = regionOf(G.byId[id]); return !(reg && reg.id === r.rid); });
+  } else if (r.type === 'dept') {
+    if (r.rid && data.locations.includes(r.rid)) {
+      const cur = new Set(data.regionDepts[r.rid] || []);
+      cur.has(r.id) ? cur.delete(r.id) : cur.add(r.id);
+      data.regionDepts[r.rid] = [...cur];
+    } else if (data.locations.includes(r.id)) {
+      data.locations = data.locations.filter((x) => x !== r.id);
+    } else data.locations.push(r.id);
+  } else {
+    data.locations = data.locations.includes(r.id) ? data.locations.filter((x) => x !== r.id) : [...data.locations, r.id];
+  }
+  save(); renderLocs(); openLocList();
 }
 function closeLocList() { $('locList').hidden = true; $('locInput').setAttribute('aria-expanded', 'false'); }
-function pickLoc(id) { if (!data.locations.includes(id)) { data.locations.push(id); save(); } $('locInput').value = ''; locActive = 0; renderLocs(); openLocList(); }
 $('locInput').addEventListener('focus', () => { locActive = 0; openLocList(); });
-$('locInput').addEventListener('input', () => { locActive = 0; openLocList(); });
-$('locInput').addEventListener('blur', () => setTimeout(closeLocList, 120));
+$('locInput').addEventListener('input', () => { locActive = 0; locExpanded = null; openLocList(); });
+$('locInput').addEventListener('blur', () => setTimeout(closeLocList, 150));
 $('locInput').addEventListener('keydown', (e) => {
-  const opts = [...$('locList').querySelectorAll('li[data-id]')];
-  if (e.key === 'ArrowDown') { e.preventDefault(); locActive = Math.min(locActive + 1, opts.length - 1); openLocList(); }
+  const r = locRows[locActive];
+  if (e.key === 'ArrowDown') { e.preventDefault(); locActive = Math.min(locActive + 1, locRows.length - 1); openLocList(); }
   else if (e.key === 'ArrowUp') { e.preventDefault(); locActive = Math.max(locActive - 1, 0); openLocList(); }
-  else if (e.key === 'Enter') { e.preventDefault(); if (opts[locActive]) pickLoc(opts[locActive].dataset.id); }
+  else if (e.key === 'ArrowRight' && r && r.type === 'region' && locExpanded !== r.id) { e.preventDefault(); locExpanded = r.id; openLocList(); }
+  else if (e.key === 'ArrowLeft' && r && (r.type === 'region' || r.nested || r.type === 'all') && locExpanded) {
+    e.preventDefault(); const rid = r.rid || r.id; locExpanded = null; locActive = buildRows().findIndex((x) => x.id === rid); openLocList();
+  }
+  else if (e.key === 'Enter') { e.preventDefault(); if (r) actLoc(r); }
   else if (e.key === 'Escape') closeLocList();
-  else if (e.key === 'Backspace' && !$('locInput').value && data.locations.length) { data.locations.pop(); save(); renderLocs(); }
+  else if (e.key === 'Backspace' && !$('locInput').value && data.locations.length) { delete data.regionDepts[data.locations[data.locations.length - 1]]; data.locations.pop(); save(); renderLocs(); }
 });
 $('locChips').addEventListener('click', (e) => { if (e.target === $('locChips')) $('locInput').focus(); });
 
