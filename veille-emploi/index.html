@@ -104,11 +104,20 @@
         <label for="contrat"><span data-i18n="contract"></span>
           <select id="contrat" name="contrat"><option value="cdi"></option><option value="cdi_cdd"></option><option value="cdi_free"></option><option value="all"></option></select></label>
       </div>
-      <fieldset class="group">
-        <legend data-i18n="exclude"></legend>
-        <div class="toggles" id="excludeTags"></div>
-        <label for="exclure" class="sub-label"><span data-i18n="excludeOther"></span><input id="exclure" name="exclure" data-i18n-ph="excludePh"></label>
-      </fieldset>
+      <div class="field">
+        <span class="field-label" id="exLabel" data-i18n="exclude"></span>
+        <div class="loc-dd" id="exDd">
+          <button type="button" class="loc-trigger" id="exTrigger" aria-expanded="false" aria-controls="exPanel" aria-labelledby="exLabel exTriggerText">
+            <span id="exTriggerText" class="trigger-text"></span>
+            <svg class="trigger-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="loc-panel" id="exPanel" hidden>
+            <div class="loc-list ex-list" id="excludeTags"></div>
+            <div class="ex-other"><label for="exclure"><span data-i18n="excludeOther"></span><input id="exclure" name="exclure" data-i18n-ph="excludePh"></label></div>
+            <div class="loc-foot"><button type="button" class="link-btn-plain" id="exReset" data-i18n="reset"></button><button type="button" class="primary small-btn" id="exDone" data-i18n="ok">OK</button></div>
+          </div>
+        </div>
+      </div>
       <p class="err" id="formErr" hidden></p>
     </section>
 

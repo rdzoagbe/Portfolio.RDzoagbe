@@ -1,4 +1,4 @@
-const VERSION = '0.6.1';
+const VERSION = '0.6.2';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -67,7 +67,7 @@ const T = {
     x_interim: 'Intérim', x_stage: 'Stage', x_alternance: 'Alternance', x_cdd: 'CDD', x_partiel: 'Temps partiel', x_nuit: 'Horaires de nuit',
     x_weekend: 'Week-ends', x_astreintes: 'Astreintes', x_deplacements: 'Déplacements fréquents', x_esn: 'ESN et sociétés de conseil',
     x_cabinets: 'Cabinets de recrutement', x_nosalary: 'Sans salaire indiqué',
-    wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
+    exNone: 'Aucune exclusion', wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
     remote_hybrid: 'Hybride ou complet', remote_onsite: 'Sur site accepté', remote_remote: 'Télétravail complet uniquement',
     contract_cdi: 'CDI', contract_cdi_cdd: 'CDI ou CDD', contract_cdi_free: 'CDI ou freelance', contract_all: 'Tous',
     consent: "J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.",
@@ -109,7 +109,7 @@ const T = {
     x_interim: 'Temp work', x_stage: 'Internship', x_alternance: 'Apprenticeship', x_cdd: 'Fixed-term', x_partiel: 'Part-time', x_nuit: 'Night shifts',
     x_weekend: 'Weekends', x_astreintes: 'On-call duty', x_deplacements: 'Frequent travel', x_esn: 'IT services & consulting firms',
     x_cabinets: 'Recruitment agencies', x_nosalary: 'No salary shown',
-    wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
+    exNone: 'Nothing excluded', wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
     remote_hybrid: 'Hybrid or fully remote', remote_onsite: 'On-site is fine', remote_remote: 'Fully remote only',
     contract_cdi: 'Permanent (CDI)', contract_cdi_cdd: 'Permanent or fixed-term', contract_cdi_free: 'Permanent or freelance', contract_all: 'Any',
     consent: 'I agree that my CV is analysed to suggest job offers. I can delete everything at any time.',
@@ -501,16 +501,37 @@ document.addEventListener('click', (e) => { if (!$('locPanel').hidden && !$('loc
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('locPanel').hidden) { setLocPanel(false); $('locTrigger').focus(); } });
 function renderExclude() {
   const box = $('excludeTags'); box.textContent = '';
+  const wrap = document.createElement('div'); wrap.className = 'opt-group';
   EXCL.forEach((x) => {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'toggle';
-    b.textContent = t('x_' + x); b.setAttribute('aria-pressed', String(data.excludeTags.includes(x)));
-    b.addEventListener('click', () => {
+    wrap.appendChild(optionBtn(t('x_' + x), data.excludeTags.includes(x), () => {
       data.excludeTags = data.excludeTags.includes(x) ? data.excludeTags.filter((y) => y !== x) : [...data.excludeTags, x];
       save(); renderExclude();
-    });
-    box.appendChild(b);
+    }));
   });
+  box.appendChild(wrap);
+  renderExTrigger();
 }
+function renderExTrigger() {
+  const items = data.excludeTags.map((x) => t('x_' + x));
+  const other = ($('exclure').value || data.exclure || '').trim();
+  if (other) items.push(other);
+  const el = $('exTriggerText');
+  el.classList.toggle('placeholder', !items.length);
+  el.textContent = !items.length ? t('exNone') : items.length <= 2 ? items.join(', ') : `${items.slice(0, 2).join(', ')} +${items.length - 2}`;
+  $('exReset').hidden = !items.length;
+}
+function setExPanel(open) {
+  $('exPanel').hidden = !open;
+  $('exTrigger').setAttribute('aria-expanded', String(open));
+  $('exDd').classList.toggle('open', open);
+}
+$('exTrigger').addEventListener('click', (e) => { e.stopPropagation(); setExPanel($('exPanel').hidden); });
+$('exDone').addEventListener('click', (e) => { e.stopPropagation(); setExPanel(false); $('exTrigger').focus(); });
+$('exReset').addEventListener('click', (e) => { e.stopPropagation(); data.excludeTags = []; data.exclure = ''; $('exclure').value = ''; save(); renderExclude(); });
+$('exclure').addEventListener('input', renderExTrigger);
+$('exclure').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); setExPanel(false); } });
+document.addEventListener('click', (e) => { if (!$('exPanel').hidden && !$('exDd').contains(e.target)) setExPanel(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('exPanel').hidden) { setExPanel(false); $('exTrigger').focus(); } });
 
 /* ---------- alert options ---------- */
 const srcName = (s) => (typeof s.name === 'string' ? s.name : s.name[settings.lang]);
