@@ -1,4 +1,4 @@
-const VERSION = '0.2.0';
+const VERSION = '0.3.0';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -17,6 +17,17 @@ if (data.lieu && !data.locations.length) { const m = matchLocations(data.lieu); 
 delete data.postes; delete data.lieu;
 if (!['hybrid', 'onsite', 'remote'].includes(data.teletravail)) data.teletravail = 'hybrid';
 if (!['cdi', 'cdi_cdd', 'cdi_free', 'all'].includes(data.contrat)) data.contrat = 'cdi';
+const SOURCES = [
+  { id: 'francetravail', name: 'France Travail', auto: true },
+  { id: 'startups', name: { fr: 'Startups et scale-ups', en: 'Startups & scale-ups' }, auto: true },
+  { id: 'linkedin', name: 'LinkedIn' },
+  { id: 'indeed', name: 'Indeed' },
+  { id: 'wttj', name: 'Welcome to the Jungle' },
+  { id: 'hellowork', name: 'HelloWork' },
+  { id: 'apec', name: 'APEC' },
+];
+if (!Array.isArray(data.sources)) data.sources = ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'];
+if (!['1', '3', '7'].includes(data.since)) data.since = '3';
 const save = () => write(KEY, data);
 
 /* ---------- text ---------- */
@@ -51,6 +62,11 @@ const T = {
     dataTitle: 'Mes données', dataNote: "Dans cette version test, tout reste sur cet appareil : rien n'est envoyé.", wipe: 'Supprimer mes données', wiped: 'Tout est supprimé.',
     language: 'Langue', frequency: 'Fréquence des alertes', f1: 'Tous les jours', f2: 'Tous les 2 jours', f7: 'Chaque semaine',
     sendTime: "Heure d'envoi", maxOffers: 'Offres max par email', theme: 'Thème', tAuto: 'Automatique', tLight: 'Clair', tDark: 'Sombre', done: 'Terminé',
+    alertTitle: "Options d'alerte", sourcesTitle: 'Sources des offres', sinceTitle: 'Publiées depuis',
+    sourcesHelp: "« Offres envoyées » : l'app les cherche et les trie pour toi. « Lien de recherche » : ces sites n'ont pas d'accès gratuit, l'email contient un lien qui ouvre leurs offres récentes avec tes critères.",
+    badgeAuto: 'offres envoyées', badgeLink: 'lien de recherche', since1: '24 heures', since3: '3 jours', since7: '7 jours',
+    mSources: 'au moins une source', linksTitle: 'Recherches prêtes', linksHelp: 'Un clic ouvre les offres publiées depuis {d}, avec tes critères.',
+    noAuto: "Tu n'as coché que des liens de recherche : l'email contiendra seulement les liens ci-dessous.", dLabel1: '24 heures', dLabel3: '3 jours', dLabel7: '7 jours',
     testVersion: 'version test', at: 'à', remove: 'Retirer', add: 'Ajouter', noMatch: 'Aucun lieu trouvé',
   },
   en: {
@@ -83,6 +99,11 @@ const T = {
     dataTitle: 'My data', dataNote: 'In this test version everything stays on this device: nothing is sent.', wipe: 'Delete my data', wiped: 'Everything is deleted.',
     language: 'Language', frequency: 'Alert frequency', f1: 'Every day', f2: 'Every 2 days', f7: 'Every week',
     sendTime: 'Send time', maxOffers: 'Max offers per email', theme: 'Theme', tAuto: 'Automatic', tLight: 'Light', tDark: 'Dark', done: 'Done',
+    alertTitle: 'Alert options', sourcesTitle: 'Where offers come from', sinceTitle: 'Posted within',
+    sourcesHelp: '"Offers sent": the app finds and ranks them for you. "Search link": these sites have no free access, so the email includes a link that opens their recent offers with your criteria.',
+    badgeAuto: 'offers sent', badgeLink: 'search link', since1: '24 hours', since3: '3 days', since7: '7 days',
+    mSources: 'at least one source', linksTitle: 'Ready-made searches', linksHelp: 'One click opens offers posted in the last {d}, with your criteria.',
+    noAuto: 'You only ticked search links: the email will contain just the links below.', dLabel1: '24 hours', dLabel3: '3 days', dLabel7: '7 days',
     testVersion: 'test version', at: 'at', remove: 'Remove', add: 'Add', noMatch: 'No location found',
   },
 };
@@ -339,6 +360,49 @@ $('locInput').addEventListener('keydown', (e) => {
 });
 $('locChips').addEventListener('click', (e) => { if (e.target === $('locChips')) $('locInput').focus(); });
 
+/* ---------- alert options ---------- */
+const srcName = (s) => (typeof s.name === 'string' ? s.name : s.name[settings.lang]);
+function renderSources() {
+  const box = $('sources'); box.textContent = '';
+  SOURCES.forEach((s) => {
+    const l = document.createElement('label'); l.className = 'check';
+    l.innerHTML = '<input type="checkbox"><span class="cname"></span><span class="badge"></span>';
+    const cb = l.querySelector('input'); cb.id = 'src-' + s.id; cb.checked = data.sources.includes(s.id);
+    l.querySelector('.cname').textContent = srcName(s);
+    const bd = l.querySelector('.badge'); bd.textContent = s.auto ? t('badgeAuto') : t('badgeLink'); bd.classList.add(s.auto ? 'auto' : 'link');
+    cb.addEventListener('change', () => {
+      data.sources = SOURCES.filter((x) => $('src-' + x.id).checked).map((x) => x.id); save();
+      if (data.active) renderPreview();
+    });
+    box.appendChild(l);
+  });
+  document.querySelectorAll('input[name="since"]').forEach((r) => { r.checked = r.value === data.since; });
+}
+document.querySelectorAll('input[name="since"]').forEach((r) => r.addEventListener('change', () => { data.since = r.value; save(); if (data.active) renderPreview(); }));
+function searchParts() {
+  const q = data.roles[0] || '';
+  const first = data.locations[0];
+  const i = first && G.byId[first];
+  let loc = 'France';
+  if (i && i.kind === 'region') loc = i.name;
+  else if (i && i.kind === 'dept') loc = i.name;
+  return { q, loc, remote: data.locations.includes('REMOTE') };
+}
+function searchLink(id) {
+  const { q, loc, remote } = searchParts();
+  const d = data.since; const e = encodeURIComponent;
+  const qq = remote && id !== 'linkedin' ? q + ' télétravail' : q;
+  switch (id) {
+    case 'linkedin': return `https://www.linkedin.com/jobs/search/?keywords=${e(q)}&location=${e(loc + ', France')}&f_TPR=r${Number(d) * 86400}${remote ? '&f_WT=2' : ''}`;
+    case 'indeed': return `https://fr.indeed.com/jobs?q=${e(qq)}&l=${e(loc)}&fromage=${d}&sort=date`;
+    case 'wttj': return `https://www.welcometothejungle.com/fr/jobs?query=${e(q)}&aroundQuery=${e(loc + ', France')}&sortBy=mostRecent`;
+    case 'hellowork': return `https://www.hellowork.com/fr-fr/emploi/recherche.html?k=${e(qq)}&l=${e(loc)}&st=date&d=${d === '1' ? 'd' : 'w'}`;
+    case 'apec': return `https://www.apec.fr/candidat/recherche-emploi.html/emploi?motsCles=${e(qq + (loc !== 'France' ? ' ' + loc : ''))}`;
+    case 'francetravail': return `https://candidat.francetravail.fr/offres/recherche?motsCles=${e(qq)}&offresPartenaires=true&tri=1&emission=${d}`;
+    default: return '#';
+  }
+}
+
 /* ---------- main render ---------- */
 const FIELDS = ['prenom', 'email', 'salaire', 'teletravail', 'contrat', 'exclure'];
 function nextSend(from = new Date()) {
@@ -356,7 +420,7 @@ function render() {
   $('fileRow').hidden = !hasCv; $('fileEmpty').hidden = hasCv;
   $('fileName').textContent = data.cvName || '';
   $('cvLabel').textContent = hasCv ? t('cvReplace') : t('cvChoose');
-  renderFound(); renderRoles(); renderLocs();
+  renderFound(); renderRoles(); renderLocs(); renderSources();
   const on = !!data.active;
   $('statusOn').hidden = !on; $('statusOff').hidden = on; $('pause').hidden = !on;
   $('activate').textContent = on ? t('update') : t('activate');
@@ -393,16 +457,27 @@ function renderPreview() {
     { t: first, c: t('ex1c'), l: `${lieu}, ${tt}`, s: `${min + 3}–${min + 10} k€`, m: 91, w: t('ex1w'), a: t('ex1a') },
     { t: data.roles[1] || first, c: t('ex2c'), l: `${lieu}, ${t('onsiteTxt')}`, s: `${min}–${min + 5} k€`, m: 86, w: t('ex2w'), a: t('ex2a') },
   ];
+  const autos = SOURCES.filter((s) => s.auto && data.sources.includes(s.id));
+  offers.forEach((o, k) => { o.src = autos.length ? srcName(autos[k % autos.length]) : ''; });
   const ul = $('offers'); ul.textContent = '';
-  offers.forEach((o) => {
+  if (!autos.length) { const li = document.createElement('li'); li.className = 'small'; li.textContent = t('noAuto'); ul.appendChild(li); }
+  (autos.length ? offers : []).forEach((o) => {
     const li = document.createElement('li'); li.className = 'offer';
     li.innerHTML = '<div class="offer-top"><b></b><span class="match"></span></div><div class="meta"></div><div class="why"></div><div class="warn"></div>';
     li.querySelector('b').textContent = o.t;
     li.querySelector('.match').textContent = o.m + ' %';
-    li.querySelector('.meta').textContent = `${o.c} · ${o.l} · ${o.s}`;
+    li.querySelector('.meta').textContent = `${o.c} · ${o.l} · ${o.s} · ${o.src}`;
     li.querySelector('.why').textContent = t('why') + o.w;
     li.querySelector('.warn').textContent = t('warn') + o.a;
     ul.appendChild(li);
+  });
+  const linkSrc = SOURCES.filter((s) => !s.auto && data.sources.includes(s.id));
+  $('linksBox').hidden = !linkSrc.length;
+  $('linksBox').querySelector('.small').textContent = t('linksHelp', { d: t('dLabel' + data.since) });
+  const row = $('links'); row.textContent = '';
+  linkSrc.forEach((s) => {
+    const a = document.createElement('a'); a.href = searchLink(s.id); a.target = '_blank'; a.rel = 'noopener';
+    a.className = 'link-btn'; a.textContent = srcName(s) + ' ↗'; row.appendChild(a);
   });
 }
 
@@ -444,6 +519,7 @@ $('form').addEventListener('submit', (e) => {
   if (!data.email || !/^\S+@\S+\.\S+$/.test(data.email)) missing.push(t('mEmail'));
   if (!data.roles.length) missing.push(t('mRoles'));
   if (!data.locations.length) missing.push(t('mLoc'));
+  if (!data.sources.length) missing.push(t('mSources'));
   if (!$('consent').checked) missing.push(t('mConsent'));
   const err = $('formErr');
   if (missing.length) { err.textContent = t('missing', { list: missing.join(', ') }); err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
@@ -454,7 +530,7 @@ $('form').addEventListener('submit', (e) => {
 $('pause').addEventListener('click', () => { data.active = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 $('wipe').addEventListener('click', () => {
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
-  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi' };
+  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3' };
   $('form').reset(); render(); $('wipeMsg').hidden = false; setTimeout(() => { $('wipeMsg').hidden = true; }, 3000);
 });
 
