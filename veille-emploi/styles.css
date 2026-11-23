@@ -127,7 +127,9 @@ input:focus-visible,select:focus-visible,button:focus-visible,.btn-file:focus-wi
 .acc.open .acc-inner{visibility:visible;transition:visibility 0s}
 .acc-rail{display:grid;gap:2px;margin:6px 10px 10px 22px;padding-left:10px;border-left:2px solid var(--accent)}
 .acc-empty{padding:24px 16px;text-align:center;color:var(--muted);font-size:.9rem}
-.loc-foot{display:flex;justify-content:flex-end;padding:8px 10px;border-top:1px solid var(--line);background:var(--sunken)}
+.ex-other{padding:10px 12px;border-top:1px solid var(--line)}
+.ex-list{max-height:min(300px,45vh)}
+.loc-foot{display:flex;justify-content:flex-end;gap:14px;align-items:center;padding:8px 10px;border-top:1px solid var(--line);background:var(--sunken)}
 .small-btn{padding:8px 18px;font-size:.92rem}
 .loc-summary{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:8px;background:var(--bg)}
 .loc-summary.filled{border-color:var(--accent)}
