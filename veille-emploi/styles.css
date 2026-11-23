@@ -50,6 +50,16 @@ label{display:grid;gap:5px;font-size:.85rem;font-weight:500;color:var(--muted)}
 input,select{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
 input:focus-visible,select:focus-visible,button:focus-visible,.btn-file:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.grid3{grid-template-columns:1fr 1fr}.grid3>label:first-child{grid-column:1/-1}}
+@media (max-width:420px){.grid3{grid-template-columns:1fr}}
+.toggles{display:flex;flex-wrap:wrap;gap:6px}
+.toggle{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:999px;padding:6px 12px;font-size:.86rem;font-weight:500}
+.toggle[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--fg);font-weight:600}
+.toggle[aria-pressed="true"]::before{content:"✓ ";color:var(--accent)}
+.sub-label{margin-top:6px}
+.region-panels{display:grid;gap:10px}
+.region-panel{display:grid;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:10px}
 @media (max-width:480px){.grid2{grid-template-columns:1fr}}
 .drop{border:1.5px dashed var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;justify-items:start;background:var(--bg)}
 .file{display:flex;align-items:center;gap:10px;min-width:0;max-width:100%}

@@ -79,19 +79,23 @@
           <div class="chips" id="locChips"><input id="locInput" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="locList" data-i18n-ph="locationPh"></div>
           <ul class="listbox" id="locList" role="listbox" hidden></ul>
         </div>
+        <div id="regionPanels" class="region-panels"></div>
         <div class="suggest" id="locSuggest" hidden><span class="small" data-i18n="fromCv"></span><div class="sugg-row" id="locSuggestRow"></div></div>
       </div>
 
-      <div class="grid2">
-        <label for="salaire"><span data-i18n="salary"></span><input id="salaire" name="salaire" inputmode="numeric" placeholder="55"></label>
+      <div class="grid3">
+        <label for="salaire"><span data-i18n="salary"></span>
+          <select id="salaire" name="salaire"><option value=""></option><option value="25-35"></option><option value="35-45"></option><option value="45-55"></option><option value="55-65"></option><option value="65-80"></option><option value="80-100"></option><option value="100+"></option></select></label>
         <label for="teletravail"><span data-i18n="remote"></span>
           <select id="teletravail" name="teletravail"><option value="hybrid"></option><option value="onsite"></option><option value="remote"></option></select></label>
-      </div>
-      <div class="grid2">
         <label for="contrat"><span data-i18n="contract"></span>
           <select id="contrat" name="contrat"><option value="cdi"></option><option value="cdi_cdd"></option><option value="cdi_free"></option><option value="all"></option></select></label>
-        <label for="exclure"><span data-i18n="exclude"></span><input id="exclure" name="exclure" data-i18n-ph="excludePh"></label>
       </div>
+      <fieldset class="group">
+        <legend data-i18n="exclude"></legend>
+        <div class="toggles" id="excludeTags"></div>
+        <label for="exclure" class="sub-label"><span data-i18n="excludeOther"></span><input id="exclure" name="exclure" data-i18n-ph="excludePh"></label>
+      </fieldset>
       <p class="err" id="formErr" hidden></p>
     </section>
 

@@ -1,4 +1,4 @@
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -28,6 +28,14 @@ const SOURCES = [
 ];
 if (!Array.isArray(data.sources)) data.sources = ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'];
 if (!['1', '3', '7'].includes(data.since)) data.since = '3';
+const SAL = ['25-35', '35-45', '45-55', '55-65', '65-80', '80-100', '100+'];
+if (data.salaire && !SAL.includes(data.salaire)) {
+  const n = parseInt(String(data.salaire).replace(/\D/g, ''), 10);
+  data.salaire = !n ? '' : n >= 100 ? '100+' : SAL.find((r) => { const [a, b] = r.split('-').map(Number); return n >= a && n < b; }) || '';
+}
+const EXCL = ['interim', 'stage', 'alternance', 'cdd', 'partiel', 'nuit', 'weekend', 'astreintes', 'deplacements', 'esn', 'cabinets', 'nosalary'];
+if (!Array.isArray(data.excludeTags)) data.excludeTags = [];
+if (!data.regionDepts || typeof data.regionDepts !== 'object') data.regionDepts = {};
 const save = () => write(KEY, data);
 
 /* ---------- text ---------- */
@@ -48,7 +56,12 @@ const T = {
     prefsTitle: 'Ce que je recherche', firstName: 'Prénom', firstNamePh: 'Camille', email: 'Email pour recevoir les offres', emailPh: 'camille@exemple.fr',
     roles: 'Postes visés', rolesPh: 'Écris un poste puis Entrée', rolesHelp: 'Touche une suggestion pour l\'ajouter, ou écris ton propre intitulé.',
     fromCv: "D'après ton CV :", location: 'Lieu', locationPh: 'Région, département ou ville',
-    salary: 'Salaire minimum (k€ brut/an)', remote: 'Télétravail', contract: 'Contrat', exclude: 'À exclure (facultatif)', excludePh: 'Ex. intérim, stage',
+    salary: 'Salaire souhaité (brut/an)', salAny: 'Peu importe', salPlus: '100 k€ et plus', remote: 'Télétravail', contract: 'Contrat',
+    exclude: 'À exclure (facultatif)', excludeOther: 'Autre chose à exclure', excludePh: 'Ex. un secteur, une entreprise…',
+    x_interim: 'Intérim', x_stage: 'Stage', x_alternance: 'Alternance', x_cdd: 'CDD', x_partiel: 'Temps partiel', x_nuit: 'Horaires de nuit',
+    x_weekend: 'Week-ends', x_astreintes: 'Astreintes', x_deplacements: 'Déplacements fréquents', x_esn: 'ESN et sociétés de conseil',
+    x_cabinets: 'Cabinets de recrutement', x_nosalary: 'Sans salaire indiqué',
+    regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
     remote_hybrid: 'Hybride ou complet', remote_onsite: 'Sur site accepté', remote_remote: 'Télétravail complet uniquement',
     contract_cdi: 'CDI', contract_cdi_cdd: 'CDI ou CDD', contract_cdi_free: 'CDI ou freelance', contract_all: 'Tous',
     consent: "J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.",
@@ -85,7 +98,12 @@ const T = {
     prefsTitle: "What I'm looking for", firstName: 'First name', firstNamePh: 'Camille', email: 'Email to receive offers', emailPh: 'camille@example.com',
     roles: 'Target jobs', rolesPh: 'Type a job title, then Enter', rolesHelp: 'Tap a suggestion to add it, or type your own title.',
     fromCv: 'From your CV:', location: 'Location', locationPh: 'Region, department or city',
-    salary: 'Minimum salary (k€ gross/year)', remote: 'Remote work', contract: 'Contract', exclude: 'Exclude (optional)', excludePh: 'e.g. temp work, internship',
+    salary: 'Salary range (gross/year)', salAny: 'Any', salPlus: '100 k€ and above', remote: 'Remote work', contract: 'Contract',
+    exclude: 'Exclude (optional)', excludeOther: 'Anything else to exclude', excludePh: 'e.g. an industry, a company…',
+    x_interim: 'Temp work', x_stage: 'Internship', x_alternance: 'Apprenticeship', x_cdd: 'Fixed-term', x_partiel: 'Part-time', x_nuit: 'Night shifts',
+    x_weekend: 'Weekends', x_astreintes: 'On-call duty', x_deplacements: 'Frequent travel', x_esn: 'IT services & consulting firms',
+    x_cabinets: 'Recruitment agencies', x_nosalary: 'No salary shown',
+    regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
     remote_hybrid: 'Hybrid or fully remote', remote_onsite: 'On-site is fine', remote_remote: 'Fully remote only',
     contract_cdi: 'Permanent (CDI)', contract_cdi_cdd: 'Permanent or fixed-term', contract_cdi_free: 'Permanent or freelance', contract_all: 'Any',
     consent: 'I agree that my CV is analysed to suggest job offers. I can delete everything at any time.',
@@ -117,6 +135,7 @@ function applyLang() {
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
   [...$('teletravail').options].forEach((o) => { o.textContent = t('remote_' + o.value); });
   [...$('contrat').options].forEach((o) => { o.textContent = t('contract_' + o.value); });
+  [...$('salaire').options].forEach((o) => { o.textContent = !o.value ? t('salAny') : o.value === '100+' ? t('salPlus') : o.value.replace('-', ' – ') + ' k€'; });
   [...$('setFreq').options].forEach((o) => { o.textContent = t('f' + o.value); });
   const th = { auto: 'tAuto', light: 'tLight', dark: 'tDark' };
   [...$('setTheme').options].forEach((o) => { o.textContent = t(th[o.value]); });
@@ -133,6 +152,16 @@ const locLabel = (id) => {
   if (i.kind === 'region') return i.name;
   return `${i.name} (${i.code})`;
 };
+const locChipLabel = (id) => {
+  const i = G.byId[id]; if (!i) return id;
+  if (i.kind === 'dept') return `${i.name} (${i.code}) · ${i.region}`;
+  if (i.kind === 'region') {
+    const n = (data.regionDepts[id] || []).length;
+    return n ? `${i.name} · ${n} dép.` : i.name;
+  }
+  return locLabel(id);
+};
+const regionDepts = (rid) => G.items.filter((x) => x.kind === 'dept' && x.region === G.byId[rid].name);
 const locSub = (i) => (i.kind === 'dept' ? i.region : i.kind === 'region' ? (settings.lang === 'fr' ? 'Région' : 'Region') : '');
 function searchLocations(q) {
   const n = G.norm(q.trim());
@@ -312,8 +341,9 @@ function renderRoles() {
     (r) => { data.roles.push(r.label); save(); renderRoles(); });
 }
 function renderLocs() {
-  renderChips('locChips', 'locInput', data.locations, locLabel, (i) => { data.locations.splice(i, 1); save(); renderLocs(); });
-  renderSuggest('locSuggest', 'locSuggestRow', (data.cvSugg && data.cvSugg.locations) || [], (id) => data.locations.includes(id), locLabel,
+  renderChips('locChips', 'locInput', data.locations, locChipLabel, (i) => { delete data.regionDepts[data.locations[i]]; data.locations.splice(i, 1); save(); renderLocs(); });
+  renderRegionPanels();
+  renderSuggest('locSuggest', 'locSuggestRow', (data.cvSugg && data.cvSugg.locations) || [], (id) => data.locations.includes(id) || Object.values(data.regionDepts).some((l) => l.includes(id)), locChipLabel,
     (id) => { data.locations.push(id); save(); renderLocs(); });
 }
 function addRole(v) {
@@ -360,6 +390,43 @@ $('locInput').addEventListener('keydown', (e) => {
 });
 $('locChips').addEventListener('click', (e) => { if (e.target === $('locChips')) $('locInput').focus(); });
 
+function renderRegionPanels() {
+  const box = $('regionPanels'); box.textContent = '';
+  data.locations.filter((id) => id.startsWith('R:')).forEach((rid) => {
+    const chosen = data.regionDepts[rid] || [];
+    const wrap = document.createElement('div'); wrap.className = 'region-panel';
+    const h = document.createElement('div'); h.className = 'small'; h.textContent = t('regionPick', { r: G.byId[rid].name }) + ' · ' + t('regionHelp');
+    const row = document.createElement('div'); row.className = 'toggles';
+    const all = document.createElement('button'); all.type = 'button'; all.className = 'toggle'; all.textContent = t('regionAll');
+    all.setAttribute('aria-pressed', String(!chosen.length));
+    all.addEventListener('click', () => { data.regionDepts[rid] = []; save(); renderLocs(); });
+    row.appendChild(all);
+    regionDepts(rid).forEach((d) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'toggle';
+      b.textContent = `${d.code} ${d.name}`; b.setAttribute('aria-pressed', String(chosen.includes(d.id)));
+      b.addEventListener('click', () => {
+        const cur = new Set(data.regionDepts[rid] || []);
+        cur.has(d.id) ? cur.delete(d.id) : cur.add(d.id);
+        data.regionDepts[rid] = [...cur]; save(); renderLocs();
+      });
+      row.appendChild(b);
+    });
+    wrap.append(h, row); box.appendChild(wrap);
+  });
+}
+function renderExclude() {
+  const box = $('excludeTags'); box.textContent = '';
+  EXCL.forEach((x) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'toggle';
+    b.textContent = t('x_' + x); b.setAttribute('aria-pressed', String(data.excludeTags.includes(x)));
+    b.addEventListener('click', () => {
+      data.excludeTags = data.excludeTags.includes(x) ? data.excludeTags.filter((y) => y !== x) : [...data.excludeTags, x];
+      save(); renderExclude();
+    });
+    box.appendChild(b);
+  });
+}
+
 /* ---------- alert options ---------- */
 const srcName = (s) => (typeof s.name === 'string' ? s.name : s.name[settings.lang]);
 function renderSources() {
@@ -384,7 +451,9 @@ function searchParts() {
   const first = data.locations[0];
   const i = first && G.byId[first];
   let loc = 'France';
-  if (i && i.kind === 'region') loc = i.name;
+  const narrowed = i && i.kind === 'region' ? (data.regionDepts[first] || []) : [];
+  if (narrowed.length === 1) loc = G.byId[narrowed[0]].name;
+  else if (i && i.kind === 'region') loc = i.name;
   else if (i && i.kind === 'dept') loc = i.name;
   return { q, loc, remote: data.locations.includes('REMOTE') };
 }
@@ -420,7 +489,7 @@ function render() {
   $('fileRow').hidden = !hasCv; $('fileEmpty').hidden = hasCv;
   $('fileName').textContent = data.cvName || '';
   $('cvLabel').textContent = hasCv ? t('cvReplace') : t('cvChoose');
-  renderFound(); renderRoles(); renderLocs(); renderSources();
+  renderFound(); renderRoles(); renderLocs(); renderSources(); renderExclude();
   const on = !!data.active;
   $('statusOn').hidden = !on; $('statusOff').hidden = on; $('pause').hidden = !on;
   $('activate').textContent = on ? t('update') : t('activate');
@@ -448,14 +517,16 @@ function renderFound() {
 }
 function renderPreview() {
   const first = data.roles[0] || (settings.lang === 'fr' ? 'Le poste que tu vises' : 'Your target job');
-  const min = parseInt(String(data.salaire || '').replace(/\D/g, ''), 10) || 45;
-  const lieu = data.locations.length ? locLabel(data.locations[0]) : 'Île-de-France';
+  const [lo, hi] = !data.salaire ? [45, 55] : data.salaire === '100+' ? [100, 120] : data.salaire.split('-').map(Number);
+  const min = lo; const span = Math.max(5, hi - lo);
+  const l0 = data.locations[0]; const nd = l0 && l0.startsWith('R:') ? (data.regionDepts[l0] || []) : [];
+  const lieu = !l0 ? 'Île-de-France' : nd.length ? locLabel(nd[0]) : locLabel(l0);
   const tt = data.teletravail === 'remote' ? t('remoteTxt') : data.teletravail === 'onsite' ? t('onsiteTxt') : t('hybridTxt');
   $('mailSubject').textContent = t('subject', { d: nextSend().toLocaleDateString(locale(), { day: 'numeric', month: 'long' }) });
   $('mailHello').textContent = t('hello', { name: data.prenom || '' }).replace(/ ,/, ',');
   const offers = [
-    { t: first, c: t('ex1c'), l: `${lieu}, ${tt}`, s: `${min + 3}–${min + 10} k€`, m: 91, w: t('ex1w'), a: t('ex1a') },
-    { t: data.roles[1] || first, c: t('ex2c'), l: `${lieu}, ${t('onsiteTxt')}`, s: `${min}–${min + 5} k€`, m: 86, w: t('ex2w'), a: t('ex2a') },
+    { t: first, c: t('ex1c'), l: `${lieu}, ${tt}`, s: `${min + 2}–${min + span} k€`, m: 91, w: t('ex1w'), a: t('ex1a') },
+    { t: data.roles[1] || first, c: t('ex2c'), l: `${lieu}, ${t('onsiteTxt')}`, s: `${min}–${min + Math.round(span / 2)} k€`, m: 86, w: t('ex2w'), a: t('ex2a') },
   ];
   const autos = SOURCES.filter((s) => s.auto && data.sources.includes(s.id));
   offers.forEach((o, k) => { o.src = autos.length ? srcName(autos[k % autos.length]) : ''; });
@@ -530,7 +601,7 @@ $('form').addEventListener('submit', (e) => {
 $('pause').addEventListener('click', () => { data.active = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 $('wipe').addEventListener('click', () => {
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
-  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3' };
+  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [], regionDepts: {} };
   $('form').reset(); render(); $('wipeMsg').hidden = false; setTimeout(() => { $('wipeMsg').hidden = true; }, 3000);
 });
 
