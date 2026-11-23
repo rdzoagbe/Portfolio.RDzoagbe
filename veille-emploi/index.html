@@ -96,6 +96,23 @@
     </section>
 
     <section class="card">
+      <h2><span class="num">3</span> <span data-i18n="alertTitle"></span></h2>
+      <fieldset class="group">
+        <legend data-i18n="sourcesTitle"></legend>
+        <div class="checks" id="sources"></div>
+        <p class="small" data-i18n="sourcesHelp"></p>
+      </fieldset>
+      <fieldset class="group">
+        <legend data-i18n="sinceTitle"></legend>
+        <div class="radios" id="since">
+          <label><input type="radio" name="since" value="1"> <span data-i18n="since1"></span></label>
+          <label><input type="radio" name="since" value="3"> <span data-i18n="since3"></span></label>
+          <label><input type="radio" name="since" value="7"> <span data-i18n="since7"></span></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="card">
       <label class="consent" for="consent"><input id="consent" name="consent" type="checkbox"> <span data-i18n="consent"></span></label>
       <div class="actions">
         <button class="primary" id="activate" type="submit"></button>
@@ -111,6 +128,11 @@
       <div class="mail-body">
         <p id="mailHello"></p>
         <ul class="offers" id="offers"></ul>
+        <div id="linksBox" class="links" hidden>
+          <b data-i18n="linksTitle"></b>
+          <p class="small" data-i18n="linksHelp"></p>
+          <div class="link-row" id="links"></div>
+        </div>
       </div>
     </div>
   </section>
