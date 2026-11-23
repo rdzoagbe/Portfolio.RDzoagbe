@@ -1,4 +1,4 @@
-const VERSION = '0.6.0';
+const VERSION = '0.6.1';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -345,8 +345,6 @@ function renderRoles() {
 function renderLocs() {
   renderLocTrigger(); renderLocSummary();
   if (!$('locPanel').hidden) renderLocList();
-  renderSuggest('locSuggest', 'locSuggestRow', (data.cvSugg && data.cvSugg.locations) || [], (id) => locCovered(id), locChipLabel,
-    (id) => { addLoc(id); save(); renderLocs(); });
 }
 function addRole(v) {
   const s = v.trim().replace(/,$/, '');
