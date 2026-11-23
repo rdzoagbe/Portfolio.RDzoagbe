@@ -1,4 +1,4 @@
-const VERSION = '0.6.3';
+const VERSION = '0.6.4';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -67,7 +67,8 @@ const T = {
     x_interim: 'Intérim', x_stage: 'Stage', x_alternance: 'Alternance', x_cdd: 'CDD', x_partiel: 'Temps partiel', x_nuit: 'Horaires de nuit',
     x_weekend: 'Week-ends', x_astreintes: 'Astreintes', x_deplacements: 'Déplacements fréquents', x_esn: 'ESN et sociétés de conseil',
     x_cabinets: 'Cabinets de recrutement', x_nosalary: 'Sans salaire indiqué',
-    exNone: 'Aucune exclusion', wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
+    exNone: 'Aucune exclusion', cTitle: 'Tes alertes sont prêtes', cJobs: 'Postes', cPlaces: 'Lieux', cOffers: 'Offres envoyées depuis', cLinks: 'Liens de recherche', cWhen: 'Fréquence', cFirst: 'premier email {d}', cSeePreview: "Voir l'aperçu de l'email",
+    cNote: "<b>Version test :</b> aucun email ni notification n'est encore envoyé. Dans la version complète, tu recevras d'abord un email de confirmation, puis tes offres à la fréquence choisie, uniquement celles publiées dans la période choisie.", wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
     remote_hybrid: 'Hybride ou complet', remote_onsite: 'Sur site accepté', remote_remote: 'Télétravail complet uniquement',
     contract_cdi: 'CDI', contract_cdi_cdd: 'CDI ou CDD', contract_cdi_free: 'CDI ou freelance', contract_all: 'Tous',
     consent: "J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.",
@@ -109,7 +110,8 @@ const T = {
     x_interim: 'Temp work', x_stage: 'Internship', x_alternance: 'Apprenticeship', x_cdd: 'Fixed-term', x_partiel: 'Part-time', x_nuit: 'Night shifts',
     x_weekend: 'Weekends', x_astreintes: 'On-call duty', x_deplacements: 'Frequent travel', x_esn: 'IT services & consulting firms',
     x_cabinets: 'Recruitment agencies', x_nosalary: 'No salary shown',
-    exNone: 'Nothing excluded', wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
+    exNone: 'Nothing excluded', cTitle: 'Your alerts are ready', cJobs: 'Jobs', cPlaces: 'Places', cOffers: 'Offers sent from', cLinks: 'Search links', cWhen: 'Frequency', cFirst: 'first email {d}', cSeePreview: 'See the email preview',
+    cNote: '<b>Test version:</b> no email or notification is sent yet. In the full version you will first get a confirmation email, then your offers at the chosen frequency, only those posted within the chosen period.', wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
     remote_hybrid: 'Hybrid or fully remote', remote_onsite: 'On-site is fine', remote_remote: 'Fully remote only',
     contract_cdi: 'Permanent (CDI)', contract_cdi_cdd: 'Permanent or fixed-term', contract_cdi_free: 'Permanent or freelance', contract_all: 'Any',
     consent: 'I agree that my CV is analysed to suggest job offers. I can delete everything at any time.',
@@ -701,8 +703,30 @@ $('form').addEventListener('submit', (e) => {
   if (missing.length) { err.textContent = t('missing', { list: missing.join(', ') }); err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   err.hidden = true;
   data.active = true; data.activatedAt = new Date().toISOString(); save(); render();
-  $('preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showConfirm();
 });
+function showConfirm() {
+  const dl = $('confirmList'); dl.textContent = '';
+  const autos = SOURCES.filter((s) => s.auto && data.sources.includes(s.id)).map(srcName);
+  const links = SOURCES.filter((s) => !s.auto && data.sources.includes(s.id)).map(srcName);
+  const rows = [
+    [t('cJobs'), data.roles.join(', ')],
+    [t('cPlaces'), data.locations.map((id) => { const i = G.byId[id]; return i && i.kind === 'dept' ? `${i.code} ${i.name}` : locLabel(id); }).join(', ')],
+    [t('cOffers'), autos.join(', ') || '—'],
+    [t('cLinks'), links.join(', ') || '—'],
+    [t('sinceTitle'), t('since' + data.since)],
+    [t('cWhen'), t('f' + settings.freq) + ' · ' + t('cFirst', { d: nextSend().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + fmtTime() })],
+    [t('sentTo'), data.email],
+  ];
+  rows.forEach(([k, v]) => {
+    const dt = document.createElement('dt'); dt.textContent = k;
+    const dd = document.createElement('dd'); dd.textContent = v;
+    dl.append(dt, dd);
+  });
+  const dlg = $('confirm');
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+}
+$('confirm').addEventListener('close', () => $('preview').scrollIntoView({ behavior: 'smooth', block: 'start' }));
 $('pause').addEventListener('click', () => { data.active = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 $('wipe').addEventListener('click', () => {
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
