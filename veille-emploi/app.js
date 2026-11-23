@@ -1,4 +1,4 @@
-const VERSION = '0.6.2';
+const VERSION = '0.6.3';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -58,8 +58,8 @@ const T = {
     cvNotPdf: "Ce fichier n'est pas un PDF. Choisis ton CV au format PDF.", cvMissing: 'Ajoute ton CV en PDF pour activer les alertes.',
     cvUnreadable: "Je n'ai pas pu lire le texte de ce PDF (CV scanné en image ?). Remplis les champs à la main.",
     cvFound: 'Rempli d\'après ton CV : {list}. Vérifie et modifie si besoin.', cvNothing: "CV ajouté. Je n'ai rien trouvé à remplir automatiquement.",
-    fName: 'prénom', fEmail: 'email', fRoles: '{n} poste(s)', fLoc: 'lieu', fYears: '{n} ans d\'expérience repérés',
-    prefsTitle: 'Ce que je recherche', firstName: 'Prénom', firstNamePh: 'Camille', email: 'Email pour recevoir les offres', emailPh: 'camille@exemple.fr',
+    fName: 'nom', fEmail: 'email', fRoles: '{n} poste(s)', fLoc: 'lieu', fYears: '{n} ans d\'expérience repérés',
+    prefsTitle: 'Ce que je recherche', firstName: 'Nom complet', firstNamePh: 'Camille Martin', email: 'Email pour recevoir les offres', emailPh: 'camille@exemple.fr',
     roles: 'Postes visés', rolesPh: 'Écris un poste puis Entrée', rolesHelp: 'Touche une suggestion pour l\'ajouter, ou écris ton propre intitulé.',
     fromCv: "D'après ton CV :", location: 'Lieu', locationPh: 'Région, département ou ville',
     salary: 'Salaire souhaité (brut/an)', salAny: 'Peu importe', salPlus: '100 k€ et plus', remote: 'Télétravail', contract: 'Contrat',
@@ -100,8 +100,8 @@ const T = {
     cvNotPdf: 'This file is not a PDF. Choose your CV as a PDF.', cvMissing: 'Add your CV as a PDF to turn on alerts.',
     cvUnreadable: "I couldn't read the text in this PDF (scanned image?). Fill in the fields by hand.",
     cvFound: 'Filled from your CV: {list}. Check and edit if needed.', cvNothing: 'CV added. Nothing could be filled in automatically.',
-    fName: 'first name', fEmail: 'email', fRoles: '{n} job title(s)', fLoc: 'location', fYears: '{n} years of experience found',
-    prefsTitle: "What I'm looking for", firstName: 'First name', firstNamePh: 'Camille', email: 'Email to receive offers', emailPh: 'camille@example.com',
+    fName: 'name', fEmail: 'email', fRoles: '{n} job title(s)', fLoc: 'location', fYears: '{n} years of experience found',
+    prefsTitle: "What I'm looking for", firstName: 'Full name', firstNamePh: 'Camille Martin', email: 'Email to receive offers', emailPh: 'camille@example.com',
     roles: 'Target jobs', rolesPh: 'Type a job title, then Enter', rolesHelp: 'Tap a suggestion to add it, or type your own title.',
     fromCv: 'From your CV:', location: 'Location', locationPh: 'Region, department or city',
     salary: 'Salary range (gross/year)', salAny: 'Any', salPlus: '100 k€ and above', remote: 'Remote work', contract: 'Contract',
@@ -304,8 +304,9 @@ function extract(lines) {
     const words = clean.split(/\s+/);
     if (words.length >= 2 && words.length <= 4 && words.every((w) => /^[A-Za-zÀ-ÖØ-öø-ÿ'-]+$/.test(w))) { name = clean; break; }
   }
-  const first = name ? name.split(/\s+/)[0] : '';
-  const prenom = first ? first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() : '';
+  // "ROLAND DZOAGBE" or "jean-pierre martin" -> "Roland Dzoagbe", "Jean-Pierre Martin"
+  const cap = (w) => w.toLowerCase().replace(/(^|[-'])([a-zà-öø-ÿ])/g, (m, a, b) => a + b.toUpperCase());
+  const prenom = name ? name.split(/\s+/).map(cap).join(' ') : '';
   const years = (G.norm(text).match(/(\d{1,2})\s*(ans|years)\b/) || [])[1] || '';
   return { email, prenom, years, roles: suggestRoles(lines), locations: (() => { const top = matchLocations(lines.slice(0, 5).join(' ')); return top.length ? top : matchLocations(lines.slice(0, 12).join(' ')); })() };
 }
@@ -627,7 +628,7 @@ function renderPreview() {
   const lieu = !l0 ? 'Île-de-France' : locLabel(l0);
   const tt = data.teletravail === 'remote' ? t('remoteTxt') : data.teletravail === 'onsite' ? t('onsiteTxt') : t('hybridTxt');
   $('mailSubject').textContent = t('subject', { d: nextSend().toLocaleDateString(locale(), { day: 'numeric', month: 'long' }) });
-  $('mailHello').textContent = t('hello', { name: data.prenom || '' }).replace(/ ,/, ',');
+  $('mailHello').textContent = t('hello', { name: (data.prenom || '').trim().split(/\s+/)[0] }).replace(/ ,/, ',');
   const offers = [
     { t: first, c: t('ex1c'), l: `${lieu}, ${tt}`, s: `${min + 2}–${min + span} k€`, m: 91, w: t('ex1w'), a: t('ex1a') },
     { t: data.roles[1] || first, c: t('ex2c'), l: `${lieu}, ${t('onsiteTxt')}`, s: `${min}–${min + Math.round(span / 2)} k€`, m: 86, w: t('ex2w'), a: t('ex2a') },
@@ -672,7 +673,7 @@ $('cv').addEventListener('change', async () => {
     if (lines.join('').length < 40) throw new Error('empty');
     const x = extract(lines);
     const found = { years: x.years };
-    if (x.prenom && !data.prenom) { data.prenom = x.prenom; found.prenom = 1; }
+    if (x.prenom && (!data.prenom || x.prenom.toLowerCase().startsWith(data.prenom.trim().toLowerCase() + ' '))) { data.prenom = x.prenom; found.prenom = 1; }
     if (x.email && !data.email) { data.email = x.email; found.email = 1; }
     const strong = x.roles.filter((r) => r.strong).slice(0, 2);
     const pre = (strong.length ? strong : x.roles.slice(0, 1)).map((r) => r.label).filter((l) => !data.roles.includes(l));
