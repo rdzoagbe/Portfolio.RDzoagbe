@@ -173,6 +173,18 @@
   </section>
 </main>
 
+<dialog id="confirm" aria-labelledby="confirmTitle">
+  <form method="dialog" class="sheet">
+    <div class="confirm-head">
+      <span class="confirm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <h2 id="confirmTitle" data-i18n="cTitle"></h2>
+    </div>
+    <dl class="confirm-list" id="confirmList"></dl>
+    <p class="confirm-note" data-i18n-html="cNote"></p>
+    <button class="primary" value="close" id="confirmOk" data-i18n="cSeePreview"></button>
+  </form>
+</dialog>
+
 <dialog id="settings" aria-labelledby="settingsTitle">
   <form method="dialog" class="sheet">
     <div class="sheet-head">
