@@ -1,4 +1,4 @@
-const VERSION = '0.5.0';
+const VERSION = '0.6.0';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
@@ -35,7 +35,13 @@ if (data.salaire && !SAL.includes(data.salaire)) {
 }
 const EXCL = ['interim', 'stage', 'alternance', 'cdd', 'partiel', 'nuit', 'weekend', 'astreintes', 'deplacements', 'esn', 'cabinets', 'nosalary'];
 if (!Array.isArray(data.excludeTags)) data.excludeTags = [];
-if (!data.regionDepts || typeof data.regionDepts !== 'object') data.regionDepts = {};
+if (data.regionDepts && typeof data.regionDepts === 'object') {
+  Object.entries(data.regionDepts).forEach(([rid, depts]) => {
+    if (depts && depts.length && data.locations.includes(rid)) data.locations = data.locations.filter((x) => x !== rid).concat(depts.filter((d) => !data.locations.includes(d)));
+  });
+}
+delete data.regionDepts;
+data.locations = data.locations.filter((id) => G.byId[id]);
 const save = () => write(KEY, data);
 
 /* ---------- text ---------- */
@@ -61,7 +67,7 @@ const T = {
     x_interim: 'Intérim', x_stage: 'Stage', x_alternance: 'Alternance', x_cdd: 'CDD', x_partiel: 'Temps partiel', x_nuit: 'Horaires de nuit',
     x_weekend: 'Week-ends', x_astreintes: 'Astreintes', x_deplacements: 'Déplacements fréquents', x_esn: 'ESN et sociétés de conseil',
     x_cabinets: 'Cabinets de recrutement', x_nosalary: 'Sans salaire indiqué',
-    wholeRegion: 'Toute la région {r}', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
+    wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
     remote_hybrid: 'Hybride ou complet', remote_onsite: 'Sur site accepté', remote_remote: 'Télétravail complet uniquement',
     contract_cdi: 'CDI', contract_cdi_cdd: 'CDI ou CDD', contract_cdi_free: 'CDI ou freelance', contract_all: 'Tous',
     consent: "J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.",
@@ -103,7 +109,7 @@ const T = {
     x_interim: 'Temp work', x_stage: 'Internship', x_alternance: 'Apprenticeship', x_cdd: 'Fixed-term', x_partiel: 'Part-time', x_nuit: 'Night shifts',
     x_weekend: 'Weekends', x_astreintes: 'On-call duty', x_deplacements: 'Frequent travel', x_esn: 'IT services & consulting firms',
     x_cabinets: 'Recruitment agencies', x_nosalary: 'No salary shown',
-    wholeRegion: 'All of {r}', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
+    wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
     remote_hybrid: 'Hybrid or fully remote', remote_onsite: 'On-site is fine', remote_remote: 'Fully remote only',
     contract_cdi: 'Permanent (CDI)', contract_cdi_cdd: 'Permanent or fixed-term', contract_cdi_free: 'Permanent or freelance', contract_all: 'Any',
     consent: 'I agree that my CV is analysed to suggest job offers. I can delete everything at any time.',
@@ -155,10 +161,6 @@ const locLabel = (id) => {
 const locChipLabel = (id) => {
   const i = G.byId[id]; if (!i) return id;
   if (i.kind === 'dept') return `${i.name} (${i.code}) · ${i.region}`;
-  if (i.kind === 'region') {
-    const n = (data.regionDepts[id] || []).length;
-    return n ? `${i.name} · ${n} dép.` : i.name;
-  }
   return locLabel(id);
 };
 const regionDepts = (rid) => G.items.filter((x) => x.kind === 'dept' && x.region === G.byId[rid].name);
@@ -341,10 +343,10 @@ function renderRoles() {
     (r) => { data.roles.push(r.label); save(); renderRoles(); });
 }
 function renderLocs() {
-  renderChips('locChips', 'locInput', data.locations, locChipLabel, (i) => { delete data.regionDepts[data.locations[i]]; data.locations.splice(i, 1); save(); renderLocs(); });
-  renderRegionPanels();
-  renderSuggest('locSuggest', 'locSuggestRow', (data.cvSugg && data.cvSugg.locations) || [], (id) => data.locations.includes(id) || Object.values(data.regionDepts).some((l) => l.includes(id)), locChipLabel,
-    (id) => { data.locations.push(id); save(); renderLocs(); });
+  renderLocTrigger(); renderLocSummary();
+  if (!$('locPanel').hidden) renderLocList();
+  renderSuggest('locSuggest', 'locSuggestRow', (data.cvSugg && data.cvSugg.locations) || [], (id) => locCovered(id), locChipLabel,
+    (id) => { addLoc(id); save(); renderLocs(); });
 }
 function addRole(v) {
   const s = v.trim().replace(/,$/, '');
@@ -358,137 +360,147 @@ $('roleInput').addEventListener('keydown', (e) => {
 $('roleInput').addEventListener('blur', () => { if ($('roleInput').value.trim()) addRole($('roleInput').value); });
 $('roleChips').addEventListener('click', (e) => { if (e.target === $('roleChips')) $('roleInput').focus(); });
 
-let locActive = 0;
-let locExpanded = null; // region id opened inside the dropdown
-let locRows = [];
+/* ---------- location picker: one button, search, regions as an accordion ---------- */
 const regionOf = (dept) => G.items.find((x) => x.kind === 'region' && x.name === dept.region);
-function rowSelected(r) {
-  if (r.type === 'all') return data.locations.includes(r.rid) && !(data.regionDepts[r.rid] || []).length;
-  if (r.type === 'dept') return data.locations.includes(r.id) || (data.regionDepts[r.rid] || []).includes(r.id);
-  return data.locations.includes(r.id);
+let locOpenRegion = null;
+const locCovered = (id) => {
+  if (data.locations.includes(id)) return true;
+  const i = G.byId[id];
+  return !!(i && i.kind === 'dept' && data.locations.includes(regionOf(i).id));
+};
+function addLoc(id) {
+  const i = G.byId[id]; if (!i) return;
+  if (i.kind === 'region') {
+    data.locations = data.locations.filter((x) => { const d = G.byId[x]; return !(d && d.kind === 'dept' && regionOf(d).id === id); });
+    if (!data.locations.includes(id)) data.locations.push(id);
+  } else if (i.kind === 'dept') {
+    const r = regionOf(i).id;
+    if (data.locations.includes(r)) data.locations = data.locations.filter((x) => x !== r);
+    if (!data.locations.includes(id)) data.locations.push(id);
+  } else if (!data.locations.includes(id)) data.locations.push(id);
 }
-function buildRows() {
-  const q = $('locInput').value.trim();
-  const rows = [];
-  const pushRegion = (reg) => {
-    rows.push({ type: 'region', id: reg.id });
-    if (locExpanded === reg.id) {
-      rows.push({ type: 'all', id: reg.id, rid: reg.id });
-      regionDepts(reg.id).forEach((d) => rows.push({ type: 'dept', id: d.id, rid: reg.id, nested: true }));
-    }
-  };
-  if (!q) {
-    G.items.filter((i) => i.kind === 'special').forEach((i) => rows.push({ type: 'special', id: i.id }));
-    G.items.filter((i) => i.kind === 'region').forEach(pushRegion);
-  } else {
-    searchLocations(q).forEach((i) => {
-      if (i.kind === 'region') pushRegion(i);
-      else if (i.kind === 'dept') { const reg = regionOf(i); rows.push({ type: 'dept', id: i.id, rid: reg ? reg.id : null }); }
-      else rows.push({ type: 'special', id: i.id });
+function toggleLoc(id) {
+  if (data.locations.includes(id)) data.locations = data.locations.filter((x) => x !== id);
+  else addLoc(id);
+  save(); renderLocs();
+}
+function renderLocTrigger() {
+  const el = $('locTriggerText'); el.textContent = ''; el.classList.toggle('placeholder', !data.locations.length);
+  if (!data.locations.length) { el.textContent = t('locPick'); return; }
+  if (data.locations.length > 1) { el.textContent = t('locMany', { n: data.locations.length }); return; }
+  const i = G.byId[data.locations[0]];
+  if (i.kind === 'dept') {
+    const a = document.createElement('span'); a.className = 'crumb'; a.textContent = i.region;
+    const s = document.createElement('span'); s.className = 'sep'; s.textContent = '›';
+    const b = document.createElement('b'); b.textContent = `${i.code} ${i.name}`;
+    el.append(a, s, b);
+  } else if (i.kind === 'region') {
+    const b = document.createElement('b'); b.textContent = i.name;
+    const s = document.createElement('span'); s.className = 'crumb'; s.textContent = ' · ' + t('wholeRegionShort');
+    el.append(b, s);
+  } else el.textContent = locLabel(i.id);
+}
+function renderLocSummary() {
+  const box = $('locSummary');
+  box.classList.toggle('filled', data.locations.length > 0);
+  $('locReset').hidden = !data.locations.length;
+  const groups = [['sumRegions', (i) => i.kind === 'region'], ['sumDepts', (i) => i.kind === 'dept'], ['sumOther', (i) => i.kind === 'special']];
+  const rows = $('locSumRows'); rows.textContent = '';
+  if (!data.locations.length) { const p = document.createElement('p'); p.className = 'small'; p.textContent = t('sumNone'); rows.appendChild(p); return; }
+  groups.forEach(([k, test]) => {
+    const ids = data.locations.filter((id) => test(G.byId[id]));
+    if (!ids.length) return;
+    const row = document.createElement('div'); row.className = 'sum-row';
+    const lab = document.createElement('span'); lab.className = 'sum-label'; lab.textContent = t(k);
+    const vals = document.createElement('div'); vals.className = 'sum-vals';
+    ids.forEach((id) => {
+      const i = G.byId[id];
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
+      b.innerHTML = '<span></span><span aria-hidden="true">×</span>';
+      b.firstChild.textContent = i.kind === 'dept' ? `${i.code} ${i.name}` : locLabel(id);
+      b.setAttribute('aria-label', `${t('remove')} ${b.firstChild.textContent}`);
+      b.addEventListener('click', () => toggleLoc(id));
+      vals.appendChild(b);
     });
-  }
-  return rows;
-}
-function openLocList() {
-  locRows = buildRows();
-  if (locActive >= locRows.length) locActive = Math.max(0, locRows.length - 1);
-  const ul = $('locList'); ul.textContent = '';
-  if (!locRows.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = t('noMatch'); ul.appendChild(li); }
-  locRows.forEach((r, idx) => {
-    const i = G.byId[r.id];
-    const li = document.createElement('li');
-    li.role = 'option'; li.id = 'loc-' + idx; li.dataset.idx = idx;
-    li.className = 'row-' + r.type + (r.nested ? ' nested' : '');
-    const sel = r.type !== 'region' && rowSelected(r);
-    li.setAttribute('aria-selected', String(sel));
-    const main = document.createElement('span'); main.className = 'main';
-    const sub = document.createElement('span'); sub.className = 'sub';
-    if (r.type === 'region') {
-      const open = locExpanded === r.id;
-      li.setAttribute('aria-expanded', String(open));
-      main.textContent = (open ? '▾ ' : '▸ ') + i.name;
-      const n = data.locations.includes(r.id) ? ((data.regionDepts[r.id] || []).length || t('regionAll')) : '';
-      sub.textContent = n ? '✓ ' + (typeof n === 'number' ? n + ' dép.' : n) : regionDepts(r.id).length + ' dép.';
-    } else if (r.type === 'all') {
-      main.textContent = (sel ? '✓ ' : '') + t('wholeRegion', { r: i.name });
-    } else if (r.type === 'dept') {
-      main.textContent = (sel ? '✓ ' : '') + `${i.code} · ${i.name}`;
-      sub.textContent = r.nested ? '' : i.region;
-    } else {
-      main.textContent = (sel ? '✓ ' : '') + locLabel(r.id);
-    }
-    li.append(main, sub);
-    if (idx === locActive) li.classList.add('on');
-    li.addEventListener('mousedown', (e) => { e.preventDefault(); locActive = idx; actLoc(r); });
-    ul.appendChild(li);
-  });
-  ul.hidden = false; $('locInput').setAttribute('aria-expanded', 'true');
-  if (locRows[locActive]) {
-    $('locInput').setAttribute('aria-activedescendant', 'loc-' + locActive);
-    const on = ul.querySelector('li.on'); if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
-  }
-}
-function actLoc(r) {
-  if (r.type === 'region') { locExpanded = locExpanded === r.id ? null : r.id; openLocList(); return; }
-  if (r.type === 'all') {
-    if (!data.locations.includes(r.rid)) data.locations.push(r.rid);
-    data.regionDepts[r.rid] = [];
-    data.locations = data.locations.filter((id) => { if (!id.startsWith('D:')) return true; const reg = regionOf(G.byId[id]); return !(reg && reg.id === r.rid); });
-  } else if (r.type === 'dept') {
-    if (r.rid && data.locations.includes(r.rid)) {
-      const cur = new Set(data.regionDepts[r.rid] || []);
-      cur.has(r.id) ? cur.delete(r.id) : cur.add(r.id);
-      data.regionDepts[r.rid] = [...cur];
-    } else if (data.locations.includes(r.id)) {
-      data.locations = data.locations.filter((x) => x !== r.id);
-    } else data.locations.push(r.id);
-  } else {
-    data.locations = data.locations.includes(r.id) ? data.locations.filter((x) => x !== r.id) : [...data.locations, r.id];
-  }
-  save(); renderLocs(); openLocList();
-}
-function closeLocList() { $('locList').hidden = true; $('locInput').setAttribute('aria-expanded', 'false'); }
-$('locInput').addEventListener('focus', () => { locActive = 0; openLocList(); });
-$('locInput').addEventListener('input', () => { locActive = 0; locExpanded = null; openLocList(); });
-$('locInput').addEventListener('blur', () => setTimeout(closeLocList, 150));
-$('locInput').addEventListener('keydown', (e) => {
-  const r = locRows[locActive];
-  if (e.key === 'ArrowDown') { e.preventDefault(); locActive = Math.min(locActive + 1, locRows.length - 1); openLocList(); }
-  else if (e.key === 'ArrowUp') { e.preventDefault(); locActive = Math.max(locActive - 1, 0); openLocList(); }
-  else if (e.key === 'ArrowRight' && r && r.type === 'region' && locExpanded !== r.id) { e.preventDefault(); locExpanded = r.id; openLocList(); }
-  else if (e.key === 'ArrowLeft' && r && (r.type === 'region' || r.nested || r.type === 'all') && locExpanded) {
-    e.preventDefault(); const rid = r.rid || r.id; locExpanded = null; locActive = buildRows().findIndex((x) => x.id === rid); openLocList();
-  }
-  else if (e.key === 'Enter') { e.preventDefault(); if (r) actLoc(r); }
-  else if (e.key === 'Escape') closeLocList();
-  else if (e.key === 'Backspace' && !$('locInput').value && data.locations.length) { delete data.regionDepts[data.locations[data.locations.length - 1]]; data.locations.pop(); save(); renderLocs(); }
-});
-$('locChips').addEventListener('click', (e) => { if (e.target === $('locChips')) $('locInput').focus(); });
-
-function renderRegionPanels() {
-  const box = $('regionPanels'); box.textContent = '';
-  data.locations.filter((id) => id.startsWith('R:')).forEach((rid) => {
-    const chosen = data.regionDepts[rid] || [];
-    const wrap = document.createElement('div'); wrap.className = 'region-panel';
-    const h = document.createElement('div'); h.className = 'small'; h.textContent = t('regionPick', { r: G.byId[rid].name }) + ' · ' + t('regionHelp');
-    const row = document.createElement('div'); row.className = 'toggles';
-    const all = document.createElement('button'); all.type = 'button'; all.className = 'toggle'; all.textContent = t('regionAll');
-    all.setAttribute('aria-pressed', String(!chosen.length));
-    all.addEventListener('click', () => { data.regionDepts[rid] = []; save(); renderLocs(); });
-    row.appendChild(all);
-    regionDepts(rid).forEach((d) => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'toggle';
-      b.textContent = `${d.code} ${d.name}`; b.setAttribute('aria-pressed', String(chosen.includes(d.id)));
-      b.addEventListener('click', () => {
-        const cur = new Set(data.regionDepts[rid] || []);
-        cur.has(d.id) ? cur.delete(d.id) : cur.add(d.id);
-        data.regionDepts[rid] = [...cur]; save(); renderLocs();
-      });
-      row.appendChild(b);
-    });
-    wrap.append(h, row); box.appendChild(wrap);
+    row.append(lab, vals); rows.appendChild(row);
   });
 }
+const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function optionBtn(label, selected, onClick, cls) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'opt ' + (cls || '');
+  b.setAttribute('aria-pressed', String(selected));
+  const s = document.createElement('span'); s.textContent = label;
+  b.appendChild(s);
+  if (selected) b.insertAdjacentHTML('beforeend', CHECK);
+  b.addEventListener('click', (e) => { e.stopPropagation(); onClick(); });
+  return b;
+}
+function renderLocList() {
+  const q = G.norm($('locSearch').value.trim());
+  $('locClear').hidden = !q;
+  const list = $('locList'); const keep = list.scrollTop; list.textContent = '';
+  let count = 0;
+  // remote / anywhere
+  const specials = G.items.filter((i) => i.kind === 'special' && (!q || G.norm(i.label.fr + ' ' + i.label.en).includes(q)));
+  if (specials.length) {
+    const wrap = document.createElement('div'); wrap.className = 'opt-group';
+    specials.forEach((i) => wrap.appendChild(optionBtn(locLabel(i.id), data.locations.includes(i.id), () => toggleLoc(i.id), 'special')));
+    list.appendChild(wrap); count += specials.length;
+  }
+  const cityDepts = q.length > 1 ? Object.keys(G.CITIES).filter((c) => c.startsWith(q)).map((c) => 'D:' + G.CITIES[c]) : [];
+  G.items.filter((i) => i.kind === 'region').forEach((reg) => {
+    const depts = G.items.filter((d) => d.kind === 'dept' && d.region === reg.name);
+    const regMatch = !q || G.norm(reg.name).includes(q);
+    const shown = !q || regMatch ? depts : depts.filter((d) => G.norm(d.name).includes(q) || d.code.toLowerCase() === q || d.code.toLowerCase().startsWith(q) && q.length > 1 || cityDepts.includes(d.id));
+    if (q && !regMatch && !shown.length) return;
+    count++;
+    const open = q ? true : locOpenRegion === reg.id;
+    const regionSel = data.locations.includes(reg.id);
+    const picked = depts.filter((d) => data.locations.includes(d.id)).length;
+    const item = document.createElement('div'); item.className = 'acc' + (open ? ' open' : '') + (regionSel || picked ? ' has-sel' : '');
+    const head = document.createElement('button'); head.type = 'button'; head.className = 'acc-head';
+    head.setAttribute('aria-expanded', String(open));
+    head.innerHTML = '<span class="dot" aria-hidden="true"></span><span class="acc-name"></span><span class="count"></span>' + CHEV;
+    head.querySelector('.acc-name').textContent = reg.name;
+    head.querySelector('.count').textContent = regionSel ? '✓ ' + t('allShort') : picked ? `${picked}/${depts.length}` : String(shown.length);
+    head.addEventListener('click', (e) => { e.stopPropagation(); locOpenRegion = locOpenRegion === reg.id ? null : reg.id; renderLocList(); });
+    const body = document.createElement('div'); body.className = 'acc-body';
+    const inner = document.createElement('div'); inner.className = 'acc-inner';
+    const rail = document.createElement('div'); rail.className = 'acc-rail';
+    rail.appendChild(optionBtn(t('wholeRegion', { r: reg.name }), regionSel, () => toggleLoc(reg.id), 'whole'));
+    shown.forEach((d) => rail.appendChild(optionBtn(`${d.code} · ${d.name}`, data.locations.includes(d.id), () => toggleLoc(d.id))));
+    inner.appendChild(rail); body.appendChild(inner);
+    item.append(head, body); list.appendChild(item);
+  });
+  if (!count) {
+    const p = document.createElement('div'); p.className = 'acc-empty';
+    p.textContent = t('noMatchFor', { q: $('locSearch').value.trim() });
+    list.appendChild(p);
+  }
+  list.scrollTop = keep;
+}
+function setLocPanel(open) {
+  $('locPanel').hidden = !open;
+  $('locTrigger').setAttribute('aria-expanded', String(open));
+  $('locDd').classList.toggle('open', open);
+  if (open) {
+    if (!locOpenRegion) {
+      const first = data.locations.map((id) => G.byId[id]).find((i) => i && i.kind !== 'special');
+      if (first) locOpenRegion = first.kind === 'region' ? first.id : regionOf(first).id;
+    }
+    renderLocList();
+    setTimeout(() => $('locSearch').focus(), 40);
+  }
+}
+$('locTrigger').addEventListener('click', (e) => { e.stopPropagation(); setLocPanel($('locPanel').hidden); });
+$('locSearch').addEventListener('input', renderLocList);
+$('locSearch').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
+$('locClear').addEventListener('click', (e) => { e.stopPropagation(); $('locSearch').value = ''; renderLocList(); $('locSearch').focus(); });
+$('locDone').addEventListener('click', (e) => { e.stopPropagation(); setLocPanel(false); $('locTrigger').focus(); });
+$('locReset').addEventListener('click', () => { data.locations = []; locOpenRegion = null; save(); renderLocs(); });
+document.addEventListener('click', (e) => { if (!$('locPanel').hidden && !$('locDd').contains(e.target)) setLocPanel(false); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('locPanel').hidden) { setLocPanel(false); $('locTrigger').focus(); } });
 function renderExclude() {
   const box = $('excludeTags'); box.textContent = '';
   EXCL.forEach((x) => {
@@ -526,9 +538,7 @@ function searchParts() {
   const first = data.locations[0];
   const i = first && G.byId[first];
   let loc = 'France';
-  const narrowed = i && i.kind === 'region' ? (data.regionDepts[first] || []) : [];
-  if (narrowed.length === 1) loc = G.byId[narrowed[0]].name;
-  else if (i && i.kind === 'region') loc = i.name;
+  if (i && i.kind === 'region') loc = i.name;
   else if (i && i.kind === 'dept') loc = i.name;
   return { q, loc, remote: data.locations.includes('REMOTE') };
 }
@@ -594,8 +604,8 @@ function renderPreview() {
   const first = data.roles[0] || (settings.lang === 'fr' ? 'Le poste que tu vises' : 'Your target job');
   const [lo, hi] = !data.salaire ? [45, 55] : data.salaire === '100+' ? [100, 120] : data.salaire.split('-').map(Number);
   const min = lo; const span = Math.max(5, hi - lo);
-  const l0 = data.locations[0]; const nd = l0 && l0.startsWith('R:') ? (data.regionDepts[l0] || []) : [];
-  const lieu = !l0 ? 'Île-de-France' : nd.length ? locLabel(nd[0]) : locLabel(l0);
+  const l0 = data.locations[0];
+  const lieu = !l0 ? 'Île-de-France' : locLabel(l0);
   const tt = data.teletravail === 'remote' ? t('remoteTxt') : data.teletravail === 'onsite' ? t('onsiteTxt') : t('hybridTxt');
   $('mailSubject').textContent = t('subject', { d: nextSend().toLocaleDateString(locale(), { day: 'numeric', month: 'long' }) });
   $('mailHello').textContent = t('hello', { name: data.prenom || '' }).replace(/ ,/, ',');
@@ -676,7 +686,7 @@ $('form').addEventListener('submit', (e) => {
 $('pause').addEventListener('click', () => { data.active = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 $('wipe').addEventListener('click', () => {
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
-  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [], regionDepts: {} };
+  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [] };
   $('form').reset(); render(); $('wipeMsg').hidden = false; setTimeout(() => { $('wipeMsg').hidden = true; }, 3000);
 });
 

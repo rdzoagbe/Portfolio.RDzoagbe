@@ -4,7 +4,7 @@ window.VE_GEO = (() => {
     ARA: 'Auvergne-Rhône-Alpes', BFC: 'Bourgogne-Franche-Comté', BRE: 'Bretagne', CVL: 'Centre-Val de Loire',
     COR: 'Corse', GES: 'Grand Est', HDF: 'Hauts-de-France', IDF: 'Île-de-France', NOR: 'Normandie',
     NAQ: 'Nouvelle-Aquitaine', OCC: 'Occitanie', PDL: 'Pays de la Loire', PAC: "Provence-Alpes-Côte d'Azur",
-    GUA: 'Guadeloupe', MTQ: 'Martinique', GUF: 'Guyane', LRE: 'La Réunion', MAY: 'Mayotte',
+    DOM: 'Outre-mer',
   };
   const D = [
     ['01', 'Ain', 'ARA'], ['03', 'Allier', 'ARA'], ['07', 'Ardèche', 'ARA'], ['15', 'Cantal', 'ARA'], ['26', 'Drôme', 'ARA'],
@@ -30,7 +30,7 @@ window.VE_GEO = (() => {
     ['44', 'Loire-Atlantique', 'PDL'], ['49', 'Maine-et-Loire', 'PDL'], ['53', 'Mayenne', 'PDL'], ['72', 'Sarthe', 'PDL'], ['85', 'Vendée', 'PDL'],
     ['04', 'Alpes-de-Haute-Provence', 'PAC'], ['05', 'Hautes-Alpes', 'PAC'], ['06', 'Alpes-Maritimes', 'PAC'], ['13', 'Bouches-du-Rhône', 'PAC'],
     ['83', 'Var', 'PAC'], ['84', 'Vaucluse', 'PAC'],
-    ['971', 'Guadeloupe', 'GUA'], ['972', 'Martinique', 'MTQ'], ['973', 'Guyane', 'GUF'], ['974', 'La Réunion', 'LRE'], ['976', 'Mayotte', 'MAY'],
+    ['971', 'Guadeloupe', 'DOM'], ['972', 'Martinique', 'DOM'], ['973', 'Guyane', 'DOM'], ['974', 'La Réunion', 'DOM'], ['976', 'Mayotte', 'DOM'],
   ];
   const CITIES = {
     paris: '75', marseille: '13', lyon: '69', toulouse: '31', nice: '06', nantes: '44', montpellier: '34', strasbourg: '67',
@@ -50,7 +50,7 @@ window.VE_GEO = (() => {
   const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const items = [
     ...SPECIAL.map((s) => ({ id: s.id, kind: 'special', label: s.label })),
-    ...Object.entries(R).filter(([k]) => !['GUA', 'MTQ', 'GUF', 'LRE', 'MAY'].includes(k))
+    ...Object.entries(R)
       .map(([k, name]) => ({ id: 'R:' + k, kind: 'region', name })),
     ...D.map(([code, name, r]) => ({ id: 'D:' + code, kind: 'dept', code, name, region: R[r] })),
   ];

@@ -73,13 +73,27 @@
         <p class="small" data-i18n="rolesHelp"></p>
       </div>
 
-      <div class="field">
-        <label for="locInput" data-i18n="location"></label>
-        <div class="combo">
-          <div class="chips" id="locChips"><input id="locInput" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="locList" data-i18n-ph="locationPh"></div>
-          <ul class="listbox" id="locList" role="listbox" hidden></ul>
+      <div class="field" id="locField">
+        <span class="field-label" id="locLabel" data-i18n="location"></span>
+        <div class="loc-dd" id="locDd">
+          <button type="button" class="loc-trigger" id="locTrigger" aria-expanded="false" aria-controls="locPanel" aria-labelledby="locLabel locTriggerText">
+            <span id="locTriggerText" class="trigger-text"></span>
+            <svg class="trigger-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="loc-panel" id="locPanel" hidden>
+            <div class="loc-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <input id="locSearch" autocomplete="off" data-i18n-ph="locSearchPh" data-i18n-aria="location">
+              <button type="button" class="clear" id="locClear" hidden data-i18n-aria="clearSearch" aria-label="Effacer">×</button>
+            </div>
+            <div class="loc-list" id="locList"></div>
+            <div class="loc-foot"><button type="button" class="primary small-btn" id="locDone" data-i18n="ok">OK</button></div>
+          </div>
         </div>
-        <div id="regionPanels" class="region-panels"></div>
+        <div class="loc-summary" id="locSummary">
+          <div class="sum-head"><span class="sum-title" data-i18n="sumTitle"></span><button type="button" class="link-btn-plain" id="locReset" hidden data-i18n="reset"></button></div>
+          <div id="locSumRows" class="sum-rows"></div>
+        </div>
         <div class="suggest" id="locSuggest" hidden><span class="small" data-i18n="fromCv"></span><div class="sugg-row" id="locSuggestRow"></div></div>
       </div>
 
