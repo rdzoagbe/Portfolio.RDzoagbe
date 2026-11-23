@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Veille Emploi</title>
-<meta name="description" content="Dépose ton CV une fois, reçois tous les 2 jours les offres qui te correspondent.">
 <meta name="robots" content="noindex">
+<meta name="description" content="Dépose ton CV une fois, reçois tous les 2 jours les offres qui te correspondent.">
 <meta name="theme-color" content="#0f6b5c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32">
@@ -21,71 +21,93 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 12l4.5-4.5" stroke-linecap="round"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>
     Veille Emploi
   </div>
-  <button id="installBtn" class="ghost" type="button" hidden>Installer l'app</button>
+  <div class="top-actions">
+    <button id="installBtn" class="ghost" type="button" hidden data-i18n="install">Installer l'app</button>
+    <button id="settingsBtn" class="icon-btn" type="button" data-i18n-aria="settings" aria-label="Réglages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </div>
 </header>
 
 <main class="wrap">
-  <p class="beta" role="note"><b>Version test.</b> L'app ne cherche pas encore de vraies offres : tu peux tout essayer, et les offres affichées sont des exemples. Tes informations restent sur ton téléphone.</p>
-
-  <div id="iosHint" class="hint" hidden>Pour l'installer sur iPhone : touche <b>Partager</b> <span aria-hidden="true">⎋</span> puis <b>Sur l'écran d'accueil</b>.</div>
+  <p class="beta" role="note" data-i18n-html="beta"></p>
+  <div id="iosHint" class="hint" hidden data-i18n-html="iosHint"></div>
 
   <section class="card status" aria-live="polite">
     <div id="statusOff">
-      <span class="pill off">INACTIF</span>
-      <p>Dépose ton CV, dis ce que tu cherches, puis active tes alertes.</p>
+      <span class="pill off" data-i18n="inactive">INACTIF</span>
+      <p data-i18n="statusOff"></p>
     </div>
     <div id="statusOn" hidden>
-      <span class="pill on">ACTIF</span>
-      <p>Prochain email : <b id="nextDate">—</b>, puis tous les 2 jours.</p>
-      <p class="small">Envoyé à <span id="sentTo">—</span></p>
+      <span class="pill on" data-i18n="active">ACTIF</span>
+      <p><span data-i18n="nextEmail"></span> <b id="nextDate">—</b><span id="freqText"></span></p>
+      <p class="small"><span data-i18n="sentTo"></span> <span id="sentTo">—</span> · <span id="maxText"></span></p>
     </div>
   </section>
 
   <form id="form" novalidate>
     <section class="card">
-      <h2><span class="num">1</span> Mon CV</h2>
+      <h2><span class="num">1</span> <span data-i18n="cvTitle"></span></h2>
       <div class="drop" id="drop">
         <div class="file" id="fileRow" hidden><span class="pdf">PDF</span><span id="fileName"></span></div>
-        <p class="small" id="fileEmpty">Aucun CV pour l'instant. Format PDF.</p>
-        <label class="btn-file" for="cv"><span id="cvLabel">Choisir mon CV</span><input id="cv" name="cv" type="file" accept="application/pdf,.pdf"></label>
+        <p class="small" id="fileEmpty" data-i18n="cvEmpty"></p>
+        <label class="btn-file" for="cv"><span id="cvLabel"></span><input id="cv" name="cv" type="file" accept="application/pdf,.pdf"></label>
+        <p class="small" data-i18n="cvLocal"></p>
       </div>
-      <p class="err" id="cvErr" hidden>Ajoute ton CV en PDF pour activer les alertes.</p>
+      <div id="cvReading" class="reading" hidden><span class="spinner" aria-hidden="true"></span><span data-i18n="cvReading"></span></div>
+      <div id="cvFound" class="found" hidden></div>
+      <p class="err" id="cvErr" hidden></p>
     </section>
 
     <section class="card">
-      <h2><span class="num">2</span> Ce que je recherche</h2>
+      <h2><span class="num">2</span> <span data-i18n="prefsTitle"></span></h2>
       <div class="grid2">
-        <label for="prenom">Prénom<input id="prenom" name="prenom" autocomplete="given-name" placeholder="Camille"></label>
-        <label for="email">Email pour recevoir les offres<input id="email" name="email" type="email" autocomplete="email" placeholder="camille@exemple.fr"></label>
+        <label for="prenom"><span data-i18n="firstName"></span><input id="prenom" name="prenom" autocomplete="given-name" data-i18n-ph="firstNamePh"></label>
+        <label for="email"><span data-i18n="email"></span><input id="email" name="email" type="email" autocomplete="email" data-i18n-ph="emailPh"></label>
       </div>
-      <label for="postes">Postes visés<input id="postes" name="postes" placeholder="Ex. Responsable RH, HR Business Partner"></label>
+
+      <div class="field">
+        <label for="roleInput" data-i18n="roles"></label>
+        <div class="chips" id="roleChips"><input id="roleInput" autocomplete="off" data-i18n-ph="rolesPh"></div>
+        <div class="suggest" id="roleSuggest" hidden><span class="small" data-i18n="fromCv"></span><div class="sugg-row" id="roleSuggestRow"></div></div>
+        <p class="small" data-i18n="rolesHelp"></p>
+      </div>
+
+      <div class="field">
+        <label for="locInput" data-i18n="location"></label>
+        <div class="combo">
+          <div class="chips" id="locChips"><input id="locInput" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="locList" data-i18n-ph="locationPh"></div>
+          <ul class="listbox" id="locList" role="listbox" hidden></ul>
+        </div>
+        <div class="suggest" id="locSuggest" hidden><span class="small" data-i18n="fromCv"></span><div class="sugg-row" id="locSuggestRow"></div></div>
+      </div>
+
       <div class="grid2">
-        <label for="salaire">Salaire minimum (k€ brut/an)<input id="salaire" name="salaire" inputmode="numeric" placeholder="55"></label>
-        <label for="lieu">Lieu<input id="lieu" name="lieu" placeholder="Île-de-France"></label>
+        <label for="salaire"><span data-i18n="salary"></span><input id="salaire" name="salaire" inputmode="numeric" placeholder="55"></label>
+        <label for="teletravail"><span data-i18n="remote"></span>
+          <select id="teletravail" name="teletravail"><option value="hybrid"></option><option value="onsite"></option><option value="remote"></option></select></label>
       </div>
       <div class="grid2">
-        <label for="teletravail">Télétravail
-          <select id="teletravail" name="teletravail"><option>Hybride ou complet</option><option>Sur site accepté</option><option>Télétravail complet uniquement</option></select></label>
-        <label for="contrat">Contrat
-          <select id="contrat" name="contrat"><option>CDI</option><option>CDI ou CDD</option><option>CDI ou freelance</option><option>Tous</option></select></label>
+        <label for="contrat"><span data-i18n="contract"></span>
+          <select id="contrat" name="contrat"><option value="cdi"></option><option value="cdi_cdd"></option><option value="cdi_free"></option><option value="all"></option></select></label>
+        <label for="exclure"><span data-i18n="exclude"></span><input id="exclure" name="exclure" data-i18n-ph="excludePh"></label>
       </div>
-      <label for="exclure">À exclure (facultatif)<input id="exclure" name="exclure" placeholder="Ex. intérim, postes de stagiaire"></label>
       <p class="err" id="formErr" hidden></p>
     </section>
 
     <section class="card">
-      <label class="consent" for="consent"><input id="consent" name="consent" type="checkbox"> J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.</label>
+      <label class="consent" for="consent"><input id="consent" name="consent" type="checkbox"> <span data-i18n="consent"></span></label>
       <div class="actions">
-        <button class="primary" id="activate" type="submit">Activer mes alertes</button>
-        <button class="ghost" id="pause" type="button" hidden>Mettre en pause</button>
+        <button class="primary" id="activate" type="submit"></button>
+        <button class="ghost" id="pause" type="button" hidden data-i18n="pause"></button>
       </div>
     </section>
   </form>
 
   <section class="card" id="preview" hidden>
-    <h2>Aperçu de ton prochain email</h2>
+    <h2 data-i18n="previewTitle"></h2>
     <div class="mail">
-      <div class="mail-head"><b id="mailSubject">Nouvelles offres à postuler</b><span class="small">Offres d'exemple : la vraie recherche arrive dans la prochaine version.</span></div>
+      <div class="mail-head"><b id="mailSubject"></b><span class="small" data-i18n="previewNote"></span></div>
       <div class="mail-body">
         <p id="mailHello"></p>
         <ul class="offers" id="offers"></ul>
@@ -94,16 +116,39 @@
   </section>
 
   <section class="card quiet">
-    <h2>Mes données</h2>
-    <p class="small">Dans cette version test, tout reste sur ce téléphone : rien n'est envoyé.</p>
+    <h2 data-i18n="dataTitle"></h2>
+    <p class="small" data-i18n="dataNote"></p>
     <div class="actions">
-      <button class="danger" id="wipe" type="button">Supprimer mes données</button>
-      <span class="small" id="wipeMsg" hidden>Tout est supprimé.</span>
+      <button class="danger" id="wipe" type="button" data-i18n="wipe"></button>
+      <span class="small" id="wipeMsg" hidden data-i18n="wiped"></span>
     </div>
   </section>
 </main>
 
-<footer class="foot small">Veille Emploi · version test · <span id="ver"></span></footer>
+<dialog id="settings" aria-labelledby="settingsTitle">
+  <form method="dialog" class="sheet">
+    <div class="sheet-head">
+      <h2 id="settingsTitle" data-i18n="settings"></h2>
+      <button class="icon-btn plain" value="close" data-i18n-aria="close" aria-label="Fermer">✕</button>
+    </div>
+    <label for="setLang"><span data-i18n="language"></span>
+      <select id="setLang"><option value="fr">Français</option><option value="en">English</option></select></label>
+    <label for="setFreq"><span data-i18n="frequency"></span>
+      <select id="setFreq"><option value="1"></option><option value="2"></option><option value="7"></option></select></label>
+    <div class="grid2">
+      <label for="setHour"><span data-i18n="sendTime"></span>
+        <select id="setHour"><option>07:00</option><option>07:45</option><option>12:00</option><option>18:00</option></select></label>
+      <label for="setMax"><span data-i18n="maxOffers"></span>
+        <select id="setMax"><option>5</option><option>8</option><option>10</option></select></label>
+    </div>
+    <label for="setTheme"><span data-i18n="theme"></span>
+      <select id="setTheme"><option value="auto"></option><option value="light"></option><option value="dark"></option></select></label>
+    <button class="primary" value="close" data-i18n="done"></button>
+  </form>
+</dialog>
+
+<footer class="foot small"><span>Veille Emploi</span> · <span data-i18n="testVersion"></span> · <span id="ver"></span></footer>
+<script src="geo.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
