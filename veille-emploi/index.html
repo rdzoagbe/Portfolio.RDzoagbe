@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Veille Emploi</title>
+<meta name="description" content="Dépose ton CV une fois, reçois tous les 2 jours les offres qui te correspondent.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f6b5c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Veille Emploi">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 12l4.5-4.5" stroke-linecap="round"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>
+    Veille Emploi
+  </div>
+  <button id="installBtn" class="ghost" type="button" hidden>Installer l'app</button>
+</header>
+
+<main class="wrap">
+  <p class="beta" role="note"><b>Version test.</b> L'app ne cherche pas encore de vraies offres : tu peux tout essayer, et les offres affichées sont des exemples. Tes informations restent sur ton téléphone.</p>
+
+  <div id="iosHint" class="hint" hidden>Pour l'installer sur iPhone : touche <b>Partager</b> <span aria-hidden="true">⎋</span> puis <b>Sur l'écran d'accueil</b>.</div>
+
+  <section class="card status" aria-live="polite">
+    <div id="statusOff">
+      <span class="pill off">INACTIF</span>
+      <p>Dépose ton CV, dis ce que tu cherches, puis active tes alertes.</p>
+    </div>
+    <div id="statusOn" hidden>
+      <span class="pill on">ACTIF</span>
+      <p>Prochain email : <b id="nextDate">—</b>, puis tous les 2 jours.</p>
+      <p class="small">Envoyé à <span id="sentTo">—</span></p>
+    </div>
+  </section>
+
+  <form id="form" novalidate>
+    <section class="card">
+      <h2><span class="num">1</span> Mon CV</h2>
+      <div class="drop" id="drop">
+        <div class="file" id="fileRow" hidden><span class="pdf">PDF</span><span id="fileName"></span></div>
+        <p class="small" id="fileEmpty">Aucun CV pour l'instant. Format PDF.</p>
+        <label class="btn-file" for="cv"><span id="cvLabel">Choisir mon CV</span><input id="cv" name="cv" type="file" accept="application/pdf,.pdf"></label>
+      </div>
+      <p class="err" id="cvErr" hidden>Ajoute ton CV en PDF pour activer les alertes.</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="num">2</span> Ce que je recherche</h2>
+      <div class="grid2">
+        <label for="prenom">Prénom<input id="prenom" name="prenom" autocomplete="given-name" placeholder="Camille"></label>
+        <label for="email">Email pour recevoir les offres<input id="email" name="email" type="email" autocomplete="email" placeholder="camille@exemple.fr"></label>
+      </div>
+      <label for="postes">Postes visés<input id="postes" name="postes" placeholder="Ex. Responsable RH, HR Business Partner"></label>
+      <div class="grid2">
+        <label for="salaire">Salaire minimum (k€ brut/an)<input id="salaire" name="salaire" inputmode="numeric" placeholder="55"></label>
+        <label for="lieu">Lieu<input id="lieu" name="lieu" placeholder="Île-de-France"></label>
+      </div>
+      <div class="grid2">
+        <label for="teletravail">Télétravail
+          <select id="teletravail" name="teletravail"><option>Hybride ou complet</option><option>Sur site accepté</option><option>Télétravail complet uniquement</option></select></label>
+        <label for="contrat">Contrat
+          <select id="contrat" name="contrat"><option>CDI</option><option>CDI ou CDD</option><option>CDI ou freelance</option><option>Tous</option></select></label>
+      </div>
+      <label for="exclure">À exclure (facultatif)<input id="exclure" name="exclure" placeholder="Ex. intérim, postes de stagiaire"></label>
+      <p class="err" id="formErr" hidden></p>
+    </section>
+
+    <section class="card">
+      <label class="consent" for="consent"><input id="consent" name="consent" type="checkbox"> J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.</label>
+      <div class="actions">
+        <button class="primary" id="activate" type="submit">Activer mes alertes</button>
+        <button class="ghost" id="pause" type="button" hidden>Mettre en pause</button>
+      </div>
+    </section>
+  </form>
+
+  <section class="card" id="preview" hidden>
+    <h2>Aperçu de ton prochain email</h2>
+    <div class="mail">
+      <div class="mail-head"><b id="mailSubject">Nouvelles offres à postuler</b><span class="small">Offres d'exemple : la vraie recherche arrive dans la prochaine version.</span></div>
+      <div class="mail-body">
+        <p id="mailHello"></p>
+        <ul class="offers" id="offers"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card quiet">
+    <h2>Mes données</h2>
+    <p class="small">Dans cette version test, tout reste sur ce téléphone : rien n'est envoyé.</p>
+    <div class="actions">
+      <button class="danger" id="wipe" type="button">Supprimer mes données</button>
+      <span class="small" id="wipeMsg" hidden>Tout est supprimé.</span>
+    </div>
+  </section>
+</main>
+
+<footer class="foot small">Veille Emploi · version test · <span id="ver"></span></footer>
+<script src="app.js"></script>
+</body>
+</html>
