@@ -1,5 +1,6 @@
 // Veille Emploi edge function: email alerts.
-//   POST {action:'subscribe', email, prefs, token?}  -> confirmation email (or direct update with a valid token)
+//   POST {action:'subscribe', email, prefs, token?, code?} -> confirmation email (or direct update with a valid token);
+//        `code` is the family invite code from the shared link (?i=CODE)
 //   POST {action:'pause', token}                      -> pause alerts
 //   POST {action:'status', token}                     -> current state
 //   POST {action:'run'} + x-cron-secret header        -> send due alerts (called by pg_cron every 15 min)
@@ -99,7 +100,12 @@ async function subscribe(body: Record<string, unknown>) {
   const prefs = cleanPrefs((body.prefs || {}) as Record<string, unknown>);
   if (!prefs.roles.length || !prefs.locations.length || !prefs.sources.length) return json({ error: 'missing_fields' }, 400);
   const { data: inv } = await db.from('invites').select('email').eq('email', email).maybeSingle();
-  if (!inv) return json({ error: 'not_invited' }, 403);
+  if (!inv) {
+    // Invite link: a valid family code adds the address to invites automatically.
+    const code = typeof body.code === 'string' ? body.code.trim().toLowerCase().slice(0, 32) : '';
+    const { data: ok } = code ? await db.rpc('claim_invite', { p_email: email, p_code: code }) : { data: false };
+    if (!ok) return json({ error: 'not_invited' }, 403);
+  }
   const { data: sub } = await db.from('subscriptions').select('*').eq('email', email).maybeSingle();
 
   // Same device (it holds the token): apply the change straight away.
