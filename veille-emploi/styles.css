@@ -324,3 +324,9 @@ dialog.bottom-sheet form.sheet label{color:var(--muted)}
   .print-area .foot{font-size:8pt;color:#555;margin-top:10px}
   @page{size:A4;margin:14mm}
 }
+
+.any-mail{display:flex;gap:12px;align-items:flex-start;background:var(--accent-soft);border-radius:14px;padding:13px 14px}
+.any-mail-icon{flex:none;width:34px;height:34px;border-radius:50%;background:var(--surface);color:var(--accent);display:grid;place-items:center}
+.any-mail-icon svg{width:19px;height:19px}
+.any-mail div{display:grid;gap:2px}
+.any-mail span:not(.any-mail-icon){font-size:.9rem;color:var(--muted)}
