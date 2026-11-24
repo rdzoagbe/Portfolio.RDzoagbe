@@ -31,17 +31,50 @@
 
 <main class="wrap">
   <p class="banner" id="banner" role="status" hidden></p>
-  <p class="beta" role="note" data-i18n-html="beta"></p>
   <div id="iosHint" class="hint" hidden data-i18n-html="iosHint"></div>
+
+  <section id="landing" class="landing" hidden>
+    <h1 data-i18n="lTitle"></h1>
+    <p class="lead" data-i18n="lLead"></p>
+    <ol class="steps">
+      <li><b data-i18n="l1t"></b><span data-i18n="l1"></span></li>
+      <li><b data-i18n="l2t"></b><span data-i18n="l2"></span></li>
+      <li><b data-i18n="l3t"></b><span data-i18n="l3"></span></li>
+    </ol>
+    <button class="primary big" id="startBtn" type="button" data-i18n="start"></button>
+    <p class="small center" data-i18n="lFoot"></p>
+    <button class="link-btn-plain center-self" id="haveAccount" type="button" data-i18n="haveAccount"></button>
+  </section>
+
+  <section id="signin" class="card signin" hidden>
+    <div id="emailStep">
+      <form id="emailForm" class="stack" novalidate>
+        <h2 data-i18n="siTitle"></h2>
+        <p class="small" data-i18n="siHelp"></p>
+        <input id="loginEmail" type="email" autocomplete="email" inputmode="email" data-i18n-ph="siEmailPh" data-i18n-aria="siTitle">
+        <button class="primary" id="sendCode" type="submit" data-i18n="sendCode"></button>
+      </form>
+    </div>
+    <div id="codeStep" hidden>
+      <form id="codeForm" class="stack" novalidate>
+        <h2 data-i18n="codeTitle"></h2>
+        <p class="small" id="codeSent"></p>
+        <input id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" placeholder="••••••" data-i18n-aria="codeTitle">
+        <button class="primary" id="verifyBtn" type="submit" data-i18n="verify"></button>
+        <div class="row-links"><button class="link-btn-plain" id="resendBtn" type="button" data-i18n="resend"></button><button class="link-btn-plain" id="changeEmail" type="button" data-i18n="changeEmail"></button></div>
+      </form>
+    </div>
+    <p class="err" id="loginErr" hidden role="alert"></p>
+    <button class="link-btn-plain" id="backHome" type="button" data-i18n="back"></button>
+  </section>
+
+  <div id="appView" class="stack-lg" hidden>
+  <p class="beta" role="note" data-i18n-html="beta"></p>
 
   <section class="card status" aria-live="polite">
     <div id="statusOff">
       <span class="pill off" data-i18n="inactive">INACTIF</span>
       <p data-i18n="statusOff"></p>
-    </div>
-    <div id="statusPending" hidden>
-      <span class="pill wait" data-i18n="pending">EN ATTENTE</span>
-      <p id="pendingText"></p>
     </div>
     <div id="statusOn" hidden>
       <span class="pill on" data-i18n="active">ACTIF</span>
@@ -68,7 +101,7 @@
       <h2><span class="num">2</span> <span data-i18n="prefsTitle"></span></h2>
       <div class="grid2">
         <label for="prenom"><span data-i18n="firstName"></span><input id="prenom" name="prenom" autocomplete="name" data-i18n-ph="firstNamePh"></label>
-        <label for="email"><span data-i18n="email"></span><input id="email" name="email" type="email" autocomplete="email" data-i18n-ph="emailPh"></label>
+        <label for="email"><span data-i18n="email"></span><input id="email" name="email" type="email" autocomplete="email" readonly data-i18n-ph="emailPh"></label>
       </div>
 
       <div class="field">
@@ -176,6 +209,7 @@
       <span class="small" id="wipeMsg" hidden data-i18n="wiped"></span>
     </div>
   </section>
+  </div>
 </main>
 
 <dialog id="confirm" aria-labelledby="confirmTitle">
@@ -208,6 +242,20 @@
     </div>
     <label for="setTheme"><span data-i18n="theme"></span>
       <select id="setTheme"><option value="auto"></option><option value="light"></option><option value="dark"></option></select></label>
+    <div id="accountBox" class="account-box" hidden>
+      <div class="share">
+        <b data-i18n="shareTitle"></b>
+        <p class="small" data-i18n="shareHelp"></p>
+        <div class="share-row">
+          <button class="primary small-btn" id="shareBtn" type="button" data-i18n="share"></button>
+          <a class="ghost share-btn" id="shareWa" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="ghost share-btn" id="shareSms">SMS</a>
+          <button class="ghost" id="copyLink" type="button" data-i18n="copy"></button>
+        </div>
+        <span class="small ok-msg" id="copyMsg" hidden data-i18n="copied"></span>
+      </div>
+      <div class="acct-row"><span class="small"><span data-i18n="account"></span> : <b id="accountEmail"></b></span><button class="link-btn-plain" id="logoutBtn" type="button" data-i18n="logout"></button></div>
+    </div>
     <button class="primary" value="close" data-i18n="done"></button>
   </form>
 </dialog>

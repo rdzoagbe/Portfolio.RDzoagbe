@@ -344,6 +344,19 @@ ${criteria(prefs, lang)}
   return { subject, html, text };
 }
 
+export function codeEmail(lang, code) {
+  const en = lang === 'en';
+  const subject = en ? `Your Veille Emploi code: ${code}` : `Ton code Veille Emploi : ${code}`;
+  const intro = en ? 'Here is your code to sign in to Veille Emploi:' : 'Voici ton code pour te connecter à Veille Emploi :';
+  const valid = en ? 'It is valid for 10 minutes.' : 'Il est valable 10 minutes.';
+  const ignore = en ? 'If you didn’t ask for it, just ignore this email.' : 'Si tu n’as rien demandé, ignore simplement cet email.';
+  const html = wrap(`<p>${esc(intro)}</p>
+<p style="font-size:32px;font-weight:700;letter-spacing:8px;color:#0f5c4f;margin:18px 0;font-family:Consolas,Menlo,monospace">${esc(code)}</p>
+<p>${esc(valid)}</p>
+<p style="color:#56655f;font-size:13px">${esc(ignore)}</p>`);
+  return { subject, html, text: `${intro}\n\n${code}\n\n${valid}\n${ignore}` };
+}
+
 /* ---------- input validation ---------- */
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const arr = (v, maxN, maxL) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim().slice(0, maxL)).slice(0, maxN) : []);
