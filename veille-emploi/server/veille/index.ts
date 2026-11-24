@@ -8,13 +8,18 @@
 //   POST {action:'offer_status', session, id, status} -> new | applied | interview | rejected | notforme
 //   POST {action:'add_offer', session, title, company?, location?, url?, date?, status?} -> an application found elsewhere
 //   POST {action:'delete_offer', session, id}
-//   POST {action:'run'} + x-cron-secret header       -> send due alerts (pg_cron, every 15 min)
+//   POST {action:'run'} + x-cron-secret header       -> send due alerts and read forwarded emails (pg_cron, every 15 min)
+//   Forwarded application emails: people forward them to GMAIL_USER with "+candidatures"; each one is added
+//   to the history of the account whose address sent it, and a short confirmation is sent back.
 //   GET  ?a=go&o=TRACK_ID (offer links in emails: marks the offer opened, then redirects)
 //   GET  ?a=stop&t=TOKEN (link in every email) | ?a=confirm&t=TOKEN (older emails)
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import nodemailer from 'npm:nodemailer@6.9.16';
+import { ImapFlow } from 'npm:imapflow@1.0.171';
+import { simpleParser } from 'npm:mailparser@3.7.2';
 import {
-  APP_URL, alertEmail, cleanPrefs, codeEmail, fetchFranceTravail, fetchStartups, franceTravailToken, selectOffers, validEmail,
+  APP_URL, alertEmail, cleanPrefs, codeEmail, fetchFranceTravail, fetchStartups, franceTravailToken, fwdReply, htmlToText, norm, parseForward, roleMatch,
+  selectOffers, validEmail,
 } from './core.js';
 
 const SB_URL = Deno.env.get('SUPABASE_URL')!;
@@ -27,6 +32,7 @@ const db = createClient(SB_URL, serviceKey, { auth: { persistSession: false } })
 const FN_URL = `${SB_URL}/functions/v1/veille`;
 const GMAIL_USER = (Deno.env.get('GMAIL_USER') || '').trim();
 const GMAIL_PASS = (Deno.env.get('GMAIL_APP_PASSWORD') || '').replace(/\s+/g, '');
+const FWD_ADDR = GMAIL_USER ? GMAIL_USER.replace('@', '+candidatures@') : '';
 const FT_ID = Deno.env.get('FT_CLIENT_ID') || '';
 const FT_SECRET = Deno.env.get('FT_CLIENT_SECRET') || '';
 const CODE_TTL_MS = 10 * 60000;
@@ -121,6 +127,89 @@ async function sendAlert(sub: Sub, first = false) {
   return { offers: offers.length, error: err, sourceErrors: errors };
 }
 
+/* ---------- forwarded application emails ---------- */
+const ST_LABEL: Record<string, Record<string, string>> = {
+  fr: { applied: 'Postulé', interview: 'Entretien', rejected: 'Refusé' }, en: { applied: 'Applied', interview: 'Interview', rejected: 'Rejected' },
+};
+const RANK: Record<string, number> = { new: 0, notforme: 0, applied: 1, rejected: 2, interview: 3 };
+async function handleForward(from: string, mail: { subject?: string; text?: string; html?: string | false; date?: Date; messageId?: string }) {
+  const { data: sub } = await db.from('subscriptions').select('id,email,prefs').eq('email', from).maybeSingle();
+  if (!sub) {
+    const { count } = await db.from('send_log').select('id', { count: 'exact', head: true }).eq('kind', 'fwd_unknown').eq('target', from)
+      .gte('sent_at', new Date(Date.now() - 86400000).toISOString());
+    if (!count) { await sendMail(from, fwdReply('fr', 'unknown', {})).catch(() => {}); await db.from('send_log').insert({ kind: 'fwd_unknown', target: from }); }
+    return { from, result: 'unknown' };
+  }
+  const lang = (sub.prefs as Record<string, string>)?.lang === 'en' ? 'en' : 'fr';
+  // The HTML part keeps the layout and the job links best; the text part is the fallback.
+  let p = parseForward({ subject: mail.subject || '', text: mail.html ? htmlToText(mail.html) : mail.text || '' });
+  let via = mail.html ? 'html' : 'text';
+  if (p.title === 'Candidature' && mail.html && mail.text) {
+    const q = parseForward({ subject: mail.subject || '', text: mail.text });
+    if (q.title !== 'Candidature') { p = q; via = 'text'; }
+  }
+  const when = (mail.date && !isNaN(mail.date.getTime()) ? mail.date : new Date()).toISOString();
+  const { data: rows } = await db.from('offers').select('id,title,company,status,url').eq('sub_id', sub.id);
+  const nc = norm(p.company);
+  const jobId = (u: string | null) => (u || '').match(/linkedin\.com\/(?:comm\/)?jobs\/view\/(\d+)/)?.[1] || '';
+  const same = (p.url && (rows || []).find((r) => jobId(r.url) && jobId(r.url) === jobId(p.url))) || (rows || []).find((r) => {
+    const rc = norm(r.company || '');
+    if (!nc || !rc || !(rc === nc || rc.includes(nc) || nc.includes(rc))) return false;
+    return p.title === 'Candidature' || Math.max(roleMatch(r.title, p.title), roleMatch(p.title, r.title)) >= 0.5;
+  });
+  let kind = 'ok'; let title = p.title; let company = p.company; let status = p.status;
+  if (same) {
+    title = same.title; company = same.company || company;
+    if (RANK[p.status] > RANK[same.status]) { await db.from('offers').update({ status: p.status, status_at: when }).eq('id', same.id); kind = 'upd'; }
+    else { kind = 'dup'; status = same.status; }
+  } else {
+    const key = 'fwd:' + (await sha256(mail.messageId || (mail.subject || '') + when)).slice(0, 32);
+    const { data: ins } = await db.from('offers').upsert({
+      sub_id: sub.id, offer_key: key, title, company, url: p.url, source: 'forward', sent_at: when, opened_at: when, status, status_at: when,
+    }, { onConflict: 'sub_id,offer_key', ignoreDuplicates: true }).select('id');
+    if (!ins?.length) kind = 'dup';
+  }
+  await sendMail(from, fwdReply(lang, kind, { title, company, statusLabel: ST_LABEL[lang][status] || status })).catch((e) => console.error('fwd reply', e));
+  await db.from('send_log').insert({ sub_id: sub.id, kind: 'forward', target: from, error: `${kind}: ${title} | ${company} | ${status}`.slice(0, 300) });
+  return { from, result: kind, title, company, status, via };
+}
+// The From address must be vouched for by its own domain (DMARC, or DKIM/SPF aligned with it), so nobody can add
+// entries to someone else's history by faking a From header.
+function senderVerified(from: string, auth: string) {
+  const dom = (from.split('@')[1] || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (!dom) return false;
+  if (/dmarc=pass/i.test(auth)) return true;
+  if (new RegExp(`dkim=pass[^;]*header\\.[id]=@?(?:[\\w-]+\\.)*${dom}\\b`, 'i').test(auth)) return true;
+  return new RegExp(`spf=pass[^;]*smtp\\.mailfrom=(?:[^;\\s@]*@)?(?:[\\w-]+\\.)*${dom}\\b`, 'i').test(auth);
+}
+async function processForwards() {
+  if (!GMAIL_USER || !GMAIL_PASS) return [];
+  const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: GMAIL_USER, pass: GMAIL_PASS }, logger: false });
+  const out: unknown[] = [];
+  await client.connect();
+  try {
+    const boxes = await client.list();
+    const allMail = boxes.find((b: { specialUse?: string; path: string }) => b.specialUse === '\\All')?.path || '[Gmail]/All Mail';
+    const lock = await client.getMailboxLock(allMail);
+    try {
+      const uids = (await client.search({ gmraw: `to:${FWD_ADDR} -label:veille-traite newer_than:30d` }, { uid: true })) || [];
+      for (const uid of uids.slice(0, 20)) {
+        try {
+          const msg = await client.fetchOne(String(uid), { source: true }, { uid: true });
+          const mail = await simpleParser(msg.source);
+          const from = (mail.from?.value?.[0]?.address || '').toLowerCase();
+          const auth = String(mail.headers.get('authentication-results') || '');
+          // Only trust senders whose address is verified (or Roland's own mailbox).
+          if (from && (from === GMAIL_USER.toLowerCase() || senderVerified(from, auth))) out.push(await handleForward(from, mail));
+          else out.push({ from, result: 'not_verified' });
+        } catch (e) { out.push({ uid, error: (e as Error).message }); }
+        await client.messageFlagsAdd(String(uid), ['veille-traite'], { uid: true, useLabels: true });
+      }
+    } finally { lock.release(); }
+  } finally { await client.logout().catch(() => {}); }
+  return out;
+}
+
 async function runDue() {
   const { data: due, error } = await db.from('subscriptions').select('id,email,token,status,prefs,next_run_at')
     .eq('status', 'active').lte('next_run_at', now()).order('next_run_at').limit(25);
@@ -139,7 +228,7 @@ async function accountView(sub: Record<string, unknown>) {
   const p = (sub.prefs && Object.keys(sub.prefs as object).length) ? sub.prefs : (sub.pending_prefs || {});
   return {
     email: sub.email, status: sub.status === 'pending' ? 'inactive' : sub.status, prefs: p,
-    next_run_at: sub.status === 'active' ? sub.next_run_at : null, last_sent_at: sub.last_sent_at, invite: await inviteCode(),
+    next_run_at: sub.status === 'active' ? sub.next_run_at : null, last_sent_at: sub.last_sent_at, invite: await inviteCode(), fwd: FWD_ADDR,
   };
 }
 async function bySession(token: unknown) {
@@ -308,9 +397,14 @@ Deno.serve(async (req) => {
       case 'run': {
         const { data: ok } = await db.rpc('cron_secret_ok', { s: req.headers.get('x-cron-secret') || '' });
         if (!ok) return json({ error: 'forbidden' }, 403);
-        if (body.wait) { const results = await runDue(); return json({ ok: true, sent: results.length, results }); }
+        const both = async () => {
+          const fwd = await processForwards().catch((e) => [{ error: 'imap: ' + (e as Error).message }]);
+          const results = await runDue();
+          return { fwd, results };
+        };
+        if (body.wait) { const r = await both(); return json({ ok: true, sent: r.results.length, ...r }); }
         // @ts-ignore EdgeRuntime exists on Supabase
-        EdgeRuntime.waitUntil(runDue().then((r) => console.log('run', JSON.stringify(r))).catch((e) => console.error('run', e)));
+        EdgeRuntime.waitUntil(both().then((r) => console.log('run', JSON.stringify(r))).catch((e) => console.error('run', e)));
         return json({ ok: true, started: true }, 202);
       }
       default: return json({ error: 'unknown_action' }, 400);

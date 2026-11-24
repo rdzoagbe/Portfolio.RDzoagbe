@@ -225,6 +225,13 @@
       <button type="button" class="primary small-btn" id="addOfferBtn" data-i18n="addApp"></button>
       <button type="button" class="ghost" id="exportBtn" data-i18n="export"></button>
     </div>
+    <details class="card tight fwd-card" id="fwdCard" hidden>
+      <summary><span aria-hidden="true">📨</span> <span data-i18n="fwdT"></span></summary>
+      <p class="small" id="fwdHelp"></p>
+      <div class="fwd-row"><code id="fwdAddr"></code><button type="button" class="ghost small-btn" id="fwdCopy" data-i18n="fwdCopy"></button></div>
+      <p class="small good-text" id="fwdMsg" hidden data-i18n="fwdCopied"></p>
+      <p class="small" data-i18n="fwdHow"></p>
+    </details>
     <div class="stats">
       <div class="stat"><b id="stRecv">0</b><span data-i18n="stRecv"></span><em id="stWeek"></em></div>
       <div class="stat"><b id="stOpen">0</b><span data-i18n="stOpen"></span></div>
