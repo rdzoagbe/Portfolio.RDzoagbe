@@ -182,14 +182,31 @@ function senderVerified(from: string, auth: string) {
   if (new RegExp(`dkim=pass[^;]*header\\.[id]=@?(?:[\\w-]+\\.)*${dom}\\b`, 'i').test(auth)) return true;
   return new RegExp(`spf=pass[^;]*smtp\\.mailfrom=(?:[^;\\s@]*@)?(?:[\\w-]+\\.)*${dom}\\b`, 'i').test(auth);
 }
+// The app should use its own Gmail account. While GMAIL_USER is still someone's personal address (it has an
+// account here), forwards are only offered to that person and nothing is ever deleted from that mailbox.
+let personalBox: Promise<boolean> | null = null;
+function mailboxIsPersonal() {
+  personalBox ??= (async () => {
+    const { count } = await db.from('subscriptions').select('id', { count: 'exact', head: true }).eq('email', GMAIL_USER.toLowerCase());
+    return (count || 0) > 0;
+  })();
+  return personalBox;
+}
+async function fwdAddressFor(email: unknown) {
+  if (!FWD_ADDR) return '';
+  return !(await mailboxIsPersonal()) || String(email || '').toLowerCase() === GMAIL_USER.toLowerCase() ? FWD_ADDR : '';
+}
 async function processForwards() {
   if (!GMAIL_USER || !GMAIL_PASS) return [];
+  const personal = await mailboxIsPersonal();
   const client = new ImapFlow({ host: 'imap.gmail.com', port: 993, secure: true, auth: { user: GMAIL_USER, pass: GMAIL_PASS }, logger: false });
   const out: unknown[] = [];
   await client.connect();
   try {
     const boxes = await client.list();
     const allMail = boxes.find((b: { specialUse?: string; path: string }) => b.specialUse === '\\All')?.path || '[Gmail]/All Mail';
+    const trash = boxes.find((b: { specialUse?: string; path: string }) => b.specialUse === '\\Trash')?.path || '[Gmail]/Trash';
+    const purge: number[] = [];
     const lock = await client.getMailboxLock(allMail);
     try {
       const uids = (await client.search({ gmraw: `to:${FWD_ADDR} -label:veille-traite newer_than:30d` }, { uid: true })) || [];
@@ -199,13 +216,23 @@ async function processForwards() {
           const mail = await simpleParser(msg.source);
           const from = (mail.from?.value?.[0]?.address || '').toLowerCase();
           const auth = String(mail.headers.get('authentication-results') || '');
-          // Only trust senders whose address is verified (or Roland's own mailbox).
+          // Only trust senders whose address is verified (or the mailbox itself).
           if (from && (from === GMAIL_USER.toLowerCase() || senderVerified(from, auth))) out.push(await handleForward(from, mail));
           else out.push({ from, result: 'not_verified' });
         } catch (e) { out.push({ uid, error: (e as Error).message }); }
-        await client.messageFlagsAdd(String(uid), ['veille-traite'], { uid: true, useLabels: true });
+        if (personal) await client.messageFlagsAdd(String(uid), ['veille-traite'], { uid: true, useLabels: true });
+        else {
+          // App mailbox: nothing is kept. The email goes to the bin and is then deleted for good.
+          const moved = await client.messageMove(String(uid), trash, { uid: true });
+          const dest = moved ? moved.uidMap?.get(Number(uid)) : undefined;
+          if (dest) purge.push(dest);
+        }
       }
     } finally { lock.release(); }
+    if (purge.length) {
+      const bin = await client.getMailboxLock(trash);
+      try { await client.messageDelete(purge.join(','), { uid: true }); } finally { bin.release(); }
+    }
   } finally { await client.logout().catch(() => {}); }
   return out;
 }
@@ -228,7 +255,7 @@ async function accountView(sub: Record<string, unknown>) {
   const p = (sub.prefs && Object.keys(sub.prefs as object).length) ? sub.prefs : (sub.pending_prefs || {});
   return {
     email: sub.email, status: sub.status === 'pending' ? 'inactive' : sub.status, prefs: p,
-    next_run_at: sub.status === 'active' ? sub.next_run_at : null, last_sent_at: sub.last_sent_at, invite: await inviteCode(), fwd: FWD_ADDR,
+    next_run_at: sub.status === 'active' ? sub.next_run_at : null, last_sent_at: sub.last_sent_at, invite: await inviteCode(), fwd: await fwdAddressFor(sub.email),
   };
 }
 async function bySession(token: unknown) {
