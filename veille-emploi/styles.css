@@ -304,3 +304,23 @@ dialog.bottom-sheet h2{font-size:1.1rem}
 .st-opts button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
 dialog.bottom-sheet .btn-link{justify-self:stretch}
 dialog.bottom-sheet .ghost{justify-self:stretch}
+
+/* add / export / print */
+.offer-actions{display:flex;gap:8px;flex-wrap:wrap}
+.offer-actions .primary{flex:1}
+.danger-link{color:var(--danger)}
+dialog.bottom-sheet form.sheet label{color:var(--muted)}
+.print-area{display:none}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important}
+  body > *:not(.print-area){display:none!important}
+  .print-area{display:block!important;font:11pt/1.4 Arial,sans-serif;color:#000}
+  .print-area h1{font-size:16pt;margin:0 0 4px}
+  .print-area .meta{font-size:9.5pt;color:#333;margin:0 0 10px}
+  .print-area .sum{display:flex;gap:18px;margin:8px 0 12px;font-size:10pt}
+  .print-area table{width:100%;border-collapse:collapse;font-size:9pt}
+  .print-area th,.print-area td{border:1px solid #999;padding:4px 6px;text-align:left;vertical-align:top}
+  .print-area th{background:#eee}
+  .print-area .foot{font-size:8pt;color:#555;margin-top:10px}
+  @page{size:A4;margin:14mm}
+}
