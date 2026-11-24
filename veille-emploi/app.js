@@ -1,4 +1,4 @@
-const VERSION = '0.7.0';
+const VERSION = '0.7.1';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -53,6 +53,7 @@ const T = {
     beta: "<b>Version bêta.</b> Tes alertes arrivent par email. Ton CV reste sur ton téléphone : seuls tes critères de recherche et ton email sont envoyés pour préparer tes alertes.",
     cFirstConfirm: 'premier email juste après ta confirmation', pending: 'EN ATTENTE', statusPending: 'Ouvre l’email envoyé à {e} et clique sur « Confirmer mes alertes » pour démarrer. Pense à regarder dans les spams.',
     sending: 'Envoi…', errInvite: "Cette app est réservée à la famille et aux amis de Roland. Demande-lui d'ajouter ton adresse email, puis réessaie.",
+    errMail: "Le service d'alertes n'a pas pu envoyer l'email de confirmation. Réessaie dans quelques minutes ; si ça continue, préviens Roland.",
     errWait: 'Un email de confirmation vient de partir. Attends une minute avant de réessayer.', errNet: "Impossible de joindre le service d'alertes. Vérifie ta connexion et réessaie.",
     cTitlePending: 'Vérifie ta boîte mail', cNotePending: 'On vient d’envoyer un email à <b>{e}</b>. Clique sur <b>« Confirmer mes alertes »</b> dedans : ton premier email d’offres arrive juste après. Pense à regarder dans les spams.',
     cTitleUpdated: 'Alertes mises à jour', cNoteUpdated: 'Tes nouveaux critères sont enregistrés. Ils servent dès le prochain email.',
@@ -102,6 +103,7 @@ const T = {
     beta: '<b>Beta version.</b> Your alerts arrive by email. Your CV stays on your phone: only your search criteria and your email are sent to prepare your alerts.',
     cFirstConfirm: 'first email right after you confirm', pending: 'WAITING', statusPending: 'Open the email sent to {e} and click “Confirm my alerts” to start. Check your spam folder too.',
     sending: 'Sending…', errInvite: "This app is for Roland's family and friends. Ask him to add your email address, then try again.",
+    errMail: "The alert service couldn't send the confirmation email. Try again in a few minutes; if it keeps failing, tell Roland.",
     errWait: 'A confirmation email was just sent. Wait a minute before trying again.', errNet: "Can't reach the alert service. Check your connection and try again.",
     cTitlePending: 'Check your inbox', cNotePending: 'We just sent an email to <b>{e}</b>. Click <b>“Confirm my alerts”</b> in it: your first offers email arrives right after. Check your spam folder too.',
     cTitleUpdated: 'Alerts updated', cNoteUpdated: 'Your new criteria are saved. They apply from the next email.',
@@ -745,7 +747,7 @@ async function submitAlerts() {
   if (res.status === 'confirm_sent') {
     data.pending = true; data.pendingEmail = data.email.trim(); save(); render(); showConfirm('pending'); return;
   }
-  err.textContent = res.error === 'not_invited' ? t('errInvite') : res.error === 'wait' ? t('errWait') : t('errNet');
+  err.textContent = res.error === 'not_invited' ? t('errInvite') : res.error === 'wait' ? t('errWait') : res.error === 'mail_failed' ? t('errMail') : t('errNet');
   err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 async function syncSettings() {
