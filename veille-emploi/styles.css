@@ -219,3 +219,27 @@ dialog::backdrop{background:rgba(5,15,12,.55)}
 .foot{text-align:center;padding:8px 16px 28px}
 @media (prefers-reduced-motion:no-preference){#preview:not([hidden]),.found:not([hidden]){animation:in .3s ease-out}@keyframes in{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:none}}}
 @media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+
+/* landing + sign-in */
+.landing{display:grid;gap:14px;padding:8px 2px}
+.landing h1{font-family:var(--display);font-size:1.7rem;line-height:1.2;margin:6px 0 0}
+.landing .lead{margin:0;color:var(--muted);font-size:1.02rem}
+.steps{list-style:none;counter-reset:s;margin:4px 0;padding:0;display:grid;gap:10px}
+.steps li{counter-increment:s;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 56px;display:grid;gap:3px}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;display:grid;place-items:center}
+.steps li span{color:var(--muted);font-size:.92rem}
+.primary.big{padding:15px 18px;font-size:1.1rem}
+.center{text-align:center}
+.center-self{justify-self:center}
+.signin{gap:14px}
+.stack{display:grid;gap:12px}
+.stack h2{margin:0}
+.stack-lg{display:grid;gap:14px}
+.otp{font-size:28px;letter-spacing:.5em;text-align:center;font-family:ui-monospace,Menlo,Consolas,monospace;padding:12px}
+.row-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.account-box{display:grid;gap:14px;border-top:1px solid var(--line);padding-top:14px}
+.share{display:grid;gap:8px}
+.share-row{display:flex;flex-wrap:wrap;gap:8px}
+.share-btn{text-decoration:none;display:inline-flex;align-items:center;border-radius:10px}
+.acct-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.ok-msg{color:var(--good);font-weight:600}

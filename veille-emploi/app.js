@@ -1,4 +1,4 @@
-const VERSION = '0.7.2';
+const VERSION = '0.8.0';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -68,7 +68,7 @@ const T = {
     cvUnreadable: "Je n'ai pas pu lire le texte de ce PDF (CV scanné en image ?). Remplis les champs à la main.",
     cvFound: 'Rempli d\'après ton CV : {list}. Vérifie et modifie si besoin.', cvNothing: "CV ajouté. Je n'ai rien trouvé à remplir automatiquement.",
     fName: 'nom', fEmail: 'email', fRoles: '{n} poste(s)', fLoc: 'lieu', fYears: '{n} ans d\'expérience repérés',
-    prefsTitle: 'Ce que je recherche', firstName: 'Nom complet', firstNamePh: 'Camille Martin', email: 'Email pour recevoir les offres', emailPh: 'camille@exemple.fr',
+    prefsTitle: 'Ce que je recherche', firstName: 'Nom complet', firstNamePh: 'Camille Martin', email: 'Email de ton compte (les offres arrivent ici)', emailPh: 'camille@exemple.fr',
     roles: 'Postes visés', rolesPh: 'Écris un poste puis Entrée', rolesHelp: 'Touche une suggestion pour l\'ajouter, ou écris ton propre intitulé.',
     fromCv: "D'après ton CV :", location: 'Lieu', locationPh: 'Région, département ou ville',
     salary: 'Salaire souhaité (brut/an)', salAny: 'Peu importe', salPlus: '100 k€ et plus', remote: 'Télétravail', contract: 'Contrat',
@@ -88,7 +88,20 @@ const T = {
     why: 'Pourquoi : ', warn: "Point d'attention : ", ex1c: 'Scale-up (exemple)', ex2c: 'PME en croissance (exemple)',
     ex1w: 'Ton expérience correspond aux missions principales de ce poste.', ex2w: 'Ton parcours couvre la plupart des compétences attendues.',
     ex1a: 'Anglais courant demandé', ex2a: 'Secteur nouveau pour toi', hybridTxt: 'hybride, 2 j de télétravail', onsiteTxt: 'sur site 3 j', remoteTxt: 'télétravail complet',
-    dataTitle: 'Mes données', dataNote: "Dans cette version test, tout reste sur cet appareil : rien n'est envoyé.", wipe: 'Supprimer mes données', wiped: 'Tout est supprimé.',
+    dataTitle: 'Mes données', dataNote: 'Ton CV reste sur cet appareil. Ton email et tes critères sont gardés pour t’envoyer tes alertes. Supprimer ton compte efface tout et arrête les emails.', wipe: 'Supprimer mon compte', wiped: 'Tout est supprimé.', wipeAsk: 'Supprimer ton compte, tes critères et arrêter tes alertes ?',
+    lTitle: 'Les offres d’emploi qui te correspondent, directement par email', lLead: 'Une petite app gratuite pour la famille et les amis : elle surveille les offres pour toi et t’envoie celles qui collent à ton CV.',
+    l1t: 'Crée ton compte', l1: 'Avec ton email et un code à 6 chiffres. Pas de mot de passe.',
+    l2t: 'Ajoute ton CV et dis ce que tu cherches', l2: 'Postes, lieux, salaire, télétravail. Ton CV est lu sur ton téléphone : il n’est envoyé nulle part.',
+    l3t: 'Reçois tes offres', l3: 'Les offres de startups et scale-ups, plus des liens LinkedIn, Indeed, Welcome to the Jungle… à la fréquence de ton choix. Tu arrêtes quand tu veux.',
+    start: 'Commencer', lFoot: 'Gratuit · sans mot de passe · réservé à la famille et aux amis', haveAccount: 'Déjà un compte ? Se connecter',
+    siTitle: 'Ton adresse email', siHelp: 'On t’envoie un code à 6 chiffres pour créer ton compte ou te reconnecter.', siEmailPh: 'prenom.nom@gmail.com', sendCode: 'Recevoir mon code',
+    codeTitle: 'Entre ton code', codeSent: 'Code envoyé à {e}. Regarde aussi dans les spams.', verify: 'Valider', resend: 'Renvoyer un code', changeEmail: 'Changer d’email', back: '← Retour',
+    eBadEmail: 'Cette adresse email ne semble pas valide.', eBadCode: 'Code incorrect. Il te reste {n} essai(s).', eExpired: 'Ce code a expiré. Demande un nouveau code.', eLocked: 'Trop d’essais. Demande un nouveau code.',
+    eWaitCode: 'Un code vient d’être envoyé. Attends un peu avant d’en demander un autre.', eTooMany: 'Trop de codes demandés. Réessaie dans une heure.', resent: 'Nouveau code envoyé.',
+    account: 'Mon compte', logout: 'Se déconnecter', signedOut: 'Tu as été déconnecté. Reconnecte-toi avec ton email.',
+    shareTitle: 'Partager l’app', shareHelp: 'Envoie ce lien à ta famille et tes amis : il leur permet de créer leur compte.', share: 'Partager…', copy: 'Copier le lien', copied: 'Lien copié ✓',
+    shareText: 'Je t’invite sur Veille Emploi : une petite app gratuite qui t’envoie par email les offres d’emploi qui correspondent à ton CV. Inscris-toi ici :',
+    cTitleOn: 'Tes alertes sont actives', cNoteOn: 'Ton premier email d’offres arrive dans quelques minutes à <b>{e}</b>. Pense à regarder dans les spams la première fois.', bannerSignin: 'Connecte-toi avec ton email pour gérer tes alertes.',
     language: 'Langue', frequency: 'Fréquence des alertes', f1: 'Tous les jours', f2: 'Tous les 2 jours', f7: 'Chaque semaine',
     sendTime: "Heure d'envoi", maxOffers: 'Offres max par email', theme: 'Thème', tAuto: 'Automatique', tLight: 'Clair', tDark: 'Sombre', done: 'Terminé',
     alertTitle: "Options d'alerte", sourcesTitle: 'Sources des offres', sinceTitle: 'Publiées depuis',
@@ -118,7 +131,7 @@ const T = {
     cvUnreadable: "I couldn't read the text in this PDF (scanned image?). Fill in the fields by hand.",
     cvFound: 'Filled from your CV: {list}. Check and edit if needed.', cvNothing: 'CV added. Nothing could be filled in automatically.',
     fName: 'name', fEmail: 'email', fRoles: '{n} job title(s)', fLoc: 'location', fYears: '{n} years of experience found',
-    prefsTitle: "What I'm looking for", firstName: 'Full name', firstNamePh: 'Camille Martin', email: 'Email to receive offers', emailPh: 'camille@example.com',
+    prefsTitle: "What I'm looking for", firstName: 'Full name', firstNamePh: 'Camille Martin', email: 'Your account email (offers arrive here)', emailPh: 'camille@example.com',
     roles: 'Target jobs', rolesPh: 'Type a job title, then Enter', rolesHelp: 'Tap a suggestion to add it, or type your own title.',
     fromCv: 'From your CV:', location: 'Location', locationPh: 'Region, department or city',
     salary: 'Salary range (gross/year)', salAny: 'Any', salPlus: '100 k€ and above', remote: 'Remote work', contract: 'Contract',
@@ -138,7 +151,20 @@ const T = {
     why: 'Why: ', warn: 'Watch out: ', ex1c: 'Scale-up (example)', ex2c: 'Growing SME (example)',
     ex1w: 'Your experience matches the main duties of this role.', ex2w: 'Your background covers most of the required skills.',
     ex1a: 'Fluent English required', ex2a: 'New industry for you', hybridTxt: 'hybrid, 2 days remote', onsiteTxt: 'on-site 3 days', remoteTxt: 'fully remote',
-    dataTitle: 'My data', dataNote: 'In this test version everything stays on this device: nothing is sent.', wipe: 'Delete my data', wiped: 'Everything is deleted.',
+    dataTitle: 'My data', dataNote: 'Your CV stays on this device. Your email and criteria are kept to send your alerts. Deleting your account erases everything and stops the emails.', wipe: 'Delete my account', wiped: 'Everything is deleted.', wipeAsk: 'Delete your account and criteria, and stop your alerts?',
+    lTitle: 'Job offers that match you, straight to your inbox', lLead: 'A small free app for family and friends: it watches job offers for you and emails the ones that fit your CV.',
+    l1t: 'Create your account', l1: 'With your email and a 6-digit code. No password.',
+    l2t: 'Add your CV and say what you want', l2: 'Jobs, places, salary, remote work. Your CV is read on your phone: it is never sent anywhere.',
+    l3t: 'Get your offers', l3: 'Offers from startups and scale-ups, plus LinkedIn, Indeed, Welcome to the Jungle links… as often as you like. Stop anytime.',
+    start: 'Get started', lFoot: 'Free · no password · for family and friends', haveAccount: 'Already have an account? Sign in',
+    siTitle: 'Your email address', siHelp: 'We’ll send you a 6-digit code to create your account or sign back in.', siEmailPh: 'firstname.lastname@gmail.com', sendCode: 'Get my code',
+    codeTitle: 'Enter your code', codeSent: 'Code sent to {e}. Check your spam folder too.', verify: 'Confirm', resend: 'Send a new code', changeEmail: 'Change email', back: '← Back',
+    eBadEmail: 'This email address doesn’t look valid.', eBadCode: 'Wrong code. {n} try(ies) left.', eExpired: 'This code has expired. Ask for a new one.', eLocked: 'Too many tries. Ask for a new code.',
+    eWaitCode: 'A code was just sent. Wait a little before asking for another.', eTooMany: 'Too many codes requested. Try again in an hour.', resent: 'New code sent.',
+    account: 'My account', logout: 'Sign out', signedOut: 'You were signed out. Sign in again with your email.',
+    shareTitle: 'Share the app', shareHelp: 'Send this link to family and friends: it lets them create their account.', share: 'Share…', copy: 'Copy link', copied: 'Link copied ✓',
+    shareText: 'I’m inviting you to Veille Emploi: a small free app that emails you job offers matching your CV. Sign up here:',
+    cTitleOn: 'Your alerts are on', cNoteOn: 'Your first offers email arrives in a few minutes at <b>{e}</b>. Check your spam folder the first time.', bannerSignin: 'Sign in with your email to manage your alerts.',
     language: 'Language', frequency: 'Alert frequency', f1: 'Every day', f2: 'Every 2 days', f7: 'Every week',
     sendTime: 'Send time', maxOffers: 'Max offers per email', theme: 'Theme', tAuto: 'Automatic', tLight: 'Light', tDark: 'Dark', done: 'Done',
     alertTitle: 'Alert options', sourcesTitle: 'Where offers come from', sinceTitle: 'Posted within',
@@ -614,10 +640,9 @@ function render() {
   $('fileName').textContent = data.cvName || '';
   $('cvLabel').textContent = hasCv ? t('cvReplace') : t('cvChoose');
   renderFound(); renderRoles(); renderLocs(); renderSources(); renderExclude();
-  const on = !!data.active; const pend = !on && !!data.pending;
-  $('statusOn').hidden = !on; $('statusOff').hidden = on || pend; $('statusPending').hidden = !pend; $('pause').hidden = !on;
-  if (pend) $('pendingText').textContent = t('statusPending', { e: data.pendingEmail || data.email || '' });
-  $('activate').textContent = on || pend ? t('update') : t('activate');
+  const on = !!data.active;
+  $('statusOn').hidden = !on; $('statusOff').hidden = on; $('pause').hidden = !on;
+  $('activate').textContent = on ? t('update') : t('activate');
   if (on) {
     $('nextDate').textContent = nextDate().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + nextDate().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
     $('freqText').textContent = t('freq' + settings.freq);
@@ -738,23 +763,17 @@ async function submitAlerts() {
   const btn = $('activate'); const err = $('formErr');
   btn.disabled = true; const label = btn.textContent; btn.textContent = t('sending');
   let res;
-  try { res = await callApi({ action: 'subscribe', email: data.email.trim(), prefs: payload(), token: data.tokenEmail === data.email.trim().toLowerCase() ? data.token : undefined, code: data.invite || undefined }); }
-  catch { res = { error: 'net' }; }
+  try { res = await callApi({ action: 'save', session: data.session, prefs: payload(), activate: true }); } catch { res = { error: 'net' }; }
   btn.disabled = false; btn.textContent = label;
-  if (res.status === 'active') {
-    data.active = true; data.pending = false; data.nextRun = res.next_run_at || null; save(); render(); showConfirm('updated'); return;
-  }
-  if (res.status === 'confirm_sent') {
-    data.pending = true; data.pendingEmail = data.email.trim(); save(); render(); showConfirm('pending'); return;
-  }
-  err.textContent = res.error === 'not_invited' ? t('errInvite') : res.error === 'wait' ? t('errWait') : res.error === 'mail_failed' ? t('errMail') : t('errNet');
-  err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  if (res.error === 'signed_out') return signedOut();
+  if (res.ok && res.account) { applyAccount(res.account); showConfirm(res.activated ? 'on' : 'updated'); return; }
+  err.textContent = t('errNet'); err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
 async function syncSettings() {
-  if (!data.active || !data.token) return;
-  try { const r = await callApi({ action: 'subscribe', email: data.email.trim(), prefs: payload(), token: data.token }); if (r.next_run_at) { data.nextRun = r.next_run_at; save(); render(); } } catch { /* offline */ }
+  if (!data.session) return;
+  try { const r = await callApi({ action: 'save', session: data.session, prefs: payload() }); if (r.account) applyAccount(r.account); else if (r.error === 'signed_out') signedOut(); } catch { /* offline */ }
 }
-function showConfirm(mode = 'pending') {
+function showConfirm(mode = 'on') {
   const dl = $('confirmList'); dl.textContent = '';
   const autos = SOURCES.filter((s) => s.auto && data.sources.includes(s.id)).map(srcName);
   const links = SOURCES.filter((s) => !s.auto && data.sources.includes(s.id)).map(srcName);
@@ -764,7 +783,7 @@ function showConfirm(mode = 'pending') {
     [t('cOffers'), autos.join(', ') || '—'],
     [t('cLinks'), links.join(', ') || '—'],
     [t('sinceTitle'), t('since' + data.since)],
-    [t('cWhen'), t('f' + settings.freq) + ' · ' + (mode === 'updated' ? t('nextEmail') + ' ' + nextDate().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + nextDate().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' }) : t('cFirstConfirm'))],
+    [t('cWhen'), t('f' + settings.freq) + ' · ' + t('nextEmail') + ' ' + nextDate().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + nextDate().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' })],
     [t('sentTo'), data.email],
   ];
   rows.forEach(([k, v]) => {
@@ -772,23 +791,27 @@ function showConfirm(mode = 'pending') {
     const dd = document.createElement('dd'); dd.textContent = v;
     dl.append(dt, dd);
   });
-  $('confirmTitle').textContent = mode === 'updated' ? t('cTitleUpdated') : t('cTitlePending');
-  $('confirmNote').innerHTML = mode === 'updated' ? t('cNoteUpdated') : t('cNotePending', { e: esc(data.email.trim()) });
+  $('confirmTitle').textContent = mode === 'updated' ? t('cTitleUpdated') : t('cTitleOn');
+  $('confirmNote').innerHTML = mode === 'updated' ? t('cNoteUpdated') : t('cNoteOn', { e: esc(data.email) });
   const dlg = $('confirm');
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 $('confirm').addEventListener('close', () => $('preview').scrollIntoView({ behavior: 'smooth', block: 'start' }));
 $('pause').addEventListener('click', async () => {
-  if (data.token) { try { await callApi({ action: 'pause', token: data.token }); } catch { /* offline: paused locally */ } }
-  data.active = false; data.pending = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  try { const r = await callApi({ action: 'pause', session: data.session }); if (r.error === 'signed_out') return signedOut(); if (r.account) applyAccount(r.account); } catch { /* offline */ }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-$('wipe').addEventListener('click', () => {
-  if (data.token) callApi({ action: 'pause', token: data.token }).catch(() => {});
-  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+function resetLocal(keepInvite = true) {
   const invite = data.invite;
-  data = { invite, roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [] };
-  if (invite) save();
-  $('form').reset(); render(); $('wipeMsg').hidden = false; setTimeout(() => { $('wipeMsg').hidden = true; }, 3000);
+  try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [] };
+  if (keepInvite && invite) data.invite = invite;
+  save(); $('form').reset();
+}
+$('wipe').addEventListener('click', async () => {
+  if (!confirm(t('wipeAsk'))) return;
+  try { await callApi({ action: 'delete', session: data.session }); } catch { /* offline */ }
+  resetLocal(); showBanner('wiped'); showView();
 });
 
 /* ---------- settings ---------- */
@@ -796,6 +819,7 @@ const dlg = $('settings');
 $('settingsBtn').addEventListener('click', () => {
   $('setLang').value = settings.lang; $('setFreq').value = settings.freq; $('setHour').value = settings.hour;
   $('setMax').value = settings.max; $('setTheme').value = settings.theme;
+  renderAccountBox();
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 });
 [['setLang', 'lang'], ['setFreq', 'freq'], ['setHour', 'hour'], ['setMax', 'max'], ['setTheme', 'theme']].forEach(([id, k]) => {
@@ -826,24 +850,103 @@ function showBanner(key, good) { const b = $('banner'); b.textContent = t(key); 
 (function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
   const ve = h.get('ve'); if (!ve) return;
-  if (ve === 'confirmed' && h.get('t')) {
-    data.token = h.get('t'); data.tokenEmail = (h.get('e') || data.email || '').toLowerCase();
-    if (!data.email && h.get('e')) data.email = h.get('e');
-    data.active = true; data.pending = false; data.nextRun = null; showBanner('bannerConfirmed', true);
-  } else if (ve === 'stopped') { data.active = false; data.pending = false; showBanner('bannerStopped'); }
+  if (ve === 'stopped') { data.active = false; showBanner('bannerStopped'); }
+  else if (ve === 'confirmed' || ve === 'signin') showBanner('bannerSignin');
   else showBanner('bannerInvalid');
   history.replaceState(null, '', location.pathname + location.search);
 })();
-async function refreshStatus() {
-  if (!data.token) return;
-  try {
-    const r = await callApi({ action: 'status', token: data.token });
-    if (r.status === 404 || r.error === 'invalid') { delete data.token; delete data.tokenEmail; save(); return; }
-    if (!r.ok) return;
-    data.active = r.status === 'active'; if (data.active) data.pending = false;
-    data.nextRun = r.next_run_at || null; save(); render();
-  } catch { /* offline */ }
+
+/* ---------- account: landing, sign-in with a 6-digit code ---------- */
+delete data.token; delete data.tokenEmail; delete data.pending; delete data.pendingEmail;
+function showView() {
+  const signed = !!data.session;
+  $('appView').hidden = !signed;
+  $('landing').hidden = signed || data.view === 'signin';
+  $('signin').hidden = signed || data.view !== 'signin';
+  $('accountBox').hidden = !signed;
 }
+function goSignin() {
+  data.view = 'signin'; save();
+  $('loginEmail').value = data.email || ''; $('codeStep').hidden = true; $('emailStep').hidden = false; $('loginErr').hidden = true;
+  showView(); window.scrollTo({ top: 0 }); $('loginEmail').focus();
+}
+$('startBtn').addEventListener('click', goSignin);
+$('haveAccount').addEventListener('click', goSignin);
+$('backHome').addEventListener('click', () => { data.view = ''; save(); showView(); });
+function loginError(key, v) { const e = $('loginErr'); e.textContent = t(key, v); e.hidden = false; }
+async function askCode(resend = false) {
+  const email = $('loginEmail').value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return loginError('eBadEmail');
+  const btn = resend ? $('resendBtn') : $('sendCode'); btn.disabled = true;
+  let r; try { r = await callApi({ action: 'code', email, invite: data.invite || undefined, lang: settings.lang }); } catch { r = { error: 'net' }; }
+  btn.disabled = false;
+  if (!r.ok) return loginError({ not_invited: 'errInvite', wait: 'eWaitCode', too_many: 'eTooMany', mail_failed: 'errMail', bad_email: 'eBadEmail' }[r.error] || 'errNet');
+  data.loginEmail = email; save();
+  $('loginErr').hidden = true; $('emailStep').hidden = true; $('codeStep').hidden = false;
+  $('codeSent').textContent = t('codeSent', { e: email }) + (resend ? ' ' + t('resent') : '');
+  $('otp').value = ''; $('otp').focus();
+}
+$('emailForm').addEventListener('submit', (e) => { e.preventDefault(); askCode(); });
+$('resendBtn').addEventListener('click', () => askCode(true));
+$('changeEmail').addEventListener('click', () => { $('codeStep').hidden = true; $('emailStep').hidden = false; $('loginErr').hidden = true; $('loginEmail').focus(); });
+$('otp').addEventListener('input', () => { $('otp').value = $('otp').value.replace(/\D/g, '').slice(0, 6); if ($('otp').value.length === 6) $('codeForm').requestSubmit(); });
+$('codeForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const otp = $('otp').value.replace(/\D/g, '');
+  if (otp.length !== 6) return loginError('eBadCode', { n: '—' });
+  $('verifyBtn').disabled = true;
+  let r; try { r = await callApi({ action: 'verify', email: data.loginEmail, otp }); } catch { r = { error: 'net' }; }
+  $('verifyBtn').disabled = false;
+  if (!r.ok) { $('otp').select(); return loginError({ bad_code: 'eBadCode', expired: 'eExpired', locked: 'eLocked' }[r.error] || 'errNet', { n: r.left ?? '' }); }
+  data.session = r.session; data.view = ''; data.email = r.account.email;
+  applyAccount(r.account, true); showView(); window.scrollTo({ top: 0 });
+});
+function applyAccount(a, fromLogin = false) {
+  data.email = a.email; data.active = a.status === 'active'; data.nextRun = a.next_run_at || null; data.shareInvite = a.invite || data.invite || '';
+  const p = a.prefs || {};
+  if (Array.isArray(p.roles) && p.roles.length && (fromLogin || !data.roles.length)) {
+    data.roles = p.roles; data.locations = (p.locations || []).filter((id) => G.byId[id]); data.prenom = p.name || data.prenom;
+    data.teletravail = p.remote || data.teletravail; data.contrat = p.contract || data.contrat; data.salaire = p.salary || '';
+    data.excludeTags = p.excludeTags || []; data.exclure = p.exclude || ''; data.sources = p.sources || data.sources; data.since = p.since || data.since;
+    ['freq', 'hour', 'max', 'lang'].forEach((k) => { if (p[k]) settings[k] = p[k]; }); write(SKEY, settings); applyLang();
+  }
+  save(); render();
+}
+function signedOut() { delete data.session; data.active = false; save(); showBanner('signedOut'); goSignin(); }
+async function refreshAccount() {
+  if (!data.session) return;
+  try { const r = await callApi({ action: 'account', session: data.session }); if (r.error === 'signed_out') return signedOut(); if (r.account) applyAccount(r.account); } catch { /* offline */ }
+}
+$('logoutBtn').addEventListener('click', async () => {
+  try { await callApi({ action: 'logout', session: data.session }); } catch { /* offline */ }
+  dlg.close(); resetLocal(); showView();
+});
+
+/* ---------- share the app ---------- */
+function shareUrl() {
+  const base = location.origin + location.pathname;
+  const code = data.shareInvite || data.invite;
+  return code ? `${base}?i=${code}` : base;
+}
+function renderAccountBox() {
+  $('accountEmail').textContent = data.email || '';
+  const msg = t('shareText') + ' ' + shareUrl();
+  $('shareWa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  $('shareSms').href = (isIOS ? 'sms:&body=' : 'sms:?body=') + encodeURIComponent(msg);
+  $('shareBtn').hidden = !navigator.share;
+  $('copyMsg').hidden = true;
+}
+$('shareBtn').addEventListener('click', async () => {
+  try { await navigator.share({ title: 'Veille Emploi', text: t('shareText'), url: shareUrl() }); } catch { /* cancelled */ }
+});
+$('copyLink').addEventListener('click', async () => {
+  const txt = t('shareText') + ' ' + shareUrl();
+  try { await navigator.clipboard.writeText(txt); } catch {
+    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch { /* ignore */ } ta.remove();
+  }
+  $('copyMsg').hidden = false;
+});
 
 $('ver').textContent = 'v' + VERSION;
-save(); applyTheme(); applyLang(); render(); refreshStatus();
+save(); applyTheme(); applyLang(); render(); showView(); refreshAccount();
