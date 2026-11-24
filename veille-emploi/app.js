@@ -1,4 +1,4 @@
-const VERSION = '0.9.0';
+const VERSION = '0.10.0';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -107,7 +107,16 @@ const T = {
     opt_applied: '✓ J’ai postulé', opt_interview: '📞 Entretien', opt_rejected: '✕ Refusé', opt_notforme: '👎 Pas pour moi',
     tapNote: 'Un tap suffit : tes stats se mettent à jour toutes seules. Touche à nouveau pour annuler.', loading: 'Chargement…',
     emptyAll: 'Pas encore d’offres ici. Elles apparaîtront dès ton prochain email d’alerte.', emptyFilter: 'Aucune offre dans cette catégorie.',
-    src_startups: 'Startups', src_francetravail: 'France Travail',
+    src_startups: 'Startups', src_francetravail: 'France Travail', src_gmail: 'Importée de Gmail', src_manual: 'Ajoutée à la main', src_forward: 'Email transféré',
+    addApp: '+ Ajouter une candidature', addHelp: 'Pour une candidature faite ailleurs : LinkedIn, Indeed, site de l’entreprise…', addJob: 'Poste *', addJobPh: 'ex. Responsable informatique',
+    addCompany: 'Entreprise', addCompanyPh: 'ex. Doctolib', addUrl: 'Lien de l’annonce (facultatif)', addDate: 'Date', addStatus: 'Statut', optNew: 'Pas encore postulé',
+    save: 'Enregistrer', cancel: 'Annuler', eAddTitle: 'Indique au moins le poste.', eAddUrl: 'Ce lien ne semble pas valide : il doit commencer par https://', added: 'Candidature ajoutée ✓',
+    deleteOffer: 'Supprimer de mon historique', deleteAsk: 'Supprimer cette offre de ton historique ?',
+    export: 'Exporter', exportTitle: 'Exporter mon historique', exportHelp: 'Un récapitulatif daté de tes candidatures, à garder ou à montrer (France Travail, conseiller…).',
+    exportPdf: 'PDF : imprimer ou enregistrer', exportCsv: 'Fichier Excel (CSV)',
+    rpTitle: 'Historique de mes candidatures', rpGen: 'Document généré le {d} avec Veille Emploi.', rpApps: 'Candidatures envoyées : {n}', rpInt: 'Entretiens : {n}', rpRej: 'Réponses négatives : {n}',
+    rpDate: 'Date', rpJob: 'Poste', rpCompany: 'Entreprise', rpPlace: 'Lieu', rpStatus: 'Statut', rpLink: 'Lien', rpSource: 'Source', rpNone: 'Aucune candidature enregistrée pour l’instant.',
+    rpNote: 'Liste établie par la personne elle-même à partir de ses candidatures et des réponses reçues.',
     account: 'Mon compte', logout: 'Se déconnecter', signedOut: 'Tu as été déconnecté. Reconnecte-toi avec ton email.',
     shareTitle: 'Partager l’app', shareHelp: 'Envoie ce lien à ta famille et tes amis : il leur permet de créer leur compte.', share: 'Partager…', copy: 'Copier le lien', copied: 'Lien copié ✓',
     shareText: 'Je t’invite sur Veille Emploi : une petite app gratuite qui t’envoie par email les offres d’emploi qui correspondent à ton CV. Inscris-toi ici :',
@@ -180,7 +189,16 @@ const T = {
     opt_applied: '✓ I applied', opt_interview: '📞 Interview', opt_rejected: '✕ Rejected', opt_notforme: '👎 Not for me',
     tapNote: 'One tap is enough: your stats update by themselves. Tap again to undo.', loading: 'Loading…',
     emptyAll: 'No offers here yet. They will show up after your next alert email.', emptyFilter: 'No offers in this category.',
-    src_startups: 'Startups', src_francetravail: 'France Travail',
+    src_startups: 'Startups', src_francetravail: 'France Travail', src_gmail: 'Imported from Gmail', src_manual: 'Added by hand', src_forward: 'Forwarded email',
+    addApp: '+ Add an application', addHelp: 'For an application made elsewhere: LinkedIn, Indeed, a company website…', addJob: 'Job title *', addJobPh: 'e.g. IT Manager',
+    addCompany: 'Company', addCompanyPh: 'e.g. Doctolib', addUrl: 'Link to the ad (optional)', addDate: 'Date', addStatus: 'Status', optNew: 'Not applied yet',
+    save: 'Save', cancel: 'Cancel', eAddTitle: 'Enter at least the job title.', eAddUrl: 'This link doesn’t look valid: it must start with https://', added: 'Application added ✓',
+    deleteOffer: 'Remove from my history', deleteAsk: 'Remove this offer from your history?',
+    export: 'Export', exportTitle: 'Export my history', exportHelp: 'A dated summary of your applications, to keep or to show (job centre, adviser…).',
+    exportPdf: 'PDF: print or save', exportCsv: 'Excel file (CSV)',
+    rpTitle: 'My job applications', rpGen: 'Document generated on {d} with Veille Emploi.', rpApps: 'Applications sent: {n}', rpInt: 'Interviews: {n}', rpRej: 'Rejections: {n}',
+    rpDate: 'Date', rpJob: 'Job', rpCompany: 'Company', rpPlace: 'Place', rpStatus: 'Status', rpLink: 'Link', rpSource: 'Source', rpNone: 'No application recorded yet.',
+    rpNote: 'List made by the person from their own applications and the replies received.',
     account: 'My account', logout: 'Sign out', signedOut: 'You were signed out. Sign in again with your email.',
     shareTitle: 'Share the app', shareHelp: 'Send this link to family and friends: it lets them create their account.', share: 'Share…', copy: 'Copy link', copied: 'Link copied ✓',
     shareText: 'I’m inviting you to Veille Emploi: a small free app that emails you job offers matching your CV. Sign up here:',
@@ -1035,7 +1053,7 @@ function openOffer(o) {
   current = o;
   $('osTitle').textContent = o.title;
   $('osMeta').textContent = [o.company, shortPlace(o.location), t('received', { d: dShort(o.sent_at) }), t('src_' + o.source) !== 'src_' + o.source ? t('src_' + o.source) : ''].filter(Boolean).join(' · ');
-  $('osLink').href = goUrl(o.track_id); $('osLink').textContent = t('viewOffer');
+  $('osLink').href = goUrl(o.track_id); $('osLink').textContent = t('viewOffer'); $('osLink').hidden = !o.url;
   paintSheet();
   if (sheet.showModal) sheet.showModal(); else sheet.setAttribute('open', '');
 }
@@ -1053,6 +1071,72 @@ document.querySelectorAll('#osOpts button').forEach((b) => b.addEventListener('c
   } catch { o.status = prev; paintSheet(); renderOffers(); }
 }));
 $('osClose').addEventListener('click', () => sheet.close());
+$('osDelete').addEventListener('click', async () => {
+  if (!current || !confirm(t('deleteAsk'))) return;
+  const o = current;
+  try {
+    const r = await callApi({ action: 'delete_offer', session: data.session, id: o.track_id });
+    if (r.error === 'signed_out') { sheet.close(); return signedOut(); }
+    if (!r.ok) return;
+  } catch { return; }
+  offers = offers.filter((x) => x !== o); sheet.close(); renderOffers(); updateBadge();
+});
+
+/* add an application found elsewhere */
+const addSheet = $('addSheet');
+const todayIso = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+$('addOfferBtn').addEventListener('click', () => {
+  $('addForm').reset(); $('addDate').value = todayIso(); $('addDate').max = todayIso(); $('addStatus').value = 'applied'; $('addErr').hidden = true;
+  [...$('addStatus').options].forEach((o) => { o.textContent = o.value === 'new' ? t('optNew') : t('st_' + o.value); });
+  if (addSheet.showModal) addSheet.showModal(); else addSheet.setAttribute('open', '');
+  $('addJob').focus();
+});
+$('addCancel').addEventListener('click', () => addSheet.close());
+$('addForm').addEventListener('input', () => { $('addErr').hidden = true; });
+addSheet.addEventListener('click', (e) => { if (e.target === addSheet) addSheet.close(); });
+$('addForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = (k) => { $('addErr').textContent = t(k); $('addErr').hidden = false; };
+  const title = $('addJob').value.trim(); const url = $('addUrl').value.trim();
+  if (!title) return err('eAddTitle');
+  if (url && !/^https?:\/\/\S+$/i.test(url)) return err('eAddUrl');
+  $('addSave').disabled = true;
+  let r; try { r = await callApi({ action: 'add_offer', session: data.session, title, company: $('addCompany').value.trim(), url, date: $('addDate').value, status: $('addStatus').value }); } catch { r = { error: 'net' }; }
+  $('addSave').disabled = false;
+  if (r.error === 'signed_out') { addSheet.close(); return signedOut(); }
+  if (!r.ok) return err(r.error === 'bad_url' ? 'eAddUrl' : r.error === 'missing_title' ? 'eAddTitle' : 'errNet');
+  offers.unshift(r.offer); offers.sort((a, b) => Date.parse(b.sent_at) - Date.parse(a.sent_at));
+  addSheet.close(); renderOffers(); showBanner('added', true);
+});
+
+/* export: printable PDF report and CSV */
+const exportSheet = $('exportSheet');
+$('exportBtn').addEventListener('click', () => { if (exportSheet.showModal) exportSheet.showModal(); else exportSheet.setAttribute('open', ''); });
+$('exportClose').addEventListener('click', () => exportSheet.close());
+exportSheet.addEventListener('click', (e) => { if (e.target === exportSheet) exportSheet.close(); });
+const APPLIED = ['applied', 'interview', 'rejected'];
+const dLong = (iso) => new Date(iso).toLocaleDateString(locale(), { day: '2-digit', month: '2-digit', year: 'numeric' });
+const srcLabel = (s) => (t('src_' + s) !== 'src_' + s ? t('src_' + s) : s || '');
+$('exportPdf').addEventListener('click', () => {
+  const apps = offers.filter((o) => APPLIED.includes(o.status)).sort((a, b) => Date.parse(b.sent_at) - Date.parse(a.sent_at));
+  const who = [data.prenom, data.email].filter(Boolean).map(esc).join(' · ');
+  const rows = apps.map((o) => `<tr><td>${esc(dLong(o.sent_at))}</td><td>${esc(o.title)}</td><td>${esc(o.company || '')}</td><td>${esc(shortPlace(o.location))}</td><td>${esc(t('st_' + o.status))}</td><td>${esc(srcLabel(o.source))}</td></tr>`).join('');
+  $('printArea').innerHTML = `<h1>${esc(t('rpTitle'))}</h1><p class="meta">${who}<br>${esc(t('rpGen', { d: dLong(new Date().toISOString()) }))}</p>
+    <div class="sum"><b>${esc(t('rpApps', { n: apps.length }))}</b><span>${esc(t('rpInt', { n: apps.filter((o) => o.status === 'interview').length }))}</span><span>${esc(t('rpRej', { n: apps.filter((o) => o.status === 'rejected').length }))}</span></div>
+    ${apps.length ? `<table><thead><tr><th>${esc(t('rpDate'))}</th><th>${esc(t('rpJob'))}</th><th>${esc(t('rpCompany'))}</th><th>${esc(t('rpPlace'))}</th><th>${esc(t('rpStatus'))}</th><th>${esc(t('rpSource'))}</th></tr></thead><tbody>${rows}</tbody></table>` : `<p>${esc(t('rpNone'))}</p>`}
+    <p class="foot">${esc(t('rpNote'))}</p>`;
+  exportSheet.close();
+  setTimeout(() => window.print(), 50);
+});
+$('exportCsv').addEventListener('click', () => {
+  const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const head = [t('rpDate'), t('rpJob'), t('rpCompany'), t('rpPlace'), t('rpStatus'), t('rpSource'), t('rpLink')].map(q).join(';');
+  const lines = [...offers].sort((a, b) => Date.parse(b.sent_at) - Date.parse(a.sent_at)).map((o) => [dLong(o.sent_at), o.title, o.company, o.location, t('st_' + stKey(o)), srcLabel(o.source), o.url || ''].map(q).join(';'));
+  const blob = new Blob(['\ufeff' + [head, ...lines].join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `veille-emploi-candidatures-${todayIso()}.csv`;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  exportSheet.close();
+});
 sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); });
 
 /* ---------- share the app ---------- */

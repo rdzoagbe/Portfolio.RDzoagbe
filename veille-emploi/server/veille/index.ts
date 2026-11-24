@@ -6,6 +6,8 @@
 //   POST {action:'pause' | 'logout' | 'delete', session}
 //   POST {action:'offers', session}                  -> history of offers sent, with opened/status
 //   POST {action:'offer_status', session, id, status} -> new | applied | interview | rejected | notforme
+//   POST {action:'add_offer', session, title, company?, location?, url?, date?, status?} -> an application found elsewhere
+//   POST {action:'delete_offer', session, id}
 //   POST {action:'run'} + x-cron-secret header       -> send due alerts (pg_cron, every 15 min)
 //   GET  ?a=go&o=TRACK_ID (offer links in emails: marks the offer opened, then redirects)
 //   GET  ?a=stop&t=TOKEN (link in every email) | ?a=confirm&t=TOKEN (older emails)
@@ -233,7 +235,7 @@ Deno.serve(async (req) => {
         const o = url.searchParams.get('o');
         const { data: off } = o && /^[0-9a-f-]{36}$/i.test(o)
           ? await db.from('offers').select('id,url,opened_at').eq('track_id', o).maybeSingle() : { data: null };
-        if (!off || !/^https:\/\//i.test(off.url)) return new Response(null, { status: 302, headers: { location: APP_URL } });
+        if (!off || !/^https:\/\//i.test(off.url || '')) return new Response(null, { status: 302, headers: { location: APP_URL } });
         if (!off.opened_at) await db.from('offers').update({ opened_at: now() }).eq('id', off.id);
         return new Response(null, { status: 302, headers: { location: off.url, 'cache-control': 'no-store' } });
       }
@@ -253,15 +255,39 @@ Deno.serve(async (req) => {
     switch (body.action) {
       case 'code': return await requestCode(body);
       case 'verify': return await verifyCode(body);
-      case 'account': case 'save': case 'pause': case 'logout': case 'delete': case 'offers': case 'offer_status': {
+      case 'account': case 'save': case 'pause': case 'logout': case 'delete': case 'offers': case 'offer_status': case 'add_offer': case 'delete_offer': {
         const s = await bySession(body.session);
         if (!s) return json({ error: 'signed_out' }, 401);
         if (body.action === 'account') return json({ ok: true, account: await accountView(s.sub) });
         if (body.action === 'save') return await save(s.sub, body);
         if (body.action === 'offers') {
-          const { data } = await db.from('offers').select('track_id,title,company,location,source,posted_at,sent_at,opened_at,status')
+          const { data } = await db.from('offers').select('track_id,title,company,location,url,source,posted_at,sent_at,opened_at,status')
             .eq('sub_id', s.sub.id).gte('sent_at', new Date(Date.now() - 365 * 86400000).toISOString()).order('sent_at', { ascending: false }).limit(500);
           return json({ ok: true, offers: data || [] });
+        }
+        if (body.action === 'add_offer') {
+          const clip = (v: unknown, n: number) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
+          const title = clip(body.title, 200); const company = clip(body.company, 120);
+          const url = clip(body.url, 1000); const location = clip(body.location, 200);
+          const st = ['new', 'applied', 'interview', 'rejected', 'notforme'].includes(String(body.status)) ? String(body.status) : 'applied';
+          if (!title) return json({ error: 'missing_title' }, 400);
+          if (url && !/^https?:\/\/[^\s]+$/i.test(url)) return json({ error: 'bad_url' }, 400);
+          const d = typeof body.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.date) ? new Date(body.date + 'T12:00:00Z') : new Date();
+          const when = isNaN(d.getTime()) || d.getTime() > Date.now() + 86400000 ? now() : d.toISOString();
+          const { count } = await db.from('offers').select('id', { count: 'exact', head: true }).eq('sub_id', s.sub.id).eq('source', 'manual')
+            .gte('sent_at', new Date(Date.now() - 86400000).toISOString());
+          if ((count || 0) >= 100) return json({ error: 'too_many' }, 429);
+          const { data, error } = await db.from('offers').insert({
+            sub_id: s.sub.id, offer_key: 'manual:' + crypto.randomUUID(), title, company, location, url: url ? (url.startsWith('http://') ? url.replace('http://', 'https://') : url) : null,
+            source: 'manual', sent_at: when, opened_at: when, status: st, status_at: now(),
+          }).select('track_id,title,company,location,url,source,posted_at,sent_at,opened_at,status').single();
+          if (error) throw error;
+          return json({ ok: true, offer: data });
+        }
+        if (body.action === 'delete_offer') {
+          if (typeof body.id !== 'string' || !/^[0-9a-f-]{36}$/i.test(body.id)) return json({ error: 'bad_request' }, 400);
+          await db.from('offers').delete().eq('track_id', body.id).eq('sub_id', s.sub.id);
+          return json({ ok: true });
         }
         if (body.action === 'offer_status') {
           const st = String(body.status || '');
