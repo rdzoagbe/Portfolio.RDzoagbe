@@ -1,4 +1,4 @@
-const VERSION = '0.10.1';
+const VERSION = '0.11.0';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -93,7 +93,7 @@ const T = {
     l1t: 'Crée ton compte', l1: 'Avec ton adresse email, quelle qu’elle soit, et un code à 6 chiffres. Pas de mot de passe.',
     l2t: 'Ajoute ton CV et dis ce que tu cherches', l2: 'Postes, lieux, salaire, télétravail. Ton CV est lu sur ton téléphone : il n’est envoyé nulle part.',
     l3t: 'Reçois tes offres', l3: 'Les offres de startups et scale-ups, plus des liens LinkedIn, Indeed, Welcome to the Jungle… à la fréquence de ton choix. Tu arrêtes quand tu veux.',
-    l4t: 'Suis tes candidatures', l4: 'Note où tu as postulé, vois tes statistiques et exporte ton historique en PDF : pratique pour France Travail ou ton conseiller.',
+    l4t: 'Suis tes candidatures', l4: 'Note où tu as postulé (ou transfère simplement tes emails de candidature), vois tes statistiques et exporte ton historique en PDF : pratique pour France Travail ou ton conseiller.',
     anyMailT: 'Toutes les adresses email fonctionnent', anyMail: 'Gmail, Outlook, Hotmail, Yahoo, Orange, Free, SFR, iCloud… Pas besoin de créer une adresse Gmail : utilise celle que tu as déjà.',
     start: 'Commencer', lFoot: 'Gratuit · sans mot de passe · réservé à la famille et aux amis', haveAccount: 'Déjà un compte ? Se connecter',
     siTitle: 'Ton adresse email', siHelp: 'On t’envoie un code à 6 chiffres pour créer ton compte ou te reconnecter. Toutes les adresses fonctionnent : Gmail, Outlook, Yahoo, Orange, iCloud…', siEmailPh: 'ton.adresse@exemple.fr', sendCode: 'Recevoir mon code',
@@ -110,6 +110,8 @@ const T = {
     tapNote: 'Un tap suffit : tes stats se mettent à jour toutes seules. Touche à nouveau pour annuler.', loading: 'Chargement…',
     emptyAll: 'Pas encore d’offres ici. Elles apparaîtront dès ton prochain email d’alerte.', emptyFilter: 'Aucune offre dans cette catégorie.',
     src_startups: 'Startups', src_francetravail: 'France Travail', src_gmail: 'Importée de Gmail', src_manual: 'Ajoutée à la main', src_forward: 'Email transféré',
+    fwdT: 'Ajouter une candidature par email', fwdHelp: 'Transfère tes emails de candidature (confirmation, refus, invitation à un entretien) à cette adresse, depuis {e}. Ils s’ajoutent ici tout seuls en quelques minutes, et tu reçois une confirmation.',
+    fwdCopy: 'Copier', fwdCopied: 'Adresse copiée ✓', fwdHow: 'Marche avec toutes les boîtes mail (Gmail, Outlook, Yahoo, Orange…) : ouvre l’email, appuie sur « Transférer » et colle l’adresse. Seuls le poste, l’entreprise et le statut sont gardés, pas le contenu de l’email.',
     addApp: '+ Ajouter une candidature', addHelp: 'Pour une candidature faite ailleurs : LinkedIn, Indeed, site de l’entreprise…', addJob: 'Poste *', addJobPh: 'ex. Responsable informatique',
     addCompany: 'Entreprise', addCompanyPh: 'ex. Doctolib', addUrl: 'Lien de l’annonce (facultatif)', addDate: 'Date', addStatus: 'Statut', optNew: 'Pas encore postulé',
     save: 'Enregistrer', cancel: 'Annuler', eAddTitle: 'Indique au moins le poste.', eAddUrl: 'Ce lien ne semble pas valide : il doit commencer par https://', added: 'Candidature ajoutée ✓',
@@ -177,7 +179,7 @@ const T = {
     l1t: 'Create your account', l1: 'With your email address, whichever it is, and a 6-digit code. No password.',
     l2t: 'Add your CV and say what you want', l2: 'Jobs, places, salary, remote work. Your CV is read on your phone: it is never sent anywhere.',
     l3t: 'Get your offers', l3: 'Offers from startups and scale-ups, plus LinkedIn, Indeed, Welcome to the Jungle links… as often as you like. Stop anytime.',
-    l4t: 'Track your applications', l4: 'Note where you applied, see your stats and export your history as a PDF: handy for the job centre or your adviser.',
+    l4t: 'Track your applications', l4: 'Note where you applied (or just forward your application emails), see your stats and export your history as a PDF: handy for the job centre or your adviser.',
     anyMailT: 'Any email address works', anyMail: 'Gmail, Outlook, Hotmail, Yahoo, Orange, Free, SFR, iCloud… No need to create a Gmail address: use the one you already have.',
     start: 'Get started', lFoot: 'Free · no password · for family and friends', haveAccount: 'Already have an account? Sign in',
     siTitle: 'Your email address', siHelp: 'We’ll send you a 6-digit code to create your account or sign back in. Any address works: Gmail, Outlook, Yahoo, Orange, iCloud…', siEmailPh: 'you@example.com', sendCode: 'Get my code',
@@ -194,6 +196,8 @@ const T = {
     tapNote: 'One tap is enough: your stats update by themselves. Tap again to undo.', loading: 'Loading…',
     emptyAll: 'No offers here yet. They will show up after your next alert email.', emptyFilter: 'No offers in this category.',
     src_startups: 'Startups', src_francetravail: 'France Travail', src_gmail: 'Imported from Gmail', src_manual: 'Added by hand', src_forward: 'Forwarded email',
+    fwdT: 'Add an application by email', fwdHelp: 'Forward your application emails (confirmation, rejection, interview invitation) to this address, from {e}. They show up here on their own within minutes, and you get a confirmation.',
+    fwdCopy: 'Copy', fwdCopied: 'Address copied ✓', fwdHow: 'Works with any mailbox (Gmail, Outlook, Yahoo, Orange…): open the email, tap “Forward” and paste the address. Only the job, company and status are kept, not the email itself.',
     addApp: '+ Add an application', addHelp: 'For an application made elsewhere: LinkedIn, Indeed, a company website…', addJob: 'Job title *', addJobPh: 'e.g. IT Manager',
     addCompany: 'Company', addCompanyPh: 'e.g. Doctolib', addUrl: 'Link to the ad (optional)', addDate: 'Date', addStatus: 'Status', optNew: 'Not applied yet',
     save: 'Save', cancel: 'Cancel', eAddTitle: 'Enter at least the job title.', eAddUrl: 'This link doesn’t look valid: it must start with https://', added: 'Application added ✓',
@@ -231,6 +235,8 @@ function applyLang() {
   [...$('setFreq').options].forEach((o) => { o.textContent = t('f' + o.value); });
   const th = { auto: 'tAuto', light: 'tLight', dark: 'tDark' };
   [...$('setTheme').options].forEach((o) => { o.textContent = t(th[o.value]); });
+
+  renderFwd();
 }
 function applyTheme() {
   if (settings.theme === 'auto') document.documentElement.removeAttribute('data-theme');
@@ -948,7 +954,7 @@ $('codeForm').addEventListener('submit', async (e) => {
   applyAccount(r.account, true); tab = 'home'; showView(); window.scrollTo({ top: 0 }); loadOffers();
 });
 function applyAccount(a, fromLogin = false) {
-  data.email = a.email; data.active = a.status === 'active'; data.nextRun = a.next_run_at || null; data.shareInvite = a.invite || data.invite || '';
+  data.email = a.email; data.active = a.status === 'active'; data.nextRun = a.next_run_at || null; data.shareInvite = a.invite || data.invite || ''; data.fwd = a.fwd || '';
   const p = a.prefs || {};
   if (Array.isArray(p.roles) && p.roles.length && (fromLogin || !data.roles.length)) {
     data.roles = p.roles; data.locations = (p.locations || []).filter((id) => G.byId[id]); data.prenom = p.name || data.prenom;
@@ -956,7 +962,7 @@ function applyAccount(a, fromLogin = false) {
     data.excludeTags = p.excludeTags || []; data.exclure = p.exclude || ''; data.sources = p.sources || data.sources; data.since = p.since || data.since;
     ['freq', 'hour', 'max', 'lang'].forEach((k) => { if (p[k]) settings[k] = p[k]; }); write(SKEY, settings); applyLang();
   }
-  save(); render();
+  save(); render(); renderFwd();
 }
 function signedOut() { tab = 'home'; offers = []; delete data.session; data.active = false; save(); showBanner('signedOut'); goSignin(); }
 async function refreshAccount() {
@@ -999,6 +1005,7 @@ function updateBadge() {
   $('navBadge').textContent = n > 9 ? '9+' : String(n); $('navBadge').hidden = !n || tab === 'offers';
 }
 function renderOffers() {
+  renderFwd();
   document.querySelectorAll('#period button').forEach((b) => b.classList.toggle('on', b.dataset.p === period));
   const since = period === 'all' ? 0 : Date.now() - Number(period) * DAY;
   const inP = offers.filter((o) => Date.parse(o.sent_at) >= since);
@@ -1167,6 +1174,19 @@ $('copyLink').addEventListener('click', async () => {
     try { document.execCommand('copy'); } catch { /* ignore */ } ta.remove();
   }
   $('copyMsg').hidden = false;
+});
+
+function renderFwd() {
+  const on = !!(data.session && data.fwd);
+  $('fwdCard').hidden = !on; if (!on) return;
+  $('fwdAddr').textContent = data.fwd; $('fwdHelp').textContent = t('fwdHelp', { e: data.email || '' });
+}
+$('fwdCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(data.fwd); } catch {
+    const ta = document.createElement('textarea'); ta.value = data.fwd; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch { /* ignore */ } ta.remove();
+  }
+  $('fwdMsg').hidden = false;
 });
 
 $('ver').textContent = 'v' + VERSION;

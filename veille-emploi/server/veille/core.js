@@ -357,6 +357,93 @@ export function codeEmail(lang, code) {
   return { subject, html, text: `${intro}\n\n${code}\n\n${valid}\n${ignore}` };
 }
 
+/* ---------- forwarded application emails ---------- */
+// HTML email -> plain text that keeps one line per block and the link targets as " [url]".
+export function htmlToText(html) {
+  return String(html || '')
+    .replace(/<(style|script|head|title)\b[^>]*>[\s\S]*?<\/\1>/gi, '')
+    .replace(/<a\b[^>]*?href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_, h, t) => `${t} [${h.replace(/&amp;/g, '&')}]`)
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/?(p|div|tr|td|th|table|tbody|thead|h[1-6]|li|ul|ol|section|article|header|footer|center|blockquote)\b[^>]*>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&amp;/gi, '&')
+    .replace(/[ \t ]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+const FWD_PREFIX = /^\s*((tr|fwd?|fw|re|wg|rv|réf)\s*:\s*)+/i;
+const REJECT_RX = /(pas (été )?retenue?|n['’]a pas été retenu|n['’]est pas retenu|ne (pas )?donn(er|erons|ons) pas suite|pas (donner|y donner) (une )?suite|ne pouvons pas (lui )?donner une suite|suite favorable|au regret|regret de vous|malheureusement|unfortunately|not (been )?selected|not moving forward|move forward with other|other candidates|autres candidat|décidé de ne pas|decided not to|application_rejected|pas en mesure de donner)/i;
+const INTERVIEW_RX = /((vous )?(invit\w*|convi\w*|planifier|programmer|organiser|caler|fixer)[^.\n]{0,60}(entretien|interview|échange|call|rendez-vous|visio))|((entretien|interview)[^.\n]{0,50}(le (lundi|mardi|mercredi|jeudi|vendredi)|le \d{1,2}|à \d{1,2} ?h|\d{1,2}:\d{2}|vos disponibilités|your availability))|(schedule (an? )?(interview|call))/i;
+const GENERIC_SENDERS = /^(linkedin|indeed|hellowork|welcome to the jungle|apec|france travail|smartrecruiters|teamtailor|workday|no-?reply|noreply|notifications?|candidature|recrutement|recruitment|jobs?|talent|rh|hr|careers?|carrières?)$/i;
+const cleanTitle = (t) => String(t || '').replace(/\s+/g, ' ').replace(/^[«"“'\s:–-]+|[»"”'\s.,!:–-]+$/g, '').replace(/\s*\((h\/f|f\/h)\)\s*$/i, '').slice(0, 200);
+export function parseForward({ subject = '', text = '', fromName = '' }) {
+  const raw = String(text || '').replace(/\r/g, '');
+  const li = raw.match(/linkedin\.com\/(?:comm\/)?jobs\/view\/(\d+)/i);
+  // Text made from HTML: drop invisible filler characters and the [https://…] link targets.
+  const body = raw.replace(/[\u034f\u00ad\u200b-\u200d\u2060\ufeff]/g, '').replace(/[ \t]*\[(?:(?:https?|mailto):[^\]\s]*|[^\]\s@]+@[^\]\s]+)\]/gi, '')
+    .replace(/^[ \t|\[\]#]+/gm, '').replace(/[ \t|\[\]]+$/gm, '');
+  const head = body.split(/\n\s*\n/).slice(0, 12).join('\n');
+  const fwdSubj = (head.match(/^\s*(?:\*?\s*)(?:subject|objet|sujet)\s*:\s*\*?\s*(.+)$/im) || [])[1];
+  const fwdFrom = (head.match(/^\s*(?:\*?\s*)(?:from|de)\s*:\s*\*?\s*(.+)$/im) || [])[1] || '';
+  const subj = cleanTitle(String(fwdSubj || subject).replace(FWD_PREFIX, ''));
+  let senderName = cleanTitle(fwdFrom.replace(/<[^>]*>/, '').replace(/["*]/g, '')) || fromName;
+  if (senderName.includes('@')) senderName = '';
+  if (/\s[-–|]\s/.test(senderName)) senderName = senderName.split(/\s[-–|]\s/).pop();
+  const senderMail = (fwdFrom.match(/<?([^\s<>@]+@([^\s<>]+?))>?\s*$/) || [])[1] || '';
+  const senderDomain = senderMail.split('@')[1] || '';
+  const all = subj + '\n' + body;
+  // "sans réponse sous 4 semaines, considérez que votre candidature n'a pas été retenue" is not a rejection
+  const firm = all.split(/(?<=[.!?\n])\s+/).filter((x) => !/(sans (réponse|retour|nouvelles)|si vous n['’]avez pas|considérer que|considérez que|if you (are not|have not|haven['’]t) (been )?(contacted|heard)|please consider|à défaut de)/i.test(x)).join(' ');
+  let status = REJECT_RX.test(firm) ? 'rejected' : INTERVIEW_RX.test(firm) ? 'interview' : 'applied';
+  let title = ''; let company = ''; let m;
+  if ((m = subj.match(/your application to (.+?) at (.+)$/i))) { title = m[1]; company = m[2]; }
+  else if ((m = subj.match(/application (?:was )?sent to (.+)$/i))) {
+    company = m[1];
+    const parts = body.split(/application was sent to [^\n]+\n/i);
+    const after = parts.length > 1 ? parts[parts.length - 1] : '';
+    const co = company.toLowerCase();
+    for (const line of after.split('\n').map((l) => l.trim())) {
+      if (!line || /^https?:/i.test(line) || /^(to|à|date|cc|de|from|objet|subject)\s*:/i.test(line)) continue;
+      if (/^(view job|apply|easy apply|applied on|candidature envoyée|postulé le|now, take|maintenant)/i.test(line)) continue;
+      // The job card can read "Infrastructure ManagerGroupe TSS · Paris" when the cells run together.
+      const at = co ? line.toLowerCase().indexOf(co) : -1;
+      const cut = ((at > 0 ? line.slice(0, at) : at === 0 ? '' : line).split(/\s*\|\s*/).map((x) => x.trim()).filter(Boolean)[0]) || '';
+      if (cut && !/ · /.test(cut)) { title = cut; break; }
+    }
+  }
+  const poste = all.match(/(?:candidature|application|postul\w+)[^\n]{0,40}?(?:au poste|pour le poste|à l['’]offre|à (?:notre|votre|cette) offre|for the (?:position|role)(?: of)?|poste)\s*(?:de |d['’]|:|of )?\s*[«"“]?([^\n«»"“”]{3,120}?)[»"”]?(?=\s*(?:\(|,? et pour|,? et vous|\. |\.$|!|$|\n| au sein| chez| at | à | dans |H\/F|F\/H|A\/F))/im);
+  if (!title && poste) title = poste[1];
+  if (!title && (m = subj.match(/votre candidature (?:de|pour|:)\s*(.+?)(?: n['’]est pas retenue| a bien été|$)/i))) title = m[1];
+  if (!title && (m = subj.match(/candidature\s*[-–:]\s*(?:offre [\w-]+\s*[-–]\s*)?(.+)$/i))) title = m[1];
+  if (!company && (m = all.match(/(?:candidature|application|intérêt)[^\n]{0,60}?(?:chez|at|au sein (?:de la |du |des |de l['’]|de )|pour (?:la société |l['’]entreprise ))\s*([A-Z0-9@][^\n,.!:;()]{1,60})/))) company = m[1];
+  if (!company && (m = subj.match(/(?:chez|at|arrivée chez)\s+(.+)$/i))) company = m[1];
+  const GENERIC_DOMAIN = /(^|\.)(gmail|googlemail|outlook|hotmail|live|yahoo|icloud|orange|free|sfr|laposte|linkedin|indeed|hellowork|smartrecruiters|teamtailor(-mail)?|welcomekit|taleez|join|digitalrecruiters|profils|lever|greenhouse|ashbyhq|workday|myworkday|recruitee|jobteaser|apec|francetravail)\./i;
+  const domainName = senderDomain && !GENERIC_DOMAIN.test(senderDomain) ? (() => { const d = senderDomain.split('.').slice(-2, -1)[0] || ''; return d.charAt(0).toUpperCase() + d.slice(1); })() : '';
+  const personLike = /^[A-ZÀ-Ý][a-zà-ÿ'’-]+(?: [A-ZÀ-Ý][A-Za-zÀ-ÿ'’-]+){1,2}$/.test(senderName) && !/(group|groupe|sas|sa|inc|ltd|hôpita|caisse|recrut)/i.test(senderName);
+  if (!company && senderName && !personLike && !GENERIC_SENDERS.test(senderName.split(/\s/)[0]) && !GENERIC_SENDERS.test(senderName)) company = senderName.replace(/\b(recrutement|recruitment|recruiting|team|équipe|rh|hr)\b.*$/i, '');
+  if (!company && (m = all.match(/intérêt que vous (?:portez|avez manifesté|avez porté) (?:à|pour) (?:la société |l['’]entreprise |notre entreprise )?([A-Z][^\n,.!]{1,50})/))) company = m[1];
+  if (!company && domainName) company = domainName;
+  title = cleanTitle(title); company = cleanTitle(company).replace(/\s+(H\/F|F\/H)$/i, '');
+  if (/^(received|reçue|bien reçue|.*prise en compte|est arrivée.*)$/i.test(title)) title = '';
+  if (!title) title = cleanTitle(subj.replace(/^(roland,?\s*)?(merci pour |suite à |accusé de réception de )?(votre |your )?(candidature|application)\s*(chez|at|:|-|–)?\s*/i, '')) || 'Candidature';
+  const url = li ? `https://www.linkedin.com/jobs/view/${li[1]}/` : null;
+  if (/^(received|reçue|bien reçue|.*prise en compte|application received)$/i.test(title)) title = 'Candidature';
+  return { title, company: company.slice(0, 120), status, url };
+}
+export function fwdReply(lang, kind, info) {
+  const en = lang === 'en';
+  const L = {
+    ok: en ? `Added to your Veille Emploi history: ${info.title}${info.company ? ' – ' + info.company : ''} (${info.statusLabel}).` : `Ajouté à ton historique Veille Emploi : ${info.title}${info.company ? ' – ' + info.company : ''} (${info.statusLabel}).`,
+    upd: en ? `Updated in your Veille Emploi history: ${info.title}${info.company ? ' – ' + info.company : ''} is now “${info.statusLabel}”.` : `Mis à jour dans ton historique Veille Emploi : ${info.title}${info.company ? ' – ' + info.company : ''} passe en « ${info.statusLabel} ».`,
+    dup: en ? `Already in your Veille Emploi history: ${info.title}${info.company ? ' – ' + info.company : ''}.` : `Déjà dans ton historique Veille Emploi : ${info.title}${info.company ? ' – ' + info.company : ''}.`,
+    unknown: en ? 'This address has no Veille Emploi account, so nothing was added. Forward the email from the address you sign in with.' : 'Cette adresse n’a pas de compte Veille Emploi : rien n’a été ajouté. Transfère l’email depuis l’adresse avec laquelle tu te connectes à l’app.',
+  }[kind];
+  const fix = en ? 'If something is wrong, you can change the status or remove it in the app, under “My offers”.' : 'Si quelque chose est faux, tu peux changer le statut ou le supprimer dans l’app, onglet « Mes offres ».';
+  const subject = kind === 'unknown' ? (en ? 'Veille Emploi: address not recognised' : 'Veille Emploi : adresse non reconnue') : (en ? 'Veille Emploi: application recorded ✓' : 'Veille Emploi : candidature enregistrée ✓');
+  const html = wrap(`<p>${esc(L)}</p>${kind === 'unknown' ? '' : `<p style="color:#56655f;font-size:13px">${esc(fix)}</p>`}<p><a href="${esc(APP_URL)}" style="color:#0f5c4f">${esc(en ? 'Open the app' : 'Ouvrir l’app')}</a></p>`);
+  return { subject, html, text: `${L}\n\n${kind === 'unknown' ? '' : fix + '\n\n'}${APP_URL}` };
+}
+
 /* ---------- input validation ---------- */
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const arr = (v, maxN, maxL) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string' && x.trim()).map((x) => x.trim().slice(0, maxL)).slice(0, maxN) : []);
