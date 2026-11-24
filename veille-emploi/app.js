@@ -1,4 +1,4 @@
-const VERSION = '0.7.1';
+const VERSION = '0.7.2';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -52,7 +52,7 @@ const T = {
     install: "Installer l'app", settings: 'Réglages', close: 'Fermer',
     beta: "<b>Version bêta.</b> Tes alertes arrivent par email. Ton CV reste sur ton téléphone : seuls tes critères de recherche et ton email sont envoyés pour préparer tes alertes.",
     cFirstConfirm: 'premier email juste après ta confirmation', pending: 'EN ATTENTE', statusPending: 'Ouvre l’email envoyé à {e} et clique sur « Confirmer mes alertes » pour démarrer. Pense à regarder dans les spams.',
-    sending: 'Envoi…', errInvite: "Cette app est réservée à la famille et aux amis de Roland. Demande-lui d'ajouter ton adresse email, puis réessaie.",
+    sending: 'Envoi…', errInvite: "Cette app est réservée à la famille et aux amis de Roland. Ouvre-la avec le lien d'invitation qu'il t'a envoyé, puis réessaie.",
     errMail: "Le service d'alertes n'a pas pu envoyer l'email de confirmation. Réessaie dans quelques minutes ; si ça continue, préviens Roland.",
     errWait: 'Un email de confirmation vient de partir. Attends une minute avant de réessayer.', errNet: "Impossible de joindre le service d'alertes. Vérifie ta connexion et réessaie.",
     cTitlePending: 'Vérifie ta boîte mail', cNotePending: 'On vient d’envoyer un email à <b>{e}</b>. Clique sur <b>« Confirmer mes alertes »</b> dedans : ton premier email d’offres arrive juste après. Pense à regarder dans les spams.',
@@ -102,7 +102,7 @@ const T = {
     install: 'Install app', settings: 'Settings', close: 'Close',
     beta: '<b>Beta version.</b> Your alerts arrive by email. Your CV stays on your phone: only your search criteria and your email are sent to prepare your alerts.',
     cFirstConfirm: 'first email right after you confirm', pending: 'WAITING', statusPending: 'Open the email sent to {e} and click “Confirm my alerts” to start. Check your spam folder too.',
-    sending: 'Sending…', errInvite: "This app is for Roland's family and friends. Ask him to add your email address, then try again.",
+    sending: 'Sending…', errInvite: "This app is for Roland's family and friends. Open it with the invite link he sent you, then try again.",
     errMail: "The alert service couldn't send the confirmation email. Try again in a few minutes; if it keeps failing, tell Roland.",
     errWait: 'A confirmation email was just sent. Wait a minute before trying again.', errNet: "Can't reach the alert service. Check your connection and try again.",
     cTitlePending: 'Check your inbox', cNotePending: 'We just sent an email to <b>{e}</b>. Click <b>“Confirm my alerts”</b> in it: your first offers email arrives right after. Check your spam folder too.',
@@ -738,7 +738,7 @@ async function submitAlerts() {
   const btn = $('activate'); const err = $('formErr');
   btn.disabled = true; const label = btn.textContent; btn.textContent = t('sending');
   let res;
-  try { res = await callApi({ action: 'subscribe', email: data.email.trim(), prefs: payload(), token: data.tokenEmail === data.email.trim().toLowerCase() ? data.token : undefined }); }
+  try { res = await callApi({ action: 'subscribe', email: data.email.trim(), prefs: payload(), token: data.tokenEmail === data.email.trim().toLowerCase() ? data.token : undefined, code: data.invite || undefined }); }
   catch { res = { error: 'net' }; }
   btn.disabled = false; btn.textContent = label;
   if (res.status === 'active') {
@@ -785,7 +785,9 @@ $('pause').addEventListener('click', async () => {
 $('wipe').addEventListener('click', () => {
   if (data.token) callApi({ action: 'pause', token: data.token }).catch(() => {});
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
-  data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [] };
+  const invite = data.invite;
+  data = { invite, roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [] };
+  if (invite) save();
   $('form').reset(); render(); $('wipeMsg').hidden = false; setTimeout(() => { $('wipeMsg').hidden = true; }, 3000);
 });
 
@@ -813,6 +815,14 @@ if ('serviceWorker' in navigator) window.addEventListener('load', () => navigato
 
 /* ---------- back from an email link (#ve=confirmed|stopped|invalid) ---------- */
 function showBanner(key, good) { const b = $('banner'); b.textContent = t(key); b.className = 'banner' + (good ? ' good' : ''); b.hidden = false; }
+// Invite link: ?i=CODE is kept on this device and sent when alerts are turned on.
+(function readInvite() {
+  const q = new URLSearchParams(location.search); const code = (q.get('i') || '').trim().toLowerCase();
+  if (!/^[a-z0-9]{6,32}$/.test(code)) return;
+  data.invite = code; save();
+  q.delete('i'); const rest = q.toString();
+  history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+})();
 (function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
   const ve = h.get('ve'); if (!ve) return;
