@@ -30,6 +30,7 @@
 </header>
 
 <main class="wrap">
+  <p class="banner" id="banner" role="status" hidden></p>
   <p class="beta" role="note" data-i18n-html="beta"></p>
   <div id="iosHint" class="hint" hidden data-i18n-html="iosHint"></div>
 
@@ -37,6 +38,10 @@
     <div id="statusOff">
       <span class="pill off" data-i18n="inactive">INACTIF</span>
       <p data-i18n="statusOff"></p>
+    </div>
+    <div id="statusPending" hidden>
+      <span class="pill wait" data-i18n="pending">EN ATTENTE</span>
+      <p id="pendingText"></p>
     </div>
     <div id="statusOn" hidden>
       <span class="pill on" data-i18n="active">ACTIF</span>
@@ -177,10 +182,10 @@
   <form method="dialog" class="sheet">
     <div class="confirm-head">
       <span class="confirm-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <h2 id="confirmTitle" data-i18n="cTitle"></h2>
+      <h2 id="confirmTitle"></h2>
     </div>
     <dl class="confirm-list" id="confirmList"></dl>
-    <p class="confirm-note" data-i18n-html="cNote"></p>
+    <p class="confirm-note" id="confirmNote"></p>
     <button class="primary" value="close" id="confirmOk" data-i18n="cSeePreview"></button>
   </form>
 </dialog>

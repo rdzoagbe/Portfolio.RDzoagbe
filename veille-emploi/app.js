@@ -1,8 +1,10 @@
-const VERSION = '0.6.4';
+const VERSION = '0.7.0';
+const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
 const PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
 const $ = (id) => document.getElementById(id);
+const esc = (x) => String(x ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const G = window.VE_GEO;
 
 /* ---------- storage ---------- */
@@ -48,7 +50,13 @@ const save = () => write(KEY, data);
 const T = {
   fr: {
     install: "Installer l'app", settings: 'Réglages', close: 'Fermer',
-    beta: "<b>Version test.</b> L'app ne cherche pas encore de vraies offres : tu peux tout essayer, et les offres affichées sont des exemples. Tes informations restent sur ton téléphone.",
+    beta: "<b>Version bêta.</b> Tes alertes arrivent par email. Ton CV reste sur ton téléphone : seuls tes critères de recherche et ton email sont envoyés pour préparer tes alertes.",
+    cFirstConfirm: 'premier email juste après ta confirmation', pending: 'EN ATTENTE', statusPending: 'Ouvre l’email envoyé à {e} et clique sur « Confirmer mes alertes » pour démarrer. Pense à regarder dans les spams.',
+    sending: 'Envoi…', errInvite: "Cette app est réservée à la famille et aux amis de Roland. Demande-lui d'ajouter ton adresse email, puis réessaie.",
+    errWait: 'Un email de confirmation vient de partir. Attends une minute avant de réessayer.', errNet: "Impossible de joindre le service d'alertes. Vérifie ta connexion et réessaie.",
+    cTitlePending: 'Vérifie ta boîte mail', cNotePending: 'On vient d’envoyer un email à <b>{e}</b>. Clique sur <b>« Confirmer mes alertes »</b> dedans : ton premier email d’offres arrive juste après. Pense à regarder dans les spams.',
+    cTitleUpdated: 'Alertes mises à jour', cNoteUpdated: 'Tes nouveaux critères sont enregistrés. Ils servent dès le prochain email.',
+    bannerConfirmed: '✓ Alertes confirmées ! Ton premier email d’offres arrive dans quelques minutes.', bannerStopped: 'Tes alertes sont arrêtées. Tu peux les réactiver quand tu veux.', bannerInvalid: 'Ce lien n’est plus valide. Réactive tes alertes depuis cette page.',
     iosHint: "Pour l'installer sur iPhone : touche <b>Partager</b> puis <b>Sur l'écran d'accueil</b>.",
     inactive: 'INACTIF', active: 'ACTIF', statusOff: 'Dépose ton CV, dis ce que tu cherches, puis active tes alertes.',
     nextEmail: 'Prochain email :', sentTo: 'Envoyé à', maxText: "jusqu'à {n} offres par email",
@@ -68,13 +76,13 @@ const T = {
     x_weekend: 'Week-ends', x_astreintes: 'Astreintes', x_deplacements: 'Déplacements fréquents', x_esn: 'ESN et sociétés de conseil',
     x_cabinets: 'Cabinets de recrutement', x_nosalary: 'Sans salaire indiqué',
     exNone: 'Aucune exclusion', cTitle: 'Tes alertes sont prêtes', cJobs: 'Postes', cPlaces: 'Lieux', cOffers: 'Offres envoyées depuis', cLinks: 'Liens de recherche', cWhen: 'Fréquence', cFirst: 'premier email {d}', cSeePreview: "Voir l'aperçu de l'email",
-    cNote: "<b>Version test :</b> aucun email ni notification n'est encore envoyé. Dans la version complète, tu recevras d'abord un email de confirmation, puis tes offres à la fréquence choisie, uniquement celles publiées dans la période choisie.", wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
+    cNote: '', wholeRegion: 'Toute la région {r}', wholeRegionShort: 'toute la région', allShort: 'tout', locPick: 'Choisis une région ou un département', locMany: '{n} lieux choisis', locSearchPh: 'Rechercher une région, un département, une ville ou un code (ex. 93)', sumTitle: 'Sélection actuelle', sumRegions: 'Régions', sumDepts: 'Départements', sumOther: 'Autres', sumNone: 'Aucun lieu choisi.', reset: 'Réinitialiser', ok: 'OK', noMatchFor: 'Aucun résultat pour « {q} »', clearSearch: 'Effacer la recherche', regionPick: 'Départements – {r}', regionAll: 'Tous', regionHelp: 'Touche des départements pour réduire la zone.',
     remote_hybrid: 'Hybride ou complet', remote_onsite: 'Sur site accepté', remote_remote: 'Télétravail complet uniquement',
     contract_cdi: 'CDI', contract_cdi_cdd: 'CDI ou CDD', contract_cdi_free: 'CDI ou freelance', contract_all: 'Tous',
     consent: "J'accepte que mon CV soit analysé pour me proposer des offres. Je peux tout supprimer à tout moment.",
     activate: 'Activer mes alertes', update: 'Mettre à jour mes alertes', pause: 'Mettre en pause',
     missing: 'Il manque : {list}.', mCv: 'ton CV', mEmail: 'un email valide', mRoles: 'au moins un poste', mLoc: 'un lieu', mConsent: 'ton accord (case à cocher)',
-    previewTitle: 'Aperçu de ton prochain email', previewNote: "Offres d'exemple : la vraie recherche arrive dans la prochaine version.",
+    previewTitle: 'À quoi ressemble ton email', previewNote: 'Exemple de présentation : les vraies offres arrivent par email.',
     subject: 'Nouvelles offres à postuler – {d}', hello: 'Bonjour {name}, voici 2 nouvelles offres qui correspondent à ton CV. Postule dans les 48 heures.',
     why: 'Pourquoi : ', warn: "Point d'attention : ", ex1c: 'Scale-up (exemple)', ex2c: 'PME en croissance (exemple)',
     ex1w: 'Ton expérience correspond aux missions principales de ce poste.', ex2w: 'Ton parcours couvre la plupart des compétences attendues.',
@@ -87,11 +95,17 @@ const T = {
     badgeAuto: 'offres envoyées', badgeLink: 'lien de recherche', since1: '24 heures', since3: '3 jours', since7: '7 jours',
     mSources: 'au moins une source', linksTitle: 'Recherches prêtes', linksHelp: 'Un clic ouvre les offres publiées depuis {d}, avec tes critères.',
     noAuto: "Tu n'as coché que des liens de recherche : l'email contiendra seulement les liens ci-dessous.", dLabel1: '24 heures', dLabel3: '3 jours', dLabel7: '7 jours',
-    testVersion: 'version test', at: 'à', remove: 'Retirer', add: 'Ajouter', noMatch: 'Aucun lieu trouvé',
+    testVersion: 'bêta', at: 'à', remove: 'Retirer', add: 'Ajouter', noMatch: 'Aucun lieu trouvé',
   },
   en: {
     install: 'Install app', settings: 'Settings', close: 'Close',
-    beta: "<b>Test version.</b> The app doesn't search real job offers yet: try everything, the offers shown are examples. Your information stays on your phone.",
+    beta: '<b>Beta version.</b> Your alerts arrive by email. Your CV stays on your phone: only your search criteria and your email are sent to prepare your alerts.',
+    cFirstConfirm: 'first email right after you confirm', pending: 'WAITING', statusPending: 'Open the email sent to {e} and click “Confirm my alerts” to start. Check your spam folder too.',
+    sending: 'Sending…', errInvite: "This app is for Roland's family and friends. Ask him to add your email address, then try again.",
+    errWait: 'A confirmation email was just sent. Wait a minute before trying again.', errNet: "Can't reach the alert service. Check your connection and try again.",
+    cTitlePending: 'Check your inbox', cNotePending: 'We just sent an email to <b>{e}</b>. Click <b>“Confirm my alerts”</b> in it: your first offers email arrives right after. Check your spam folder too.',
+    cTitleUpdated: 'Alerts updated', cNoteUpdated: 'Your new criteria are saved. They apply from the next email.',
+    bannerConfirmed: '✓ Alerts confirmed! Your first offers email arrives in a few minutes.', bannerStopped: 'Your alerts are stopped. You can turn them back on anytime.', bannerInvalid: 'This link is no longer valid. Turn your alerts on again from this page.',
     iosHint: 'To install on iPhone: tap <b>Share</b>, then <b>Add to Home Screen</b>.',
     inactive: 'OFF', active: 'ON', statusOff: 'Add your CV, say what you are looking for, then turn on your alerts.',
     nextEmail: 'Next email:', sentTo: 'Sent to', maxText: 'up to {n} offers per email',
@@ -111,13 +125,13 @@ const T = {
     x_weekend: 'Weekends', x_astreintes: 'On-call duty', x_deplacements: 'Frequent travel', x_esn: 'IT services & consulting firms',
     x_cabinets: 'Recruitment agencies', x_nosalary: 'No salary shown',
     exNone: 'Nothing excluded', cTitle: 'Your alerts are ready', cJobs: 'Jobs', cPlaces: 'Places', cOffers: 'Offers sent from', cLinks: 'Search links', cWhen: 'Frequency', cFirst: 'first email {d}', cSeePreview: 'See the email preview',
-    cNote: '<b>Test version:</b> no email or notification is sent yet. In the full version you will first get a confirmation email, then your offers at the chosen frequency, only those posted within the chosen period.', wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
+    cNote: '', wholeRegion: 'All of {r}', wholeRegionShort: 'whole region', allShort: 'all', locPick: 'Choose a region or department', locMany: '{n} places chosen', locSearchPh: 'Search a region, department, city or code (e.g. 93)', sumTitle: 'Current selection', sumRegions: 'Regions', sumDepts: 'Departments', sumOther: 'Other', sumNone: 'No place chosen.', reset: 'Reset', ok: 'OK', noMatchFor: 'No results for "{q}"', clearSearch: 'Clear search', regionPick: 'Departments – {r}', regionAll: 'All', regionHelp: 'Tap departments to narrow the area.',
     remote_hybrid: 'Hybrid or fully remote', remote_onsite: 'On-site is fine', remote_remote: 'Fully remote only',
     contract_cdi: 'Permanent (CDI)', contract_cdi_cdd: 'Permanent or fixed-term', contract_cdi_free: 'Permanent or freelance', contract_all: 'Any',
     consent: 'I agree that my CV is analysed to suggest job offers. I can delete everything at any time.',
     activate: 'Turn on my alerts', update: 'Update my alerts', pause: 'Pause alerts',
     missing: 'Missing: {list}.', mCv: 'your CV', mEmail: 'a valid email', mRoles: 'at least one job title', mLoc: 'a location', mConsent: 'your consent (checkbox)',
-    previewTitle: 'Preview of your next email', previewNote: 'Example offers: real search comes in the next version.',
+    previewTitle: 'What your email looks like', previewNote: 'Layout example: the real offers arrive by email.',
     subject: 'New jobs to apply for – {d}', hello: 'Hi {name}, here are 2 new offers that match your CV. Apply within 48 hours.',
     why: 'Why: ', warn: 'Watch out: ', ex1c: 'Scale-up (example)', ex2c: 'Growing SME (example)',
     ex1w: 'Your experience matches the main duties of this role.', ex2w: 'Your background covers most of the required skills.',
@@ -130,7 +144,7 @@ const T = {
     badgeAuto: 'offers sent', badgeLink: 'search link', since1: '24 hours', since3: '3 days', since7: '7 days',
     mSources: 'at least one source', linksTitle: 'Ready-made searches', linksHelp: 'One click opens offers posted in the last {d}, with your criteria.',
     noAuto: 'You only ticked search links: the email will contain just the links below.', dLabel1: '24 hours', dLabel3: '3 days', dLabel7: '7 days',
-    testVersion: 'test version', at: 'at', remove: 'Remove', add: 'Add', noMatch: 'No location found',
+    testVersion: 'beta', at: 'at', remove: 'Remove', add: 'Add', noMatch: 'No location found',
   },
 };
 const t = (k, v = {}) => (T[settings.lang][k] ?? T.fr[k] ?? k).replace(/\{(\w+)\}/g, (_, x) => v[x] ?? '');
@@ -588,6 +602,7 @@ function nextSend(from = new Date()) {
   return d;
 }
 const locale = () => (settings.lang === 'fr' ? 'fr-FR' : 'en-GB');
+const nextDate = () => (data.nextRun && Date.parse(data.nextRun) > Date.now() ? new Date(data.nextRun) : nextSend());
 const fmtTime = () => (settings.lang === 'fr' ? settings.hour.replace(':', ' h ') : settings.hour);
 function render() {
   FIELDS.forEach((f) => { if (data[f] !== undefined) $(f).value = data[f]; });
@@ -597,11 +612,12 @@ function render() {
   $('fileName').textContent = data.cvName || '';
   $('cvLabel').textContent = hasCv ? t('cvReplace') : t('cvChoose');
   renderFound(); renderRoles(); renderLocs(); renderSources(); renderExclude();
-  const on = !!data.active;
-  $('statusOn').hidden = !on; $('statusOff').hidden = on; $('pause').hidden = !on;
-  $('activate').textContent = on ? t('update') : t('activate');
+  const on = !!data.active; const pend = !on && !!data.pending;
+  $('statusOn').hidden = !on; $('statusOff').hidden = on || pend; $('statusPending').hidden = !pend; $('pause').hidden = !on;
+  if (pend) $('pendingText').textContent = t('statusPending', { e: data.pendingEmail || data.email || '' });
+  $('activate').textContent = on || pend ? t('update') : t('activate');
   if (on) {
-    $('nextDate').textContent = nextSend().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + fmtTime();
+    $('nextDate').textContent = nextDate().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + nextDate().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
     $('freqText').textContent = t('freq' + settings.freq);
     $('sentTo').textContent = data.email || '—';
     $('maxText').textContent = t('maxText', { n: settings.max });
@@ -702,10 +718,41 @@ $('form').addEventListener('submit', (e) => {
   const err = $('formErr');
   if (missing.length) { err.textContent = t('missing', { list: missing.join(', ') }); err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
   err.hidden = true;
-  data.active = true; data.activatedAt = new Date().toISOString(); save(); render();
-  showConfirm();
+  submitAlerts();
 });
-function showConfirm() {
+function payload() {
+  return {
+    name: data.prenom || '', lang: settings.lang, roles: data.roles, locations: data.locations, remote: data.teletravail, contract: data.contrat,
+    salary: data.salaire || '', excludeTags: data.excludeTags, exclude: $('exclure').value || '', sources: data.sources, since: data.since,
+    freq: settings.freq, hour: settings.hour, max: settings.max,
+  };
+}
+async function callApi(body) {
+  const r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  let j = {}; try { j = await r.json(); } catch { /* empty */ }
+  return { ok: r.ok, status: r.status, ...j };
+}
+async function submitAlerts() {
+  const btn = $('activate'); const err = $('formErr');
+  btn.disabled = true; const label = btn.textContent; btn.textContent = t('sending');
+  let res;
+  try { res = await callApi({ action: 'subscribe', email: data.email.trim(), prefs: payload(), token: data.tokenEmail === data.email.trim().toLowerCase() ? data.token : undefined }); }
+  catch { res = { error: 'net' }; }
+  btn.disabled = false; btn.textContent = label;
+  if (res.status === 'active') {
+    data.active = true; data.pending = false; data.nextRun = res.next_run_at || null; save(); render(); showConfirm('updated'); return;
+  }
+  if (res.status === 'confirm_sent') {
+    data.pending = true; data.pendingEmail = data.email.trim(); save(); render(); showConfirm('pending'); return;
+  }
+  err.textContent = res.error === 'not_invited' ? t('errInvite') : res.error === 'wait' ? t('errWait') : t('errNet');
+  err.hidden = false; err.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+async function syncSettings() {
+  if (!data.active || !data.token) return;
+  try { const r = await callApi({ action: 'subscribe', email: data.email.trim(), prefs: payload(), token: data.token }); if (r.next_run_at) { data.nextRun = r.next_run_at; save(); render(); } } catch { /* offline */ }
+}
+function showConfirm(mode = 'pending') {
   const dl = $('confirmList'); dl.textContent = '';
   const autos = SOURCES.filter((s) => s.auto && data.sources.includes(s.id)).map(srcName);
   const links = SOURCES.filter((s) => !s.auto && data.sources.includes(s.id)).map(srcName);
@@ -715,7 +762,7 @@ function showConfirm() {
     [t('cOffers'), autos.join(', ') || '—'],
     [t('cLinks'), links.join(', ') || '—'],
     [t('sinceTitle'), t('since' + data.since)],
-    [t('cWhen'), t('f' + settings.freq) + ' · ' + t('cFirst', { d: nextSend().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + fmtTime() })],
+    [t('cWhen'), t('f' + settings.freq) + ' · ' + (mode === 'updated' ? t('nextEmail') + ' ' + nextDate().toLocaleDateString(locale(), { weekday: 'long', day: 'numeric', month: 'long' }) + ' ' + t('at') + ' ' + nextDate().toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' }) : t('cFirstConfirm'))],
     [t('sentTo'), data.email],
   ];
   rows.forEach(([k, v]) => {
@@ -723,12 +770,18 @@ function showConfirm() {
     const dd = document.createElement('dd'); dd.textContent = v;
     dl.append(dt, dd);
   });
+  $('confirmTitle').textContent = mode === 'updated' ? t('cTitleUpdated') : t('cTitlePending');
+  $('confirmNote').innerHTML = mode === 'updated' ? t('cNoteUpdated') : t('cNotePending', { e: esc(data.email.trim()) });
   const dlg = $('confirm');
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 }
 $('confirm').addEventListener('close', () => $('preview').scrollIntoView({ behavior: 'smooth', block: 'start' }));
-$('pause').addEventListener('click', () => { data.active = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+$('pause').addEventListener('click', async () => {
+  if (data.token) { try { await callApi({ action: 'pause', token: data.token }); } catch { /* offline: paused locally */ } }
+  data.active = false; data.pending = false; save(); render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 $('wipe').addEventListener('click', () => {
+  if (data.token) callApi({ action: 'pause', token: data.token }).catch(() => {});
   try { localStorage.removeItem(KEY); } catch { /* ignore */ }
   data = { roles: [], locations: [], teletravail: 'hybrid', contrat: 'cdi', sources: ['francetravail', 'startups', 'linkedin', 'indeed', 'wttj', 'hellowork'], since: '3', excludeTags: [] };
   $('form').reset(); render(); $('wipeMsg').hidden = false; setTimeout(() => { $('wipeMsg').hidden = true; }, 3000);
@@ -742,7 +795,7 @@ $('settingsBtn').addEventListener('click', () => {
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 });
 [['setLang', 'lang'], ['setFreq', 'freq'], ['setHour', 'hour'], ['setMax', 'max'], ['setTheme', 'theme']].forEach(([id, k]) => {
-  $(id).addEventListener('change', () => { settings[k] = $(id).value; write(SKEY, settings); applyTheme(); applyLang(); render(); });
+  $(id).addEventListener('change', () => { settings[k] = $(id).value; write(SKEY, settings); applyTheme(); applyLang(); render(); if (k !== 'theme') syncSettings(); });
 });
 dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
 
@@ -756,5 +809,29 @@ const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platfo
 if (isIOS && !standalone) $('iosHint').hidden = false;
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
+/* ---------- back from an email link (#ve=confirmed|stopped|invalid) ---------- */
+function showBanner(key, good) { const b = $('banner'); b.textContent = t(key); b.className = 'banner' + (good ? ' good' : ''); b.hidden = false; }
+(function readHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  const ve = h.get('ve'); if (!ve) return;
+  if (ve === 'confirmed' && h.get('t')) {
+    data.token = h.get('t'); data.tokenEmail = (h.get('e') || data.email || '').toLowerCase();
+    if (!data.email && h.get('e')) data.email = h.get('e');
+    data.active = true; data.pending = false; data.nextRun = null; showBanner('bannerConfirmed', true);
+  } else if (ve === 'stopped') { data.active = false; data.pending = false; showBanner('bannerStopped'); }
+  else showBanner('bannerInvalid');
+  history.replaceState(null, '', location.pathname + location.search);
+})();
+async function refreshStatus() {
+  if (!data.token) return;
+  try {
+    const r = await callApi({ action: 'status', token: data.token });
+    if (r.status === 404 || r.error === 'invalid') { delete data.token; delete data.tokenEmail; save(); return; }
+    if (!r.ok) return;
+    data.active = r.status === 'active'; if (data.active) data.pending = false;
+    data.nextRun = r.next_run_at || null; save(); render();
+  } catch { /* offline */ }
+}
+
 $('ver').textContent = 'v' + VERSION;
-save(); applyTheme(); applyLang(); render();
+save(); applyTheme(); applyLang(); render(); refreshStatus();
