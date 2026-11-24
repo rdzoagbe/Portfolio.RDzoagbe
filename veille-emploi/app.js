@@ -1,4 +1,4 @@
-const VERSION = '0.10.0';
+const VERSION = '0.10.1';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -90,11 +90,13 @@ const T = {
     ex1a: 'Anglais courant demandé', ex2a: 'Secteur nouveau pour toi', hybridTxt: 'hybride, 2 j de télétravail', onsiteTxt: 'sur site 3 j', remoteTxt: 'télétravail complet',
     dataTitle: 'Mes données', dataNote: 'Ton CV reste sur cet appareil. Ton email et tes critères sont gardés pour t’envoyer tes alertes. Supprimer ton compte efface tout et arrête les emails.', wipe: 'Supprimer mon compte', wiped: 'Tout est supprimé.', wipeAsk: 'Supprimer ton compte, tes critères et arrêter tes alertes ?',
     lTitle: 'Les offres d’emploi qui te correspondent, directement par email', lLead: 'Une petite app gratuite pour la famille et les amis : elle surveille les offres pour toi et t’envoie celles qui collent à ton CV.',
-    l1t: 'Crée ton compte', l1: 'Avec ton email et un code à 6 chiffres. Pas de mot de passe.',
+    l1t: 'Crée ton compte', l1: 'Avec ton adresse email, quelle qu’elle soit, et un code à 6 chiffres. Pas de mot de passe.',
     l2t: 'Ajoute ton CV et dis ce que tu cherches', l2: 'Postes, lieux, salaire, télétravail. Ton CV est lu sur ton téléphone : il n’est envoyé nulle part.',
     l3t: 'Reçois tes offres', l3: 'Les offres de startups et scale-ups, plus des liens LinkedIn, Indeed, Welcome to the Jungle… à la fréquence de ton choix. Tu arrêtes quand tu veux.',
+    l4t: 'Suis tes candidatures', l4: 'Note où tu as postulé, vois tes statistiques et exporte ton historique en PDF : pratique pour France Travail ou ton conseiller.',
+    anyMailT: 'Toutes les adresses email fonctionnent', anyMail: 'Gmail, Outlook, Hotmail, Yahoo, Orange, Free, SFR, iCloud… Pas besoin de créer une adresse Gmail : utilise celle que tu as déjà.',
     start: 'Commencer', lFoot: 'Gratuit · sans mot de passe · réservé à la famille et aux amis', haveAccount: 'Déjà un compte ? Se connecter',
-    siTitle: 'Ton adresse email', siHelp: 'On t’envoie un code à 6 chiffres pour créer ton compte ou te reconnecter.', siEmailPh: 'prenom.nom@gmail.com', sendCode: 'Recevoir mon code',
+    siTitle: 'Ton adresse email', siHelp: 'On t’envoie un code à 6 chiffres pour créer ton compte ou te reconnecter. Toutes les adresses fonctionnent : Gmail, Outlook, Yahoo, Orange, iCloud…', siEmailPh: 'ton.adresse@exemple.fr', sendCode: 'Recevoir mon code',
     codeTitle: 'Entre ton code', codeSent: 'Code envoyé à {e}. Regarde aussi dans les spams.', verify: 'Valider', resend: 'Renvoyer un code', changeEmail: 'Changer d’email', back: '← Retour',
     eBadEmail: 'Cette adresse email ne semble pas valide.', eBadCode: 'Code incorrect. Il te reste {n} essai(s).', eExpired: 'Ce code a expiré. Demande un nouveau code.', eLocked: 'Trop d’essais. Demande un nouveau code.',
     eWaitCode: 'Un code vient d’être envoyé. Attends un peu avant d’en demander un autre.', eTooMany: 'Trop de codes demandés. Réessaie dans une heure.', resent: 'Nouveau code envoyé.',
@@ -172,11 +174,13 @@ const T = {
     ex1a: 'Fluent English required', ex2a: 'New industry for you', hybridTxt: 'hybrid, 2 days remote', onsiteTxt: 'on-site 3 days', remoteTxt: 'fully remote',
     dataTitle: 'My data', dataNote: 'Your CV stays on this device. Your email and criteria are kept to send your alerts. Deleting your account erases everything and stops the emails.', wipe: 'Delete my account', wiped: 'Everything is deleted.', wipeAsk: 'Delete your account and criteria, and stop your alerts?',
     lTitle: 'Job offers that match you, straight to your inbox', lLead: 'A small free app for family and friends: it watches job offers for you and emails the ones that fit your CV.',
-    l1t: 'Create your account', l1: 'With your email and a 6-digit code. No password.',
+    l1t: 'Create your account', l1: 'With your email address, whichever it is, and a 6-digit code. No password.',
     l2t: 'Add your CV and say what you want', l2: 'Jobs, places, salary, remote work. Your CV is read on your phone: it is never sent anywhere.',
     l3t: 'Get your offers', l3: 'Offers from startups and scale-ups, plus LinkedIn, Indeed, Welcome to the Jungle links… as often as you like. Stop anytime.',
+    l4t: 'Track your applications', l4: 'Note where you applied, see your stats and export your history as a PDF: handy for the job centre or your adviser.',
+    anyMailT: 'Any email address works', anyMail: 'Gmail, Outlook, Hotmail, Yahoo, Orange, Free, SFR, iCloud… No need to create a Gmail address: use the one you already have.',
     start: 'Get started', lFoot: 'Free · no password · for family and friends', haveAccount: 'Already have an account? Sign in',
-    siTitle: 'Your email address', siHelp: 'We’ll send you a 6-digit code to create your account or sign back in.', siEmailPh: 'firstname.lastname@gmail.com', sendCode: 'Get my code',
+    siTitle: 'Your email address', siHelp: 'We’ll send you a 6-digit code to create your account or sign back in. Any address works: Gmail, Outlook, Yahoo, Orange, iCloud…', siEmailPh: 'you@example.com', sendCode: 'Get my code',
     codeTitle: 'Enter your code', codeSent: 'Code sent to {e}. Check your spam folder too.', verify: 'Confirm', resend: 'Send a new code', changeEmail: 'Change email', back: '← Back',
     eBadEmail: 'This email address doesn’t look valid.', eBadCode: 'Wrong code. {n} try(ies) left.', eExpired: 'This code has expired. Ask for a new one.', eLocked: 'Too many tries. Ask for a new code.',
     eWaitCode: 'A code was just sent. Wait a little before asking for another.', eTooMany: 'Too many codes requested. Try again in an hour.', resent: 'New code sent.',
