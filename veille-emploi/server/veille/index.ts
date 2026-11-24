@@ -4,7 +4,10 @@
 //   POST {action:'account', session}                 -> {account}
 //   POST {action:'save', session, prefs, activate?}  -> saves criteria; activate turns alerts on (first email right away)
 //   POST {action:'pause' | 'logout' | 'delete', session}
+//   POST {action:'offers', session}                  -> history of offers sent, with opened/status
+//   POST {action:'offer_status', session, id, status} -> new | applied | interview | rejected | notforme
 //   POST {action:'run'} + x-cron-secret header       -> send due alerts (pg_cron, every 15 min)
+//   GET  ?a=go&o=TRACK_ID (offer links in emails: marks the offer opened, then redirects)
 //   GET  ?a=stop&t=TOKEN (link in every email) | ?a=confirm&t=TOKEN (older emails)
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import nodemailer from 'npm:nodemailer@6.9.16';
@@ -88,9 +91,23 @@ async function sendAlert(sub: Sub, first = false) {
   const seen = new Set((seenRows || []).map((r) => r.offer_key));
   const offers = selectOffers(jobs, prefs, seen);
   const next = await nextRun(prefs.hour, Number(prefs.freq) - 1);
-  const mail = alertEmail(prefs, offers, { stopUrl: `${FN_URL}?a=stop&t=${sub.token}`, nextRun: next, first, ftLink: sources.includes('francetravail') && !ftOn });
+  // Keep each offer in the history; email links go through ?a=go so opened offers are counted.
+  let tracked = offers;
+  const keys = offers.map((o: { key: string }) => o.key);
+  if (offers.length) {
+    const rows = offers.map((o: Record<string, string>) => ({
+      sub_id: sub.id, offer_key: o.key, title: String(o.title).slice(0, 200), company: (o.company || '').slice(0, 120),
+      location: (o.location || '').slice(0, 200), url: o.url, source: o.source, posted_at: o.posted || null,
+    }));
+    const { data: ins, error: insErr } = await db.from('offers').upsert(rows, { onConflict: 'sub_id,offer_key' }).select('offer_key,track_id');
+    if (insErr) console.error('offers insert', insErr.message);
+    const byKey = new Map((ins || []).map((r) => [r.offer_key, r.track_id]));
+    tracked = offers.map((o: { key: string }) => (byKey.has(o.key) ? { ...o, url: `${FN_URL}?a=go&o=${byKey.get(o.key)}` } : o));
+  }
+  const mail = alertEmail(prefs, tracked, { stopUrl: `${FN_URL}?a=stop&t=${sub.token}`, nextRun: next, first, ftLink: sources.includes('francetravail') && !ftOn });
   let err: string | null = null;
   try { await sendMail(sub.email, mail); } catch (e) { err = (e as Error).message; }
+  if (err && keys.length) await db.from('offers').delete().eq('sub_id', sub.id).in('offer_key', keys).is('opened_at', null);
   if (!err && offers.length) {
     await db.from('sent_offers').upsert(offers.flatMap((o: { id: string; key: string }) => [{ sub_id: sub.id, offer_key: o.id }, { sub_id: sub.id, offer_key: o.key }]), { onConflict: 'sub_id,offer_key', ignoreDuplicates: true });
   }
@@ -212,6 +229,14 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     if (req.method === 'GET') {
       const a = url.searchParams.get('a'); const t = url.searchParams.get('t');
+      if (a === 'go') {
+        const o = url.searchParams.get('o');
+        const { data: off } = o && /^[0-9a-f-]{36}$/i.test(o)
+          ? await db.from('offers').select('id,url,opened_at').eq('track_id', o).maybeSingle() : { data: null };
+        if (!off || !/^https:\/\//i.test(off.url)) return new Response(null, { status: 302, headers: { location: APP_URL } });
+        if (!off.opened_at) await db.from('offers').update({ opened_at: now() }).eq('id', off.id);
+        return new Response(null, { status: 302, headers: { location: off.url, 'cache-control': 'no-store' } });
+      }
       if (a === 'stop' || a === 'confirm') {
         const sub = await byToken(t);
         if (!sub) return back('ve=invalid');
@@ -228,11 +253,24 @@ Deno.serve(async (req) => {
     switch (body.action) {
       case 'code': return await requestCode(body);
       case 'verify': return await verifyCode(body);
-      case 'account': case 'save': case 'pause': case 'logout': case 'delete': {
+      case 'account': case 'save': case 'pause': case 'logout': case 'delete': case 'offers': case 'offer_status': {
         const s = await bySession(body.session);
         if (!s) return json({ error: 'signed_out' }, 401);
         if (body.action === 'account') return json({ ok: true, account: await accountView(s.sub) });
         if (body.action === 'save') return await save(s.sub, body);
+        if (body.action === 'offers') {
+          const { data } = await db.from('offers').select('track_id,title,company,location,source,posted_at,sent_at,opened_at,status')
+            .eq('sub_id', s.sub.id).gte('sent_at', new Date(Date.now() - 365 * 86400000).toISOString()).order('sent_at', { ascending: false }).limit(500);
+          return json({ ok: true, offers: data || [] });
+        }
+        if (body.action === 'offer_status') {
+          const st = String(body.status || '');
+          if (!['new', 'applied', 'interview', 'rejected', 'notforme'].includes(st) || typeof body.id !== 'string' || !/^[0-9a-f-]{36}$/i.test(body.id)) return json({ error: 'bad_request' }, 400);
+          const { data: cur } = await db.from('offers').select('id,opened_at').eq('track_id', body.id).eq('sub_id', s.sub.id).maybeSingle();
+          if (!cur) return json({ error: 'not_found' }, 404);
+          await db.from('offers').update({ status: st, status_at: now(), opened_at: cur.opened_at || (st !== 'new' ? now() : null) }).eq('id', cur.id);
+          return json({ ok: true });
+        }
         if (body.action === 'pause') {
           const { data } = await db.from('subscriptions').update({ status: 'paused', updated_at: now() }).eq('id', s.sub.id).select('*').single();
           return json({ ok: true, account: await accountView(data) });

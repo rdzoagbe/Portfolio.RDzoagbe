@@ -1,4 +1,4 @@
-const VERSION = '0.8.0';
+const VERSION = '0.9.0';
 const API = 'https://maqyabqedzofmlcohfdc.supabase.co/functions/v1/veille';
 const KEY = 've:data';
 const SKEY = 've:settings';
@@ -98,6 +98,16 @@ const T = {
     codeTitle: 'Entre ton code', codeSent: 'Code envoyé à {e}. Regarde aussi dans les spams.', verify: 'Valider', resend: 'Renvoyer un code', changeEmail: 'Changer d’email', back: '← Retour',
     eBadEmail: 'Cette adresse email ne semble pas valide.', eBadCode: 'Code incorrect. Il te reste {n} essai(s).', eExpired: 'Ce code a expiré. Demande un nouveau code.', eLocked: 'Trop d’essais. Demande un nouveau code.',
     eWaitCode: 'Un code vient d’être envoyé. Attends un peu avant d’en demander un autre.', eTooMany: 'Trop de codes demandés. Réessaie dans une heure.', resent: 'Nouveau code envoyé.',
+    navHome: 'Accueil', myOffers: 'Mes offres', period: 'Période', p7: '7 j', p30: '30 j', pAll: 'Tout',
+    stRecv: 'offres reçues', stOpen: 'offres ouvertes', stApp: 'candidatures', stInt: 'entretiens', weekPlus: '+{n} cette semaine', rate: '{n} % de réponses',
+    funnel: 'Ton parcours', fRecv: 'Reçues', fOpen: 'Ouvertes', fApp: 'Postulé', fInt: 'Entretien', perWeek: 'Offres par semaine',
+    fAll: 'Toutes', fNew: 'À voir', fApplied: 'Postulé', fInterview: 'Entretien',
+    st_new: 'Nouveau', st_open: 'Ouverte', st_applied: 'Postulé', st_interview: 'Entretien', st_rejected: 'Refusé', st_notforme: 'Pas pour moi',
+    received: 'reçue le {d}', viewOffer: 'Voir l’offre ↗', whereAt: 'Où en es-tu avec cette offre ?',
+    opt_applied: '✓ J’ai postulé', opt_interview: '📞 Entretien', opt_rejected: '✕ Refusé', opt_notforme: '👎 Pas pour moi',
+    tapNote: 'Un tap suffit : tes stats se mettent à jour toutes seules. Touche à nouveau pour annuler.', loading: 'Chargement…',
+    emptyAll: 'Pas encore d’offres ici. Elles apparaîtront dès ton prochain email d’alerte.', emptyFilter: 'Aucune offre dans cette catégorie.',
+    src_startups: 'Startups', src_francetravail: 'France Travail',
     account: 'Mon compte', logout: 'Se déconnecter', signedOut: 'Tu as été déconnecté. Reconnecte-toi avec ton email.',
     shareTitle: 'Partager l’app', shareHelp: 'Envoie ce lien à ta famille et tes amis : il leur permet de créer leur compte.', share: 'Partager…', copy: 'Copier le lien', copied: 'Lien copié ✓',
     shareText: 'Je t’invite sur Veille Emploi : une petite app gratuite qui t’envoie par email les offres d’emploi qui correspondent à ton CV. Inscris-toi ici :',
@@ -161,6 +171,16 @@ const T = {
     codeTitle: 'Enter your code', codeSent: 'Code sent to {e}. Check your spam folder too.', verify: 'Confirm', resend: 'Send a new code', changeEmail: 'Change email', back: '← Back',
     eBadEmail: 'This email address doesn’t look valid.', eBadCode: 'Wrong code. {n} try(ies) left.', eExpired: 'This code has expired. Ask for a new one.', eLocked: 'Too many tries. Ask for a new code.',
     eWaitCode: 'A code was just sent. Wait a little before asking for another.', eTooMany: 'Too many codes requested. Try again in an hour.', resent: 'New code sent.',
+    navHome: 'Home', myOffers: 'My offers', period: 'Period', p7: '7 d', p30: '30 d', pAll: 'All',
+    stRecv: 'offers received', stOpen: 'offers opened', stApp: 'applications', stInt: 'interviews', weekPlus: '+{n} this week', rate: '{n}% response rate',
+    funnel: 'Your progress', fRecv: 'Received', fOpen: 'Opened', fApp: 'Applied', fInt: 'Interview', perWeek: 'Offers per week',
+    fAll: 'All', fNew: 'To review', fApplied: 'Applied', fInterview: 'Interview',
+    st_new: 'New', st_open: 'Opened', st_applied: 'Applied', st_interview: 'Interview', st_rejected: 'Rejected', st_notforme: 'Not for me',
+    received: 'received {d}', viewOffer: 'View the offer ↗', whereAt: 'Where are you with this offer?',
+    opt_applied: '✓ I applied', opt_interview: '📞 Interview', opt_rejected: '✕ Rejected', opt_notforme: '👎 Not for me',
+    tapNote: 'One tap is enough: your stats update by themselves. Tap again to undo.', loading: 'Loading…',
+    emptyAll: 'No offers here yet. They will show up after your next alert email.', emptyFilter: 'No offers in this category.',
+    src_startups: 'Startups', src_francetravail: 'France Travail',
     account: 'My account', logout: 'Sign out', signedOut: 'You were signed out. Sign in again with your email.',
     shareTitle: 'Share the app', shareHelp: 'Send this link to family and friends: it lets them create their account.', share: 'Share…', copy: 'Copy link', copied: 'Link copied ✓',
     shareText: 'I’m inviting you to Veille Emploi: a small free app that emails you job offers matching your CV. Sign up here:',
@@ -811,7 +831,7 @@ function resetLocal(keepInvite = true) {
 $('wipe').addEventListener('click', async () => {
   if (!confirm(t('wipeAsk'))) return;
   try { await callApi({ action: 'delete', session: data.session }); } catch { /* offline */ }
-  resetLocal(); showBanner('wiped'); showView();
+  resetLocal(); tab = 'home'; offers = []; showBanner('wiped'); showView();
 });
 
 /* ---------- settings ---------- */
@@ -823,7 +843,7 @@ $('settingsBtn').addEventListener('click', () => {
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
 });
 [['setLang', 'lang'], ['setFreq', 'freq'], ['setHour', 'hour'], ['setMax', 'max'], ['setTheme', 'theme']].forEach(([id, k]) => {
-  $(id).addEventListener('change', () => { settings[k] = $(id).value; write(SKEY, settings); applyTheme(); applyLang(); render(); if (k !== 'theme') syncSettings(); });
+  $(id).addEventListener('change', () => { settings[k] = $(id).value; write(SKEY, settings); applyTheme(); applyLang(); render(); if (k === 'lang') renderOffers(); if (k !== 'theme') syncSettings(); });
 });
 dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
 
@@ -858,9 +878,13 @@ function showBanner(key, good) { const b = $('banner'); b.textContent = t(key); 
 
 /* ---------- account: landing, sign-in with a 6-digit code ---------- */
 delete data.token; delete data.tokenEmail; delete data.pending; delete data.pendingEmail;
+let tab = 'home';
 function showView() {
   const signed = !!data.session;
-  $('appView').hidden = !signed;
+  $('appView').hidden = !signed || tab !== 'home';
+  $('offersView').hidden = !signed || tab !== 'offers';
+  $('bottomNav').hidden = !signed; document.body.classList.toggle('has-nav', signed); $('settingsBtn').hidden = signed;
+  $('navHome').classList.toggle('on', tab === 'home'); $('navOffers').classList.toggle('on', tab === 'offers');
   $('landing').hidden = signed || data.view === 'signin';
   $('signin').hidden = signed || data.view !== 'signin';
   $('accountBox').hidden = !signed;
@@ -899,7 +923,7 @@ $('codeForm').addEventListener('submit', async (e) => {
   $('verifyBtn').disabled = false;
   if (!r.ok) { $('otp').select(); return loginError({ bad_code: 'eBadCode', expired: 'eExpired', locked: 'eLocked' }[r.error] || 'errNet', { n: r.left ?? '' }); }
   data.session = r.session; data.view = ''; data.email = r.account.email;
-  applyAccount(r.account, true); showView(); window.scrollTo({ top: 0 });
+  applyAccount(r.account, true); tab = 'home'; showView(); window.scrollTo({ top: 0 }); loadOffers();
 });
 function applyAccount(a, fromLogin = false) {
   data.email = a.email; data.active = a.status === 'active'; data.nextRun = a.next_run_at || null; data.shareInvite = a.invite || data.invite || '';
@@ -912,15 +936,124 @@ function applyAccount(a, fromLogin = false) {
   }
   save(); render();
 }
-function signedOut() { delete data.session; data.active = false; save(); showBanner('signedOut'); goSignin(); }
+function signedOut() { tab = 'home'; offers = []; delete data.session; data.active = false; save(); showBanner('signedOut'); goSignin(); }
 async function refreshAccount() {
   if (!data.session) return;
   try { const r = await callApi({ action: 'account', session: data.session }); if (r.error === 'signed_out') return signedOut(); if (r.account) applyAccount(r.account); } catch { /* offline */ }
 }
 $('logoutBtn').addEventListener('click', async () => {
   try { await callApi({ action: 'logout', session: data.session }); } catch { /* offline */ }
-  dlg.close(); resetLocal(); showView();
+  dlg.close(); resetLocal(); tab = 'home'; offers = []; showView();
 });
+
+/* ---------- "Mes offres": history, stats, status ---------- */
+let offers = []; let offFilter = 'all'; let period = '30';
+const DAY = 86400000;
+const goUrl = (id) => `${API}?a=go&o=${id}`;
+const shortPlace = (l) => [...new Set(String(l || '').split(/\s*[·;]\s*/).filter(Boolean))].slice(0, 2).join(' · ');
+const dShort = (iso) => new Date(iso).toLocaleDateString(locale(), { day: 'numeric', month: 'short' });
+const stKey = (o) => (o.status === 'new' ? (o.opened_at ? 'open' : 'new') : o.status);
+function setTab(next) {
+  tab = next;
+  if (tab === 'offers') { data.offersSeenAt = new Date().toISOString(); save(); renderOffers(); loadOffers(); }
+  showView(); updateBadge(); window.scrollTo({ top: 0 });
+}
+$('navHome').addEventListener('click', () => setTab('home'));
+$('navOffers').addEventListener('click', () => setTab('offers'));
+$('navSettings').addEventListener('click', () => $('settingsBtn').click());
+async function loadOffers() {
+  if (!data.session) return;
+  if (!offers.length) $('offersLoading').hidden = false;
+  try {
+    const r = await callApi({ action: 'offers', session: data.session });
+    if (r.error === 'signed_out') return signedOut();
+    if (r.ok) offers = r.offers || [];
+  } catch { /* offline */ }
+  $('offersLoading').hidden = true; renderOffers(); updateBadge();
+}
+function updateBadge() {
+  const seen = data.offersSeenAt || '';
+  const n = offers.filter((o) => o.status === 'new' && !o.opened_at && o.sent_at > seen).length;
+  $('navBadge').textContent = n > 9 ? '9+' : String(n); $('navBadge').hidden = !n || tab === 'offers';
+}
+function renderOffers() {
+  document.querySelectorAll('#period button').forEach((b) => b.classList.toggle('on', b.dataset.p === period));
+  const since = period === 'all' ? 0 : Date.now() - Number(period) * DAY;
+  const inP = offers.filter((o) => Date.parse(o.sent_at) >= since);
+  const recv = inP.length;
+  const opened = inP.filter((o) => o.opened_at || o.status !== 'new').length;
+  const applied = inP.filter((o) => ['applied', 'interview', 'rejected'].includes(o.status)).length;
+  const inter = inP.filter((o) => o.status === 'interview').length;
+  const answered = inP.filter((o) => ['interview', 'rejected'].includes(o.status)).length;
+  const week = offers.filter((o) => Date.parse(o.sent_at) >= Date.now() - 7 * DAY).length;
+  $('stRecv').textContent = recv; $('stOpen').textContent = opened; $('stApp').textContent = applied; $('stInt').textContent = inter;
+  $('stWeek').textContent = week ? t('weekPlus', { n: week }) : '';
+  $('stRate').textContent = applied ? t('rate', { n: Math.round((answered / applied) * 100) }) : '';
+  const fun = $('funnel'); fun.textContent = '';
+  [['fRecv', recv, ''], ['fOpen', opened, ''], ['fApp', applied, 'app'], ['fInt', inter, 'int']].forEach(([k, n, c]) => {
+    const row = document.createElement('div'); row.className = 'fr';
+    row.innerHTML = '<span></span><i></i><b></b>';
+    row.querySelector('span').textContent = t(k); row.querySelector('b').textContent = n;
+    const bar = row.querySelector('i'); if (c) bar.classList.add(c); bar.style.width = recv ? Math.max(4, Math.round((n / recv) * 100)) + '%' : '4%';
+    fun.appendChild(row);
+  });
+  // last 6 weeks, Monday first
+  const monday = new Date(); monday.setHours(0, 0, 0, 0); monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  const starts = [...Array(6)].map((_, i) => new Date(monday.getTime() - (5 - i) * 7 * DAY));
+  const counts = starts.map((st) => offers.filter((o) => { const x = Date.parse(o.sent_at); return x >= st.getTime() && x < st.getTime() + 7 * DAY; }).length);
+  const max = Math.max(1, ...counts);
+  $('bars').innerHTML = counts.map((c, i) => `<div class="${i === 5 ? 'cur' : ''}" style="height:${Math.max(5, Math.round((c / max) * 100))}%" title="${c}"></div>`).join('');
+  $('weeks').innerHTML = starts.map((d) => `<span>${d.getDate()}/${d.getMonth() + 1}</span>`).join('');
+  const cnt = { all: inP.length, new: inP.filter((o) => o.status === 'new').length, applied: inP.filter((o) => o.status === 'applied').length, interview: inter };
+  const lab = { all: 'fAll', new: 'fNew', applied: 'fApplied', interview: 'fInterview' };
+  document.querySelectorAll('#offerTabs button').forEach((b) => {
+    const f = b.dataset.f; b.textContent = t(lab[f]) + (f === 'all' ? '' : ` (${cnt[f]})`);
+    b.classList.toggle('on', f === offFilter); b.setAttribute('aria-selected', f === offFilter);
+  });
+  const list = inP.filter((o) => offFilter === 'all' || o.status === offFilter);
+  const box = $('offerList'); box.textContent = '';
+  list.forEach((o) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'offer-card';
+    b.innerHTML = '<span class="oc-top"><span class="oc-t"></span><span class="chip-st"></span></span><span class="oc-m"></span>';
+    b.querySelector('.oc-t').textContent = o.title;
+    const k = stKey(o); const chip = b.querySelector('.chip-st'); chip.textContent = t('st_' + k); chip.classList.add('st-' + k);
+    b.querySelector('.oc-m').textContent = [o.company, shortPlace(o.location), t('received', { d: dShort(o.sent_at) })].filter(Boolean).join(' · ');
+    b.addEventListener('click', () => openOffer(o));
+    box.appendChild(b);
+  });
+  const empty = $('offersEmpty');
+  empty.hidden = !!list.length || !$('offersLoading').hidden;
+  empty.textContent = offers.length ? t('emptyFilter') : t('emptyAll');
+}
+document.querySelectorAll('#period button').forEach((b) => b.addEventListener('click', () => { period = b.dataset.p; renderOffers(); }));
+document.querySelectorAll('#offerTabs button').forEach((b) => b.addEventListener('click', () => { offFilter = b.dataset.f; renderOffers(); }));
+const sheet = $('offerSheet'); let current = null;
+function paintSheet() {
+  document.querySelectorAll('#osOpts button').forEach((b) => { b.textContent = t('opt_' + b.dataset.st); b.classList.toggle('sel', current && current.status === b.dataset.st); b.setAttribute('aria-pressed', !!(current && current.status === b.dataset.st)); });
+}
+function openOffer(o) {
+  current = o;
+  $('osTitle').textContent = o.title;
+  $('osMeta').textContent = [o.company, shortPlace(o.location), t('received', { d: dShort(o.sent_at) }), t('src_' + o.source) !== 'src_' + o.source ? t('src_' + o.source) : ''].filter(Boolean).join(' · ');
+  $('osLink').href = goUrl(o.track_id); $('osLink').textContent = t('viewOffer');
+  paintSheet();
+  if (sheet.showModal) sheet.showModal(); else sheet.setAttribute('open', '');
+}
+$('osLink').addEventListener('click', () => { if (current && !current.opened_at) { current.opened_at = new Date().toISOString(); renderOffers(); } });
+document.querySelectorAll('#osOpts button').forEach((b) => b.addEventListener('click', async () => {
+  if (!current) return;
+  const o = current; const prev = o.status;
+  o.status = o.status === b.dataset.st ? 'new' : b.dataset.st;
+  if (o.status !== 'new' && !o.opened_at) o.opened_at = new Date().toISOString();
+  paintSheet(); renderOffers();
+  try {
+    const r = await callApi({ action: 'offer_status', session: data.session, id: o.track_id, status: o.status });
+    if (r.error === 'signed_out') { sheet.close(); return signedOut(); }
+    if (!r.ok) { o.status = prev; paintSheet(); renderOffers(); }
+  } catch { o.status = prev; paintSheet(); renderOffers(); }
+}));
+$('osClose').addEventListener('click', () => sheet.close());
+sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); });
 
 /* ---------- share the app ---------- */
 function shareUrl() {
@@ -949,4 +1082,4 @@ $('copyLink').addEventListener('click', async () => {
 });
 
 $('ver').textContent = 'v' + VERSION;
-save(); applyTheme(); applyLang(); render(); showView(); refreshAccount();
+save(); applyTheme(); applyLang(); render(); showView(); refreshAccount(); loadOffers();

@@ -210,7 +210,49 @@
     </div>
   </section>
   </div>
+
+  <div id="offersView" class="stack-lg" hidden>
+    <div class="row-between"><h1 class="pg" data-i18n="myOffers"></h1>
+      <div class="seg" id="period" role="group" data-i18n-aria="period">
+        <button type="button" data-p="7" data-i18n="p7"></button><button type="button" data-p="30" data-i18n="p30"></button><button type="button" data-p="all" data-i18n="pAll"></button>
+      </div></div>
+    <div class="stats">
+      <div class="stat"><b id="stRecv">0</b><span data-i18n="stRecv"></span><em id="stWeek"></em></div>
+      <div class="stat"><b id="stOpen">0</b><span data-i18n="stOpen"></span></div>
+      <div class="stat"><b id="stApp">0</b><span data-i18n="stApp"></span></div>
+      <div class="stat"><b id="stInt">0</b><span data-i18n="stInt"></span><em id="stRate"></em></div>
+    </div>
+    <section class="card tight"><h3 class="h3" data-i18n="funnel"></h3><div class="funnel" id="funnel"></div></section>
+    <section class="card tight"><h3 class="h3" data-i18n="perWeek"></h3><div class="bars" id="bars"></div><div class="wk" id="weeks"></div></section>
+    <div class="tabs" id="offerTabs" role="tablist">
+      <button type="button" data-f="all"></button><button type="button" data-f="new"></button><button type="button" data-f="applied"></button><button type="button" data-f="interview"></button>
+    </div>
+    <div id="offerList" class="offer-list"></div>
+    <p class="small center" id="offersEmpty" hidden></p>
+    <p class="small center" id="offersLoading" hidden data-i18n="loading"></p>
+  </div>
 </main>
+
+<nav class="bottom-nav" id="bottomNav" hidden>
+  <button type="button" id="navHome" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="navHome"></span></button>
+  <button type="button" id="navOffers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span data-i18n="myOffers"></span><b class="nav-badge" id="navBadge" hidden></b></button>
+  <button type="button" id="navSettings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span data-i18n="settings"></span></button>
+</nav>
+
+<dialog id="offerSheet" class="bottom-sheet" aria-labelledby="osTitle">
+  <div class="sheet">
+    <div class="grab" aria-hidden="true"></div>
+    <div><h2 id="osTitle"></h2><p class="small" id="osMeta"></p></div>
+    <a class="primary btn-link" id="osLink" target="_blank" rel="noopener"></a>
+    <span class="small strong" data-i18n="whereAt"></span>
+    <div class="st-opts" id="osOpts">
+      <button type="button" data-st="applied"></button><button type="button" data-st="interview"></button>
+      <button type="button" data-st="rejected"></button><button type="button" data-st="notforme"></button>
+    </div>
+    <p class="small center" data-i18n="tapNote"></p>
+    <button class="ghost" type="button" id="osClose" data-i18n="close"></button>
+  </div>
+</dialog>
 
 <dialog id="confirm" aria-labelledby="confirmTitle">
   <form method="dialog" class="sheet">
